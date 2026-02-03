@@ -62,13 +62,13 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart }: 
                 <div className="w-full md:w-1/2 p-8 flex flex-col h-full">
                     <div className="mb-auto">
                         {product.isLocal && (
-                            <span className="inline-flex items-center gap-1.5 bg-kaiser-green-100 text-kaiser-green-700 px-3 py-1 rounded-full text-xs font-bold mb-4">
+                            <span className="inline-flex items-center gap-1.5 bg-violet-100 text-violet-700 px-3 py-1 rounded-full text-xs font-bold mb-4">
                                 <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
-                                Kaiser Local Farm
+                                Etalon Local Farm
                             </span>
                         )}
                         <h2 className="text-3xl font-bold text-gray-900 mb-2">{product.name}</h2>
-                        <p className="text-2xl font-bold text-kaiser-green-700 mb-6">${product.price.toFixed(2)}</p>
+                        <p className="text-2xl font-bold text-violet-700 mb-6">${product.price.toFixed(2)}</p>
 
                         <p className="text-gray-600 mb-6 leading-relaxed">
                             {product.description || "Fresh, high-quality product sourced directly for you. Enjoy the best flavors of the season with this premium selection."}
@@ -99,16 +99,16 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart }: 
 
                     <div className="flex gap-4">
                         <div className="flex-1 flex items-center border border-gray-200 rounded-full px-4">
-                            <button className="p-2 text-gray-500 hover:text-kaiser-green-700">-</button>
+                            <button className="p-2 text-gray-500 hover:text-violet-700">-</button>
                             <span className="flex-1 text-center font-semibold">1</span>
-                            <button className="p-2 text-gray-500 hover:text-kaiser-green-700">+</button>
+                            <button className="p-2 text-gray-500 hover:text-violet-700">+</button>
                         </div>
                         <button
                             onClick={() => {
                                 onAddToCart(product);
                                 onClose();
                             }}
-                            className="flex-[2] bg-kaiser-green-600 hover:bg-kaiser-green-700 text-white font-bold py-3.5 px-8 rounded-full transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0"
+                            className="flex-[2] bg-violet-600 hover:bg-violet-700 text-white font-bold py-3.5 px-8 rounded-full transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0"
                         >
                             Add to Cart
                         </button>

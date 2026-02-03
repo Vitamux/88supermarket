@@ -60,7 +60,7 @@ export const useCartStore = create<CartStore>()(
                 const state = get();
                 const subtotal = state.items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
                 const total = subtotal + 5.00; // $5 Delivery Fee
-                const orderId = `KS-${Math.floor(1000 + Math.random() * 9000)}`;
+                const orderId = `ET-${Math.floor(1000 + Math.random() * 9000)}`;
 
                 const newOrder: Order = {
                     id: orderId,
@@ -84,7 +84,7 @@ export const useCartStore = create<CartStore>()(
             count: () => get().items.reduce((acc, item) => acc + item.quantity, 0),
         }),
         {
-            name: 'kaiser-cart-storage',
+            name: 'etalon-cart-storage',
             // We don't want to persist searchQuery usually, but for simplicity we can or use partialize
             partialize: (state) => ({ items: state.items, orders: state.orders }),
         }

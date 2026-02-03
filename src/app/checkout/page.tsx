@@ -25,7 +25,7 @@ export default function CheckoutPage() {
     }, []);
 
     if (!mounted) {
-        return <div className="min-h-screen bg-gray-50 flex items-center justify-center"><div className="animate-pulse text-kaiser-green-600">Loading Checkout...</div></div>;
+        return <div className="min-h-screen bg-gray-50 flex items-center justify-center"><div className="animate-pulse text-etalon-violet-600">Loading Checkout...</div></div>;
     }
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -41,7 +41,7 @@ export default function CheckoutPage() {
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                 <div className="text-center">
                     <h1 className="text-2xl font-bold text-gray-900 mb-4">Your cart is empty</h1>
-                    <Link href="/" className="text-kaiser-green-600 hover:underline">Continue Shopping</Link>
+                    <Link href="/" className="text-etalon-violet-600 hover:underline">Continue Shopping</Link>
                 </div>
             </div>
         )
@@ -53,7 +53,7 @@ export default function CheckoutPage() {
                 {/* Stepped Progress */}
                 <div className="flex items-center justify-between mb-12 max-w-2xl mx-auto">
                     <div className="flex flex-col items-center">
-                        <div className="w-10 h-10 rounded-full bg-kaiser-green-600 text-white flex items-center justify-center font-bold mb-2">1</div>
+                        <div className="w-10 h-10 rounded-full bg-violet-600 text-white flex items-center justify-center font-bold mb-2">1</div>
                         <span className="text-sm font-semibold text-gray-900">Shipping</span>
                     </div>
                     <div className="h-1 flex-1 bg-gray-200 mx-4"></div>
@@ -78,7 +78,7 @@ export default function CheckoutPage() {
                                 <input
                                     type="text"
                                     required
-                                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-kaiser-green-500 focus:border-transparent outline-none transition-all"
+                                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-etalon-violet-500 focus:border-transparent outline-none transition-all"
                                     placeholder="Jane Doe"
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -89,7 +89,7 @@ export default function CheckoutPage() {
                                 <input
                                     type="text"
                                     required
-                                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-kaiser-green-500 focus:border-transparent outline-none transition-all"
+                                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-etalon-violet-500 focus:border-transparent outline-none transition-all"
                                     placeholder="123 Fresh St, Apartment 4B"
                                     value={formData.address}
                                     onChange={(e) => setFormData({ ...formData, address: e.target.value })}
@@ -100,7 +100,7 @@ export default function CheckoutPage() {
                                 <input
                                     type="tel"
                                     required
-                                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-kaiser-green-500 focus:border-transparent outline-none transition-all"
+                                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-etalon-violet-500 focus:border-transparent outline-none transition-all"
                                     placeholder="(555) 123-4567"
                                     value={formData.phone}
                                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
@@ -141,7 +141,7 @@ export default function CheckoutPage() {
 
                         <button
                             onClick={handleSubmit}
-                            className="w-full mt-8 bg-kaiser-green-600 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl hover:bg-kaiser-green-700 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+                            className="w-full mt-8 bg-violet-600 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl hover:bg-violet-700 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
                         >
                             Place Order
                         </button>

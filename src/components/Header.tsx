@@ -21,11 +21,11 @@ export default function Header() {
     };
 
     return (
-        <header className="bg-kaiser-green-700 text-white shadow-lg sticky top-0 z-50">
+        <header className="bg-violet-700 text-white shadow-lg sticky top-0 z-50">
             <div className="container mx-auto px-4 py-4 flex items-center justify-between">
                 <Link href="/" className="text-2xl font-bold tracking-tight flex items-center gap-2">
-                    <span className="text-3xl">🥬</span>
-                    <span>Kaiser Supermarket</span>
+                    <span className="text-3xl">💎</span>
+                    <span>ETALON MARKT</span>
                 </Link>
 
                 <div className="hidden md:flex flex-1 max-w-xl mx-8">
@@ -34,7 +34,7 @@ export default function Header() {
                             type="text"
                             value={searchQuery}
                             onChange={handleSearchChange}
-                            placeholder="Search for apples, bread, milk..."
+                            placeholder="Search for premium goods..."
                             className="w-full bg-white/10 border border-white/20 rounded-full py-2 px-6 pl-12 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50 backdrop-blur-sm transition-all"
                         />
                         <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-white/70" />
@@ -42,18 +42,18 @@ export default function Header() {
                 </div>
 
                 <nav className="flex items-center gap-6 text-sm font-medium">
-                    <div className="hidden sm:flex items-center gap-1 cursor-pointer hover:text-kaiser-green-100 transition-colors">
+                    <div className="hidden sm:flex items-center gap-1 cursor-pointer hover:text-violet-200 transition-colors">
                         <Menu className="w-6 h-6" />
                         <span>Categories</span>
                     </div>
-                    <div className="hidden sm:flex items-center gap-1 cursor-pointer hover:text-kaiser-green-100 transition-colors">
+                    <div className="hidden sm:flex items-center gap-1 cursor-pointer hover:text-violet-200 transition-colors">
                         <User className="w-6 h-6" />
                         <span className="hidden sm:inline">Account</span>
                     </div>
-                    <Link href="/checkout" className="flex items-center gap-1 cursor-pointer hover:text-kaiser-green-100 transition-colors relative">
+                    <Link href="/checkout" className="flex items-center gap-1 cursor-pointer hover:text-violet-200 transition-colors relative">
                         <ShoppingCart className="w-6 h-6" />
                         {mounted && cartCount > 0 && (
-                            <span className="absolute -top-2 -right-2 bg-kaiser-accent text-kaiser-green-700 text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full animate-bounce-elastic">
+                            <span className="absolute -top-2 -right-2 bg-fuchsia-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full animate-bounce-elastic">
                                 {cartCount}
                             </span>
                         )}

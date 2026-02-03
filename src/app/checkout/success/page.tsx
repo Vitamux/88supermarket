@@ -26,12 +26,12 @@ export default function SuccessPage() {
                 </div>
 
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">Order Received!</h1>
-                <p className="text-xl text-kaiser-green-600 font-semibold mb-6">
+                <p className="text-xl text-etalon-violet-600 font-semibold mb-6">
                     {latestOrder ? `Order #${latestOrder.id}` : 'Order Processing...'}
                 </p>
 
                 <p className="text-gray-600 mb-8 leading-relaxed">
-                    We are currently picking your fresh items at Kaiser Supermarket.
+                    We are currently picking your fresh items at Etalon Market.
                     You will receive a confirmation email shortly.
                 </p>
 

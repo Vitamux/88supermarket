@@ -25,20 +25,20 @@ export default function AdminDashboard() {
         <div className="min-h-screen bg-gray-50 p-8">
             <div className="max-w-6xl mx-auto">
                 <div className="flex justify-between items-center mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900">Kaiser Inventory Management</h1>
-                    <span className="bg-kaiser-green-100 text-kaiser-green-700 px-4 py-2 rounded-full font-semibold">Admin Mode</span>
+                    <h1 className="text-3xl font-bold text-gray-900">Etalon Inventory Management</h1>
+                    <span className="bg-etalon-violet-100 text-etalon-violet-700 px-4 py-2 rounded-full font-semibold">Admin Mode</span>
                 </div>
 
                 {/* Tab Navigation */}
                 <div className="flex gap-4 mb-8 border-b border-gray-200">
                     <button
-                        className={`pb-4 px-2 font-semibold ${activeTab === 'inventory' ? 'text-kaiser-green-600 border-b-2 border-kaiser-green-600' : 'text-gray-500'}`}
+                        className={`pb-4 px-2 font-semibold ${activeTab === 'inventory' ? 'text-etalon-violet-600 border-b-2 border-etalon-violet-600' : 'text-gray-500'}`}
                         onClick={() => setActiveTab('inventory')}
                     >
                         Inventory Overview
                     </button>
                     <button
-                        className={`pb-4 px-2 font-semibold ${activeTab === 'orders' ? 'text-kaiser-green-600 border-b-2 border-kaiser-green-600' : 'text-gray-500'}`}
+                        className={`pb-4 px-2 font-semibold ${activeTab === 'orders' ? 'text-etalon-violet-600 border-b-2 border-etalon-violet-600' : 'text-gray-500'}`}
                         onClick={() => setActiveTab('orders')}
                     >
                         Active Orders
@@ -54,7 +54,7 @@ export default function AdminDashboard() {
                             </div>
                             <div className="bg-white p-6 rounded-xl shadow border border-gray-100">
                                 <h3 className="text-gray-500 font-medium">Total Potential Revenue</h3>
-                                <p className="text-3xl font-bold text-kaiser-green-600">${totalRevenue.toFixed(2)}</p>
+                                <p className="text-3xl font-bold text-etalon-violet-600">${totalRevenue.toFixed(2)}</p>
                             </div>
                         </div>
 
@@ -76,8 +76,8 @@ export default function AdminDashboard() {
                                             <td className="p-4 text-gray-700">{item.stock} units</td>
                                             <td className="p-4">
                                                 <span className={`px-2 py-1 rounded text-xs font-bold ${item.status === 'In Stock' ? 'bg-green-100 text-green-700' :
-                                                        item.status === 'Low Stock' ? 'bg-yellow-100 text-yellow-700' :
-                                                            'bg-red-100 text-red-700'
+                                                    item.status === 'Low Stock' ? 'bg-yellow-100 text-yellow-700' :
+                                                        'bg-red-100 text-red-700'
                                                     }`}>
                                                     {item.status}
                                                 </span>
@@ -114,12 +114,12 @@ export default function AdminDashboard() {
                                             <td className="p-4 text-sm text-gray-600">
                                                 {order.items.map(i => `${i.quantity}x ${i.name}`).join(', ')}
                                             </td>
-                                            <td className="p-4 font-bold text-kaiser-green-600">${order.total.toFixed(2)}</td>
+                                            <td className="p-4 font-bold text-etalon-violet-600">${order.total.toFixed(2)}</td>
                                             <td className="p-4">
                                                 <select
                                                     value={order.status}
                                                     onChange={(e) => updateOrderStatus(order.id, e.target.value as any)}
-                                                    className="bg-gray-100 border-none rounded-lg text-sm font-medium px-3 py-1 cursor-pointer focus:ring-2 focus:ring-kaiser-green-500"
+                                                    className="bg-gray-100 border-none rounded-lg text-sm font-medium px-3 py-1 cursor-pointer focus:ring-2 focus:ring-etalon-violet-500"
                                                 >
                                                     <option>Pending Pickup</option>
                                                     <option>Packing</option>

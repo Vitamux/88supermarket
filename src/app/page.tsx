@@ -15,7 +15,7 @@ const products = [
     name: "Organic Honeycrisp Apples",
     price: 3.99,
     image: "https://images.unsplash.com/photo-1570913149827-d2ac84ab3f9a?auto=format&fit=crop&w=600&q=80",
-    description: "Sustainably grown at the Kaiser Valley Orchard, these apples are hand-picked at peak ripeness. A story of tradition and organic excellence in every bite.",
+    description: "The Etalon Gold Standard of crispness. Grown in our premier orchards for unmatched quality and sweetness in every bite.",
     nutrition: { calories: 95, protein: "0.5g", carbs: "25g", fat: "0.3g" },
     isLocal: true
   },
@@ -24,7 +24,7 @@ const products = [
     name: "Artisan Sourdough Bread",
     price: 6.49,
     image: "https://images.unsplash.com/photo-1585476292452-85aa9916b0df?auto=format&fit=crop&w=600&q=80",
-    description: "Leavened naturally for 48 hours and baked in stone ovens. Our sourdough tells the tale of wild yeast and premium ancient grains.",
+    description: "Baked to perfection in stone ovens. Represents the Etalon commitment to timeless culinary traditions and superior taste.",
     nutrition: { calories: 180, protein: "7g", carbs: "36g", fat: "1g" },
     isLocal: true
   },
@@ -33,7 +33,7 @@ const products = [
     name: "Premium Grass-Fed Ribeye",
     price: 24.99,
     image: "https://images.unsplash.com/photo-1603048297172-c92544798d5e?auto=format&fit=crop&w=600&q=80",
-    description: "Sourced from free-roaming herds in the high pastures. This cut delivers exceptional marbling and robust flavor, respecting the animal and the land.",
+    description: "A masterclass in flavor. Sourced from elite herds, offering the marbling and richness that defines the Etalon Reserve collection.",
     nutrition: { calories: 290, protein: "24g", carbs: "0g", fat: "22g" },
     isLocal: false
   },
@@ -42,7 +42,7 @@ const products = [
     name: "Farm Fresh Eggs (Dozen)",
     price: 5.99,
     image: "https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?auto=format&fit=crop&w=600&q=80",
-    description: "Collected daily from happy, pasture-raised hens. These eggs feature vibrant orange yolks and superior richness, supporting small family farms.",
+    description: "Golden yolks, ethically sourced. Our eggs set the standard for breakfast excellence, direct from our trusted partner farms.",
     nutrition: { calories: 70, protein: "6g", carbs: "0g", fat: "5g" },
     isLocal: true
   }
@@ -67,23 +67,22 @@ export default function Home() {
 
       <main className="flex-grow">
         {/* Dynamic Hero Section */}
-        <section className="bg-gradient-to-br from-kaiser-green-50 to-white py-16 md:py-24 relative overflow-hidden">
+        <section className="bg-gradient-to-br from-etalon-violet-100 to-white py-16 md:py-24 relative overflow-hidden">
           <div className="container mx-auto px-4 relative z-10 text-center">
             <h1 className="text-4xl md:text-6xl font-extrabold text-gray-900 mb-6 tracking-tight leading-tight">
-              Freshness Delivered <br />
-              <span className="text-kaiser-green-600">Straight to Your Door</span>
+              The Gold Standard of <br />
+              <span className="text-etalon-violet-600">Freshness & Quality</span>
             </h1>
             <p className="text-lg md:text-xl text-gray-600 mb-10 max-w-2xl mx-auto">
-              Experience the finest selection of organic produce, premium meats, and artisan bakery items.
-              Quality you can taste, service you can trust.
+              Experience Etalon. Curated exclusively for those who demand the finest organic produce and artisanal goods.
             </p>
-            <button className="bg-kaiser-green-600 text-white text-lg font-semibold px-8 py-3 rounded-full hover:bg-kaiser-green-700 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1">
-              Shop Weekly Deals
+            <button className="bg-etalon-violet-600 text-white text-lg font-semibold px-8 py-3 rounded-full hover:bg-etalon-violet-700 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1">
+              Shop the Collection
             </button>
           </div>
 
-          <div className="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-kaiser-green-100 rounded-full blur-3xl opacity-50"></div>
-          <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-yellow-100 rounded-full blur-3xl opacity-50"></div>
+          <div className="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-etalon-violet-100 rounded-full blur-3xl opacity-50"></div>
+          <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-purple-100 rounded-full blur-3xl opacity-50"></div>
         </section>
 
         {/* Featured Categories */}
@@ -113,10 +112,10 @@ export default function Home() {
           <div className="container mx-auto px-4">
             <div className="flex justify-between items-end mb-10">
               <div>
-                <h2 className="text-2xl font-bold text-gray-900">Trending Now</h2>
-                <p className="text-gray-500 mt-1">Popular items this week</p>
+                <h2 className="text-2xl font-bold text-gray-900">Etalon Select</h2>
+                <p className="text-gray-500 mt-1">Curated favorites this week</p>
               </div>
-              <Link href="#" className="text-kaiser-green-600 font-medium hover:underline">View all</Link>
+              <Link href="#" className="text-etalon-violet-600 font-medium hover:underline">View all</Link>
             </div>
 
             {filteredProducts.length > 0 ? (
@@ -144,14 +143,14 @@ export default function Home() {
         <div className="container mx-auto px-4 grid md:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center gap-2 mb-4 text-white">
-              <span className="text-2xl">🥬</span>
-              <span className="font-bold text-xl">Kaiser</span>
+              <span className="text-2xl">💎</span>
+              <span className="font-bold text-xl">Etalon</span>
             </div>
             <p className="text-sm opacity-70 mb-4">
-              Your neighborhood premium supermarket, digital and delivered.
+              Defining the standard for premium online grocery shopping.
             </p>
             <div className="text-sm space-y-2 opacity-80">
-              <p>123 Kaiser Blvd, Fresh City</p>
+              <p>Etalon Plaza, 77 Standard Ave</p>
               <p>Opening Hours:</p>
               <p className="font-semibold text-white">8 AM - 10 PM Daily</p>
             </div>
@@ -175,18 +174,18 @@ export default function Home() {
             </ul>
           </div>
           <div>
-            <h4 className="text-white font-semibold mb-4">Stay Fresh</h4>
-            <p className="text-sm mb-4 opacity-70">Subscribe for exclusive deals.</p>
+            <h4 className="text-white font-semibold mb-4">Stay Connected</h4>
+            <p className="text-sm mb-4 opacity-70">Join the Etalon privileges club.</p>
             <div className="flex">
-              <input type="email" placeholder="Email address" className="bg-gray-800 border-none rounded-l-lg px-4 py-2 w-full focus:ring-1 focus:ring-kaiser-green-500" />
-              <button className="bg-kaiser-green-600 px-4 py-2 rounded-r-lg text-white font-medium hover:bg-kaiser-green-500">
+              <input type="email" placeholder="Email address" className="bg-gray-800 border-none rounded-l-lg px-4 py-2 w-full focus:ring-1 focus:ring-etalon-violet-500" />
+              <button className="bg-etalon-violet-600 px-4 py-2 rounded-r-lg text-white font-medium hover:bg-etalon-violet-500">
                 Join
               </button>
             </div>
           </div>
         </div>
         <div className="border-t border-gray-800 mt-12 pt-8 text-center text-sm opacity-50">
-          © {new Date().getFullYear()} Kaiser Supermarket. All rights reserved.
+          © {new Date().getFullYear()} Etalon Market. All rights reserved.
         </div>
       </footer>
 
@@ -203,7 +202,7 @@ export default function Home() {
 function CategoryCircle({ title, image }: { title: string, image: string }) {
   return (
     <Link href="#" className="group flex flex-col items-center gap-4">
-      <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-white shadow-lg group-hover:shadow-xl group-hover:border-kaiser-green-100 transition-all duration-300">
+      <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-white shadow-lg group-hover:shadow-xl group-hover:border-etalon-violet-100 transition-all duration-300">
         <Image
           src={image}
           alt={title}
@@ -213,7 +212,7 @@ function CategoryCircle({ title, image }: { title: string, image: string }) {
         />
         <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
       </div>
-      <span className="text-lg font-semibold text-gray-800 group-hover:text-kaiser-green-700 transition-colors">{title}</span>
+      <span className="text-lg font-semibold text-gray-800 group-hover:text-etalon-violet-700 transition-colors">{title}</span>
     </Link>
   );
 }

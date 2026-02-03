@@ -5,8 +5,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Kaiser Supermarket | Freshness Delivered",
-  description: "Your premium online supermarket for fresh produce, bakery, and meats.",
+  title: "Etalon | Premium Fresh Market",
+  description: "Your premium online market for fresh produce, bakery, and meats.",
 };
 
 export default function RootLayout({
