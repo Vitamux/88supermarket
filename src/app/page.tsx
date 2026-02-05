@@ -1,64 +1,65 @@
 'use client';
 
-import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "../components/Header";
 import ProductCard from "../components/ProductCard";
 import ProductModal from "../components/ProductModal";
+import CategorySidebar from "../components/CategorySidebar";
 import { useCartStore } from "../store/useCartStore";
-
-// Mock Data
-const products = [
-  {
-    id: 1,
-    name: "Organic Honeycrisp Apples",
-    price: 3.99,
-    image: "https://images.unsplash.com/photo-1570913149827-d2ac84ab3f9a?auto=format&fit=crop&w=600&q=80",
-    description: "The Etalon Gold Standard of crispness. Grown in our premier orchards for unmatched quality and sweetness in every bite.",
-    nutrition: { calories: 95, protein: "0.5g", carbs: "25g", fat: "0.3g" },
-    isLocal: true
-  },
-  {
-    id: 2,
-    name: "Artisan Sourdough Bread",
-    price: 6.49,
-    image: "https://images.unsplash.com/photo-1585476292452-85aa9916b0df?auto=format&fit=crop&w=600&q=80",
-    description: "Baked to perfection in stone ovens. Represents the Etalon commitment to timeless culinary traditions and superior taste.",
-    nutrition: { calories: 180, protein: "7g", carbs: "36g", fat: "1g" },
-    isLocal: true
-  },
-  {
-    id: 3,
-    name: "Premium Grass-Fed Ribeye",
-    price: 24.99,
-    image: "https://images.unsplash.com/photo-1603048297172-c92544798d5e?auto=format&fit=crop&w=600&q=80",
-    description: "A masterclass in flavor. Sourced from elite herds, offering the marbling and richness that defines the Etalon Reserve collection.",
-    nutrition: { calories: 290, protein: "24g", carbs: "0g", fat: "22g" },
-    isLocal: false
-  },
-  {
-    id: 4,
-    name: "Farm Fresh Eggs (Dozen)",
-    price: 5.99,
-    image: "https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?auto=format&fit=crop&w=600&q=80",
-    description: "Golden yolks, ethically sourced. Our eggs set the standard for breakfast excellence, direct from our trusted partner farms.",
-    nutrition: { calories: 70, protein: "6g", carbs: "0g", fat: "5g" },
-    isLocal: true
-  }
-];
+import { supabase } from "../lib/supabase";
+import { useLanguageStore } from "../store/useLanguageStore";
+import { translations } from "../lib/translations";
 
 export default function Home() {
+  const [products, setProducts] = useState<any[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState("all");
+
+  const { lang } = useLanguageStore();
+  const t = translations[lang];
+
   const addItem = useCartStore((state) => state.addItem);
   const searchQuery = useCartStore((state) => state.searchQuery);
+  const setSearchQuery = useCartStore((state) => state.setSearchQuery);
 
-  const filteredProducts = products.filter(product =>
-    product.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*');
+
+      if (error) {
+        console.error('Error fetching products:', error);
+      } else if (data) {
+        setProducts(data);
+      }
+    };
+    fetchProducts();
+  }, []);
+
+  const filteredProducts = products.filter(product => {
+    const currentName = product.display_names?.[lang] || product.name || '';
+    const matchesSearch = currentName.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
 
   const handleAddToCart = (product: any) => {
-    addItem({ id: product.id, name: product.name, price: product.price });
+    addItem({
+      id: product.id,
+      name: product.name,
+      display_names: product.display_names,
+      price: product.price,
+      image_url: product.image_url
+    });
+  };
+
+  const scrollToProductGrid = () => {
+    const grid = document.getElementById('product-grid');
+    if (grid) {
+      grid.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   return (
@@ -70,14 +71,17 @@ export default function Home() {
         <section className="bg-gradient-to-br from-etalon-violet-100 to-white py-16 md:py-24 relative overflow-hidden">
           <div className="container mx-auto px-4 relative z-10 text-center">
             <h1 className="text-4xl md:text-6xl font-extrabold text-gray-900 mb-6 tracking-tight leading-tight">
-              The Gold Standard of <br />
-              <span className="text-etalon-violet-600">Freshness & Quality</span>
+              {t.heroTitle} <br />
+              <span className="text-etalon-violet-600">{t.heroSubtitle}</span>
             </h1>
             <p className="text-lg md:text-xl text-gray-600 mb-10 max-w-2xl mx-auto">
               Experience Etalon. Curated exclusively for those who demand the finest organic produce and artisanal goods.
             </p>
-            <button className="bg-etalon-violet-600 text-white text-lg font-semibold px-8 py-3 rounded-full hover:bg-etalon-violet-700 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1">
-              Shop the Collection
+            <button
+              onClick={() => { setSelectedCategory('all'); scrollToProductGrid(); }}
+              className="bg-etalon-violet-600 text-white text-lg font-semibold px-8 py-3 rounded-full hover:bg-etalon-violet-700 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1"
+            >
+              {t.shopCollection}
             </button>
           </div>
 
@@ -86,55 +90,90 @@ export default function Home() {
         </section>
 
         {/* Featured Categories */}
-        <section className="py-20 bg-white">
+        <section className="py-12 bg-white">
           <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold text-center text-gray-900 mb-16">Shop by Category</h2>
+            <h2 className="text-2xl font-bold text-center text-gray-900 mb-12">{t.browseAisles}</h2>
 
-            <div className="flex flex-wrap justify-center gap-12 md:gap-24">
+            <div className="flex flex-wrap justify-center gap-8 md:gap-16">
               <CategoryCircle
                 title="Bakery"
                 image="https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=400&q=80"
+                onClick={() => { setSelectedCategory('Bakery'); scrollToProductGrid(); }}
               />
               <CategoryCircle
                 title="Produce"
                 image="https://images.unsplash.com/photo-1610832958506-aa56368176cf?auto=format&fit=crop&w=400&q=80"
+                onClick={() => { setSelectedCategory('Produce'); scrollToProductGrid(); }}
               />
               <CategoryCircle
                 title="Meat"
                 image="https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=400&q=80"
+                onClick={() => { setSelectedCategory('Meat'); scrollToProductGrid(); }}
               />
             </div>
           </div>
         </section>
 
-        {/* Featured Products Teaser */}
-        <section className="py-20 bg-gray-50">
+        {/* Main Shop Section */}
+        <section id="product-grid" className="py-12 bg-gray-50 border-t border-gray-100">
           <div className="container mx-auto px-4">
-            <div className="flex justify-between items-end mb-10">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900">Etalon Select</h2>
-                <p className="text-gray-500 mt-1">Curated favorites this week</p>
-              </div>
-              <Link href="#" className="text-etalon-violet-600 font-medium hover:underline">View all</Link>
-            </div>
+            <div className="flex flex-col md:flex-row gap-8">
+              {/* Sidebar */}
+              <CategorySidebar
+                activeCategory={selectedCategory}
+                onSelectCategory={setSelectedCategory}
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+              />
 
-            {filteredProducts.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                {filteredProducts.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    onOpenModal={setSelectedProduct}
-                    onAddToCart={handleAddToCart}
-                  />
-                ))}
+              {/* Product Grid */}
+              <div className="flex-1">
+                <div className="flex justify-between items-end mb-8">
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900">
+                      {selectedCategory === 'all'
+                        ? (lang === 'en' ? 'All Products' : lang === 'ru' ? 'Все продукты' : 'Բոլոր ապրանքները')
+                        : selectedCategory}
+                    </h2>
+                    <p className="text-gray-500 mt-1">
+                      {filteredProducts.length} {t.resultsFound}
+                    </p>
+                  </div>
+                </div>
+
+                {filteredProducts.length > 0 ? (
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    {filteredProducts.map((product) => (
+                      <ProductCard
+                        key={product.id}
+                        product={{
+                          ...product,
+                          name: product.display_names?.[lang] || product.name,
+                          image: product.image_url || 'https://via.placeholder.com/300',
+                          description: product.description || "Premium quality product.",
+                          isLocal: product.category === 'Produce' || product.category === 'Bakery',
+                          nutritional_info: { calories: 0, protein: "0g", carbs: "0g", fat: "0g" },
+                          stock_quantity: product.stock_quantity
+                        }}
+                        onOpenModal={setSelectedProduct}
+                        onAddToCart={handleAddToCart}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-20 text-gray-500 bg-white rounded-xl shadow-sm border border-gray-100">
+                    <p className="text-xl font-medium text-gray-900 mb-2">{t.noProducts}</p>
+                    <p className="text-sm">Try adjusting your filters or search query.</p>
+                    <button
+                      onClick={() => { setSelectedCategory("all"); setSearchQuery(''); }}
+                      className="mt-4 text-etalon-violet-600 font-medium hover:underline"
+                    >
+                      {t.clearFilters}
+                    </button>
+                  </div>
+                )}
               </div>
-            ) : (
-              <div className="text-center py-20 text-gray-500">
-                <p className="text-xl">No products found for "{searchQuery}"</p>
-                <p className="text-sm">Try searching for apples, bread, or meat.</p>
-              </div>
-            )}
+            </div>
           </div>
         </section>
       </main>
@@ -142,9 +181,8 @@ export default function Home() {
       <footer className="bg-gray-900 text-gray-300 py-12">
         <div className="container mx-auto px-4 grid md:grid-cols-4 gap-8">
           <div>
-            <div className="flex items-center gap-2 mb-4 text-white">
-              <span className="text-2xl">💎</span>
-              <span className="font-bold text-xl">Etalon</span>
+            <div className="flex items-center gap-2 mb-6 text-white">
+              <span className="font-extrabold text-2xl tracking-tighter text-etalon-violet-400">Etalon Market</span>
             </div>
             <p className="text-sm opacity-70 mb-4">
               Defining the standard for premium online grocery shopping.
@@ -156,16 +194,16 @@ export default function Home() {
             </div>
           </div>
           <div>
-            <h4 className="text-white font-semibold mb-4">Shop</h4>
+            <h4 className="text-white font-semibold mb-4">{t.shop}</h4>
             <ul className="space-y-2 text-sm">
               <li><Link href="#" className="hover:text-white">Weekly Ads</Link></li>
-              <li><Link href="#" className="hover:text-white">Fresh Produce</Link></li>
+              <li><Link href="#" className="hover:text-white">{t.browseAisles}</Link></li>
               <li><Link href="#" className="hover:text-white">Meat & Seafood</Link></li>
               <li><Link href="#" className="hover:text-white">Bakery</Link></li>
             </ul>
           </div>
           <div>
-            <h4 className="text-white font-semibold mb-4">Support</h4>
+            <h4 className="text-white font-semibold mb-4">{t.support}</h4>
             <ul className="space-y-2 text-sm">
               <li><Link href="#" className="hover:text-white">Help Center</Link></li>
               <li><Link href="#" className="hover:text-white">Return Policy</Link></li>
@@ -174,12 +212,12 @@ export default function Home() {
             </ul>
           </div>
           <div>
-            <h4 className="text-white font-semibold mb-4">Stay Connected</h4>
-            <p className="text-sm mb-4 opacity-70">Join the Etalon privileges club.</p>
+            <h4 className="text-white font-semibold mb-4">{t.stayConnected}</h4>
+            <p className="text-sm mb-4 opacity-70">{t.joinClub}</p>
             <div className="flex">
               <input type="email" placeholder="Email address" className="bg-gray-800 border-none rounded-l-lg px-4 py-2 w-full focus:ring-1 focus:ring-etalon-violet-500" />
               <button className="bg-etalon-violet-600 px-4 py-2 rounded-r-lg text-white font-medium hover:bg-etalon-violet-500">
-                Join
+                {t.join}
               </button>
             </div>
           </div>
@@ -199,20 +237,19 @@ export default function Home() {
   );
 }
 
-function CategoryCircle({ title, image }: { title: string, image: string }) {
+function CategoryCircle({ title, image, onClick }: { title: string, image: string, onClick?: () => void }) {
   return (
-    <Link href="#" className="group flex flex-col items-center gap-4">
+    <button onClick={onClick} className="group flex flex-col items-center gap-4 cursor-pointer focus:outline-none">
       <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-white shadow-lg group-hover:shadow-xl group-hover:border-etalon-violet-100 transition-all duration-300">
-        <Image
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
           src={image}
           alt={title}
-          fill
-          sizes="(max-width: 768px) 128px, 160px"
-          className="object-cover group-hover:scale-110 transition-transform duration-500"
+          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
         />
         <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
       </div>
       <span className="text-lg font-semibold text-gray-800 group-hover:text-etalon-violet-700 transition-colors">{title}</span>
-    </Link>
+    </button>
   );
 }

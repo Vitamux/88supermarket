@@ -1,11 +1,14 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { supabase } from '../lib/supabase';
 
 interface CartItem {
     id: number;
     name: string;
+    display_names: { en: string; ru: string; am: string };
     price: number;
     quantity: number;
+    image_url?: string;
 }
 
 export interface Order {
@@ -27,11 +30,13 @@ interface CartStore {
     searchQuery: string;
     addItem: (item: Omit<CartItem, 'quantity'>) => void;
     removeItem: (id: number) => void;
+    updateQuantity: (id: number, delta: number) => void;
     clearCart: () => void;
     setSearchQuery: (query: string) => void;
-    placeOrder: (customer: Order['customer']) => string; // Returns Order ID
+    placeOrder: (customer: Order['customer']) => Promise<string>;
     updateOrderStatus: (orderId: string, status: Order['status']) => void;
-    count: () => number;
+    getItemCount: () => number;
+    getTotalPrice: () => number;
 }
 
 export const useCartStore = create<CartStore>()(
@@ -49,43 +54,62 @@ export const useCartStore = create<CartStore>()(
                         ),
                     };
                 }
-                return { items: [...state.items, { ...item, quantity: 1 }] };
+                // Ensure display_names is present or fall back to name for all keys to avoid errors
+                const safeItem = {
+                    ...item,
+                    display_names: item.display_names || { en: item.name, ru: item.name, am: item.name },
+                    quantity: 1
+                };
+                return { items: [...state.items, safeItem] };
             }),
             removeItem: (id) => set((state) => ({
                 items: state.items.filter((i) => i.id !== id),
             })),
+            updateQuantity: (id, delta) => set((state) => ({
+                items: state.items.map((item) => {
+                    if (item.id === id) {
+                        const newQuantity = Math.max(1, item.quantity + delta);
+                        return { ...item, quantity: newQuantity };
+                    }
+                    return item;
+                })
+            })),
             clearCart: () => set({ items: [] }),
             setSearchQuery: (query) => set({ searchQuery: query }),
-            placeOrder: (customer) => {
+            placeOrder: async (customer) => {
                 const state = get();
-                const subtotal = state.items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-                const total = subtotal + 5.00; // $5 Delivery Fee
-                const orderId = `ET-${Math.floor(1000 + Math.random() * 9000)}`;
+                const total = state.items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
 
-                const newOrder: Order = {
-                    id: orderId,
-                    customer,
-                    items: [...state.items],
-                    total,
-                    date: new Date().toISOString(),
-                    status: 'Pending Pickup'
-                };
+                const { data, error } = await supabase
+                    .from('orders')
+                    .insert([
+                        {
+                            customer_name: customer.name,
+                            total_price: total,
+                            items: state.items
+                        }
+                    ])
+                    .select()
+                    .single();
 
-                set((state) => ({
-                    orders: [newOrder, ...state.orders],
-                    items: [] // Clear cart
-                }));
+                if (error) {
+                    console.error('Error placing order:', error);
+                    alert('Failed to place order. Please try again.');
+                    return '';
+                }
 
-                return orderId;
+                alert('Order sent to Etalon Market');
+                set({ items: [] });
+                return data.id;
             },
             updateOrderStatus: (orderId, status) => set((state) => ({
                 orders: state.orders.map(o => o.id === orderId ? { ...o, status } : o)
             })),
-            count: () => get().items.reduce((acc, item) => acc + item.quantity, 0),
+            getItemCount: () => get().items.reduce((acc, item) => acc + item.quantity, 0),
+            getTotalPrice: () => get().items.reduce((acc, item) => acc + (item.price * item.quantity), 0),
         }),
         {
             name: 'etalon-cart-storage',
-            // We don't want to persist searchQuery usually, but for simplicity we can or use partialize
             partialize: (state) => ({ items: state.items, orders: state.orders }),
         }
     )

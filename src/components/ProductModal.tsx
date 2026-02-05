@@ -1,20 +1,21 @@
 'use client';
 
-import { X } from "lucide-react";
-import Image from "next/image";
-import { useEffect } from "react";
+import { X, Plus, Minus } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface Product {
     id: number;
     name: string;
     price: number;
     image: string;
+    image_url?: string;
     description?: string;
-    nutrition?: {
-        calories: number;
-        protein: string;
-        carbs: string;
-        fat: string;
+    nutrition?: string;
+    nutritional_info?: {
+        calories?: number | string;
+        protein?: string;
+        carbs?: string;
+        fat?: string;
     };
     isLocal?: boolean;
 }
@@ -27,9 +28,12 @@ interface ProductModalProps {
 }
 
 export default function ProductModal({ product, isOpen, onClose, onAddToCart }: ProductModalProps) {
+    const [quantity, setQuantity] = useState(1);
+
     useEffect(() => {
         if (isOpen) {
             document.body.style.overflow = 'hidden';
+            setQuantity(1); // Reset quantity when modal opens
         } else {
             document.body.style.overflow = 'unset';
         }
@@ -38,10 +42,20 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart }: 
 
     if (!isOpen || !product) return null;
 
+    const imageUrl = product.image_url || product.image || 'https://via.placeholder.com/400x400?text=No+Image';
+
+    const handleAddToCart = () => {
+        // Add the item multiple times based on quantity
+        for (let i = 0; i < quantity; i++) {
+            onAddToCart(product);
+        }
+        onClose();
+    };
+
     return (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[90] flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-            <div className="bg-white rounded-3xl w-full max-w-4xl overflow-hidden shadow-2xl relative z-10 flex flex-col md:flex-row animate-in fade-in zoom-in-95 duration-200">
+            <div className="bg-white rounded-3xl w-full max-w-4xl overflow-hidden shadow-2xl relative z-10 flex flex-col md:flex-row">
 
                 <button
                     onClick={onClose}
@@ -51,11 +65,11 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart }: 
                 </button>
 
                 <div className="relative w-full md:w-1/2 h-64 md:h-auto bg-gray-100">
-                    <Image
-                        src={product.image}
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                        src={imageUrl}
                         alt={product.name}
-                        fill
-                        className="object-cover"
+                        className="w-full h-full object-cover"
                     />
                 </div>
 
@@ -68,46 +82,64 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart }: 
                             </span>
                         )}
                         <h2 className="text-3xl font-bold text-gray-900 mb-2">{product.name}</h2>
-                        <p className="text-2xl font-bold text-violet-700 mb-6">${product.price.toFixed(2)}</p>
+                        <p className="text-2xl font-bold text-violet-700 mb-6">{product.price} AMD</p>
 
                         <p className="text-gray-600 mb-6 leading-relaxed">
                             {product.description || "Fresh, high-quality product sourced directly for you. Enjoy the best flavors of the season with this premium selection."}
                         </p>
 
-                        <div className="bg-gray-50 rounded-xl p-5 mb-8">
-                            <h3 className="font-semibold text-gray-900 mb-3 text-sm uppercase tracking-wide">Nutrition Facts</h3>
-                            <div className="grid grid-cols-4 gap-4 text-center">
-                                <div>
-                                    <div className="text-lg font-bold text-gray-900">{product.nutrition?.calories || 120}</div>
-                                    <div className="text-xs text-gray-500">Cals</div>
+                        <div className="bg-gray-50 rounded-2xl p-6 mb-8 border border-gray-100">
+                            <h3 className="font-bold text-gray-900 mb-4 text-sm uppercase tracking-wider flex items-center gap-2">
+                                <span className="w-1.5 h-4 bg-etalon-violet-600 rounded-full"></span>
+                                Nutritional Facts
+                            </h3>
+                            {product.nutritional_info ? (
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="bg-white p-3 rounded-xl border border-gray-100">
+                                        <p className="text-[10px] text-gray-400 uppercase font-bold mb-1">Calories</p>
+                                        <p className="text-lg font-black text-gray-900">{product.nutritional_info?.calories || '0'}</p>
+                                    </div>
+                                    <div className="bg-white p-3 rounded-xl border border-gray-100">
+                                        <p className="text-[10px] text-gray-400 uppercase font-bold mb-1">Protein</p>
+                                        <p className="text-lg font-black text-gray-900">{product.nutritional_info?.protein || '0g'}</p>
+                                    </div>
+                                    <div className="bg-white p-3 rounded-xl border border-gray-100">
+                                        <p className="text-[10px] text-gray-400 uppercase font-bold mb-1">Carbs</p>
+                                        <p className="text-lg font-black text-gray-900">{product.nutritional_info?.carbs || '0g'}</p>
+                                    </div>
+                                    <div className="bg-white p-3 rounded-xl border border-gray-100">
+                                        <p className="text-[10px] text-gray-400 uppercase font-bold mb-1">Fat</p>
+                                        <p className="text-lg font-black text-gray-900">{product.nutritional_info?.fat || '0g'}</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <div className="text-lg font-bold text-gray-900">{product.nutrition?.protein || '2g'}</div>
-                                    <div className="text-xs text-gray-500">Protein</div>
+                            ) : product.nutrition ? (
+                                <p className="text-gray-700 whitespace-pre-line leading-relaxed text-sm bg-white p-4 rounded-xl border border-gray-100">{product.nutrition}</p>
+                            ) : (
+                                <div className="bg-white p-4 rounded-xl border border-gray-100 text-center">
+                                    <p className="text-gray-400 italic text-sm">Nutrition information coming soon</p>
                                 </div>
-                                <div>
-                                    <div className="text-lg font-bold text-gray-900">{product.nutrition?.carbs || '15g'}</div>
-                                    <div className="text-xs text-gray-500">Carbs</div>
-                                </div>
-                                <div>
-                                    <div className="text-lg font-bold text-gray-900">{product.nutrition?.fat || '0g'}</div>
-                                    <div className="text-xs text-gray-500">Fat</div>
-                                </div>
-                            </div>
+                            )}
                         </div>
                     </div>
 
                     <div className="flex gap-4">
                         <div className="flex-1 flex items-center border border-gray-200 rounded-full px-4">
-                            <button className="p-2 text-gray-500 hover:text-violet-700">-</button>
-                            <span className="flex-1 text-center font-semibold">1</span>
-                            <button className="p-2 text-gray-500 hover:text-violet-700">+</button>
+                            <button
+                                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                                className="p-2 text-gray-500 hover:text-violet-700"
+                            >
+                                <Minus className="w-4 h-4" />
+                            </button>
+                            <span className="flex-1 text-center font-semibold">{quantity}</span>
+                            <button
+                                onClick={() => setQuantity(quantity + 1)}
+                                className="p-2 text-gray-500 hover:text-violet-700"
+                            >
+                                <Plus className="w-4 h-4" />
+                            </button>
                         </div>
                         <button
-                            onClick={() => {
-                                onAddToCart(product);
-                                onClose();
-                            }}
+                            onClick={handleAddToCart}
                             className="flex-[2] bg-violet-600 hover:bg-violet-700 text-white font-bold py-3.5 px-8 rounded-full transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0"
                         >
                             Add to Cart
