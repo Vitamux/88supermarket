@@ -4,13 +4,14 @@ import { useState, useEffect } from 'react';
 import { useCartStore } from '../../store/useCartStore';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { supabase } from '../../lib/supabase';
 
 export default function CheckoutPage() {
     const router = useRouter();
     const items = useCartStore((state) => state.items);
     const placeOrder = useCartStore((state) => state.placeOrder);
     const cartTotal = items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-    const deliveryFee = 5.00;
+    const deliveryFee = 1000;
     const total = cartTotal + deliveryFee;
 
     const [formData, setFormData] = useState({
@@ -19,21 +20,110 @@ export default function CheckoutPage() {
         phone: ''
     });
 
+    const [loading, setLoading] = useState(false);
     const [mounted, setMounted] = useState(false);
+    const [user, setUser] = useState<any>(null);
+    const [isAdmin, setIsAdmin] = useState(false);
+
     useEffect(() => {
         setMounted(true);
+
+        const fetchUser = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+
+            if (user) {
+                setUser(user);
+                setIsAdmin(adminEmail ? user.email === adminEmail : false);
+
+                // Auto-fill form data
+                setFormData(prev => ({
+                    ...prev,
+                    name: user.user_metadata?.full_name || prev.name,
+                    phone: user.user_metadata?.phone || prev.phone
+                }));
+            }
+        };
+
+        fetchUser();
     }, []);
 
     if (!mounted) {
         return <div className="min-h-screen bg-gray-50 flex items-center justify-center"><div className="animate-pulse text-etalon-violet-600">Loading Checkout...</div></div>;
     }
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!formData.name || !formData.address) return;
+        if (!formData.name || !formData.address || !formData.phone) {
+            alert('Please fill in all required fields');
+            return;
+        }
 
-        placeOrder(formData);
-        router.push('/checkout/success');
+        setLoading(true);
+
+        try {
+            // 1. Create the order
+            const orderData = {
+                customer_name: formData.name,
+                address: formData.address,
+                phone: formData.phone,
+                items: items,
+                total_price: total,
+                status: 'pending'
+            };
+
+            const { data: order, error: orderError } = await supabase
+                .from('orders')
+                .insert([orderData])
+                .select()
+                .single();
+
+            if (orderError) throw orderError;
+
+            // 2. Update stock for each item
+            for (const item of items) {
+                // Fetch current stock
+                const { data: product, error: fetchError } = await supabase
+                    .from('products')
+                    .select('stock_quantity')
+                    .eq('id', item.id)
+                    .single();
+
+                if (!fetchError && product) {
+                    const newStock = (product.stock_quantity || 0) - item.quantity;
+                    await supabase
+                        .from('products')
+                        .update({ stock_quantity: newStock })
+                        .eq('id', item.id);
+                }
+            }
+
+            // 3. Update store (to show in Success page)
+            const newOrder = {
+                id: order.id.toString(),
+                customer: {
+                    name: formData.name,
+                    address: formData.address,
+                    phone: formData.phone
+                },
+                items: items,
+                total: total,
+                date: new Date().toISOString(),
+                status: 'Pending Pickup' as const
+            };
+
+            useCartStore.setState((state) => ({
+                orders: [newOrder, ...state.orders],
+                items: []
+            }));
+
+            router.push('/checkout/success');
+        } catch (err: any) {
+            console.error('Checkout error:', err);
+            alert(`Failed to place order: ${err.message || 'Please try again'}`);
+        } finally {
+            setLoading(false);
+        }
     };
 
     if (items.length === 0) {
@@ -71,7 +161,14 @@ export default function CheckoutPage() {
                 <div className="grid md:grid-cols-2 gap-8">
                     {/* Left: Form */}
                     <div className="bg-white p-8 rounded-2xl shadow-sm">
-                        <h2 className="text-2xl font-bold text-gray-900 mb-6">Delivery Details</h2>
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-2xl font-bold text-gray-900">Delivery Details</h2>
+                            {isAdmin && (
+                                <span className="flex items-center gap-1.5 bg-amber-50 text-amber-700 px-4 py-1.5 rounded-full text-xs font-black ring-1 ring-amber-200 shadow-sm animate-pulse">
+                                    🛡️ Administrator
+                                </span>
+                            )}
+                        </div>
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
@@ -119,7 +216,7 @@ export default function CheckoutPage() {
                                         <span className="font-medium text-gray-900">{item.name}</span>
                                         <span className="text-gray-500 ml-2">x{item.quantity}</span>
                                     </div>
-                                    <span className="text-gray-900">${(item.price * item.quantity).toFixed(2)}</span>
+                                    <span className="text-gray-900">{item.price * item.quantity} AMD</span>
                                 </div>
                             ))}
                         </div>
@@ -127,23 +224,31 @@ export default function CheckoutPage() {
                         <div className="border-t border-gray-100 pt-4 space-y-2 text-sm">
                             <div className="flex justify-between text-gray-600">
                                 <span>Subtotal</span>
-                                <span>${cartTotal.toFixed(2)}</span>
+                                <span>{cartTotal} AMD</span>
                             </div>
                             <div className="flex justify-between text-gray-600">
                                 <span>Delivery Fee</span>
-                                <span>${deliveryFee.toFixed(2)}</span>
+                                <span>{deliveryFee} AMD</span>
                             </div>
-                            <div className="flex justify-between text-lg font-bold text-gray-900 pt-2">
+                            <div className="flex justify-between text-lg font-bold text-gray-900 pt-2 border-t border-gray-50 mt-2">
                                 <span>Total</span>
-                                <span>${total.toFixed(2)}</span>
+                                <span className="text-etalon-violet-600">{total} AMD</span>
                             </div>
                         </div>
 
                         <button
                             onClick={handleSubmit}
-                            className="w-full mt-8 bg-violet-600 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl hover:bg-violet-700 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+                            disabled={loading || items.length === 0}
+                            className="w-full mt-8 bg-gradient-to-r from-etalon-violet-600 to-fuchsia-600 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl hover:opacity-95 transition-all transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                         >
-                            Place Order
+                            {loading ? (
+                                <>
+                                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                    <span>Processing...</span>
+                                </>
+                            ) : (
+                                <span>Place Order</span>
+                            )}
                         </button>
                     </div>
                 </div>

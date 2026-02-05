@@ -42,7 +42,6 @@ export default function CategoriesPage() {
 
         if (error) {
             console.error('Error fetching categories:', error);
-            alert('Failed to fetch categories');
         } else if (data) {
             setCategories(data);
         }
@@ -78,12 +77,12 @@ export default function CategoriesPage() {
         } else {
             setCategories([...categories, data]);
             setNewCategory({ nameEn: '', nameRu: '', nameAm: '', slug: '' });
-            alert('Category added successfully!');
+            alert(t.categoryAdded);
         }
     };
 
     const handleDeleteCategory = async (id: number, categoryName: string) => {
-        if (!confirm(`Are you sure you want to delete "${categoryName}"?`)) {
+        if (!confirm(`${t.confirmDeleteCategory} "${categoryName}"?`)) {
             return;
         }
 
@@ -97,7 +96,7 @@ export default function CategoriesPage() {
             alert(`Failed to delete category: ${error.message}`);
         } else {
             setCategories(categories.filter(cat => cat.id !== id));
-            alert('Category deleted successfully!');
+            alert(t.categoryDeleted);
         }
     };
 

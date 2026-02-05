@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { useCartStore, Order } from '../../store/useCartStore';
 import { supabase } from '../../lib/supabase';
 import { Trash2 } from 'lucide-react';
+import { useLanguageStore } from '../../store/useLanguageStore';
+import { translations } from '../../lib/translations';
 
 export default function AdminDashboard() {
     const [activeTab, setActiveTab] = useState<'orders' | 'products'>('orders');
@@ -19,6 +21,8 @@ export default function AdminDashboard() {
         nutrition: ''
     });
     const [categories, setCategories] = useState<any[]>([]);
+    const { lang } = useLanguageStore();
+    const t = translations[lang];
 
     const inventory = [
         { id: 1, name: "Organic Honeycrisp Apples", stock: 120, status: "In Stock" },
@@ -123,7 +127,7 @@ export default function AdminDashboard() {
             .single();
 
         if (error) {
-            alert('Error adding product');
+            alert(t.errorAddingProduct);
             console.error(error);
         } else {
             setProducts([...products, data]);
@@ -135,7 +139,7 @@ export default function AdminDashboard() {
                 display_names: { en: '', ru: '', am: '' },
                 nutrition: ''
             });
-            alert('Product added successfully');
+            alert(t.productAdded);
         }
     };
 
@@ -168,8 +172,8 @@ export default function AdminDashboard() {
         <div className="min-h-screen bg-gray-50 p-8">
             <div className="max-w-6xl mx-auto">
                 <div className="flex justify-between items-center mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900">Etalon Inventory Management</h1>
-                    <span className="bg-etalon-violet-100 text-etalon-violet-700 px-4 py-2 rounded-full font-semibold">Admin Mode</span>
+                    <h1 className="text-3xl font-bold text-gray-900">{t.adminManagement}</h1>
+                    <span className="bg-etalon-violet-100 text-etalon-violet-700 px-4 py-2 rounded-full font-semibold">{t.adminMode}</span>
                 </div>
 
                 {/* Quick Navigation Cards */}
@@ -184,11 +188,11 @@ export default function AdminDashboard() {
                             </div>
                             <div className="text-right">
                                 <p className="text-2xl font-bold">{orders.length}</p>
-                                <p className="text-sm opacity-80">Pending</p>
+                                <p className="text-sm opacity-80">{t.pending}</p>
                             </div>
                         </div>
-                        <h3 className="text-lg font-bold">Active Orders</h3>
-                        <p className="text-sm opacity-80 mt-1">Manage pending orders</p>
+                        <h3 className="text-lg font-bold">{t.activeOrders}</h3>
+                        <p className="text-sm opacity-80 mt-1">{t.activeOrdersDesc}</p>
                     </Link>
 
                     <Link
@@ -201,11 +205,11 @@ export default function AdminDashboard() {
                             </div>
                             <div className="text-right">
                                 <p className="text-2xl font-bold">{categories.length}</p>
-                                <p className="text-sm opacity-80">Total</p>
+                                <p className="text-sm opacity-80">{t.total}</p>
                             </div>
                         </div>
-                        <h3 className="text-lg font-bold">Manage Categories</h3>
-                        <p className="text-sm opacity-80 mt-1">Add/edit categories</p>
+                        <h3 className="text-lg font-bold">{t.manageCategories}</h3>
+                        <p className="text-sm opacity-80 mt-1">{t.manageCategoriesDesc}</p>
                     </Link>
 
                     <Link
@@ -218,11 +222,11 @@ export default function AdminDashboard() {
                             </div>
                             <div className="text-right">
                                 <p className="text-2xl font-bold">{products.length}</p>
-                                <p className="text-sm opacity-80">Products</p>
+                                <p className="text-sm opacity-80">{t.shop}</p>
                             </div>
                         </div>
-                        <h3 className="text-lg font-bold">Stock Manager</h3>
-                        <p className="text-sm opacity-80 mt-1">Bulk edit inventory</p>
+                        <h3 className="text-lg font-bold">{t.stockManager}</h3>
+                        <p className="text-sm opacity-80 mt-1">{t.bulkEditDesc}</p>
                     </Link>
                 </div>
 
@@ -232,13 +236,13 @@ export default function AdminDashboard() {
                         className={`pb-4 px-2 font-semibold ${activeTab === 'orders' ? 'text-etalon-violet-600 border-b-2 border-etalon-violet-600' : 'text-gray-500'}`}
                         onClick={() => setActiveTab('orders')}
                     >
-                        Active Orders
+                        {t.activeOrders}
                     </button>
                     <button
                         className={`pb-4 px-2 font-semibold ${activeTab === 'products' ? 'text-etalon-violet-600 border-b-2 border-etalon-violet-600' : 'text-gray-500'}`}
                         onClick={() => setActiveTab('products')}
                     >
-                        Manage Products
+                        {t.manageProducts}
                     </button>
                 </div>
 
@@ -247,16 +251,16 @@ export default function AdminDashboard() {
                         <table className="w-full text-left">
                             <thead className="bg-gray-100 text-gray-600 uppercase text-sm">
                                 <tr>
-                                    <th className="p-4">Order ID</th>
-                                    <th className="p-4">Customer</th>
-                                    <th className="p-4">Items</th>
-                                    <th className="p-4">Total</th>
-                                    <th className="p-4">Status</th>
+                                    <th className="p-4">{t.orderId}</th>
+                                    <th className="p-4">{t.customer}</th>
+                                    <th className="p-4">{t.items}</th>
+                                    <th className="p-4">{t.total}</th>
+                                    <th className="p-4">{t.status}</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200">
                                 {orders.length === 0 ? (
-                                    <tr><td colSpan={5} className="p-8 text-center text-gray-500">No active orders found.</td></tr>
+                                    <tr><td colSpan={5} className="p-8 text-center text-gray-500">{t.noActiveOrders}</td></tr>
                                 ) : (
                                     orders.map((order) => (
                                         <tr key={order.id} className="hover:bg-gray-50">
@@ -266,19 +270,19 @@ export default function AdminDashboard() {
                                                 <div className="text-xs text-gray-500">{order.customer.address}</div>
                                             </td>
                                             <td className="p-4 text-sm text-gray-600">
-                                                {order.items.map(i => `${i.quantity}x ${i.name}`).join(', ')}
+                                                {order.items.map(i => `${i.quantity}x ${i.display_names?.[lang] || i.name}`).join(', ')}
                                             </td>
-                                            <td className="p-4 font-bold text-etalon-violet-600">${order.total.toFixed(2)}</td>
+                                            <td className="p-4 font-bold text-etalon-violet-600">{order.total.toFixed(0)} AMD</td>
                                             <td className="p-4">
                                                 <select
                                                     value={order.status}
                                                     onChange={(e) => updateOrderStatus(order.id, e.target.value as any)}
                                                     className="bg-gray-100 border-none rounded-lg text-sm font-medium px-3 py-1 cursor-pointer focus:ring-2 focus:ring-etalon-violet-500"
                                                 >
-                                                    <option>Pending Pickup</option>
-                                                    <option>Packing</option>
-                                                    <option>Out for Delivery</option>
-                                                    <option>Completed</option>
+                                                    <option value="pending">{t.pendingPickupStatus}</option>
+                                                    <option value="packing">{t.packingStatus}</option>
+                                                    <option value="delivery">{t.deliveryStatus}</option>
+                                                    <option value="completed">{t.completedStatus}</option>
                                                 </select>
                                             </td>
                                         </tr>
@@ -292,51 +296,51 @@ export default function AdminDashboard() {
                 {activeTab === 'products' && (
                     <div className="space-y-8">
                         <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-200">
-                            <h3 className="text-xl font-bold text-gray-900 mb-6">Add New Product</h3>
+                            <h3 className="text-xl font-bold text-gray-900 mb-6">{t.addProduct}</h3>
                             <form onSubmit={handleAddProduct} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 items-end">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Name (English)</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">{t.addProductName} (English)</label>
                                     <input required type="text" value={newProduct.display_names.en} onChange={e => setNewProduct({ ...newProduct, display_names: { ...newProduct.display_names, en: e.target.value } })} className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-etalon-violet-500 focus:border-transparent outline-none transition-all" placeholder="Apple" />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Name (Russian)</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">{t.addProductName} (Russian)</label>
                                     <input required type="text" value={newProduct.display_names.ru} onChange={e => setNewProduct({ ...newProduct, display_names: { ...newProduct.display_names, ru: e.target.value } })} className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-etalon-violet-500 focus:border-transparent outline-none transition-all" placeholder="Яблоко" />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Name (Armenian)</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">{t.addProductName} (Armenian)</label>
                                     <input required type="text" value={newProduct.display_names.am} onChange={e => setNewProduct({ ...newProduct, display_names: { ...newProduct.display_names, am: e.target.value } })} className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-etalon-violet-500 focus:border-transparent outline-none transition-all" placeholder="Խնձոր" />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Price ($)</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">{t.priceLabel} (AMD)</label>
                                     <input required type="number" step="0.01" value={newProduct.price} onChange={e => setNewProduct({ ...newProduct, price: e.target.value })} className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-etalon-violet-500 focus:border-transparent outline-none transition-all" placeholder="0.00" />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Image URL</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">{t.productImage}</label>
                                     <input type="text" value={newProduct.image_url} onChange={e => setNewProduct({ ...newProduct, image_url: e.target.value })} className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-etalon-violet-500 focus:border-transparent outline-none transition-all" placeholder="https://..." />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">{t.productCategory}</label>
                                     <select
                                         value={newProduct.category}
                                         onChange={e => setNewProduct({ ...newProduct, category: e.target.value })}
                                         className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-etalon-violet-500 focus:border-transparent outline-none transition-all appearance-none bg-white"
                                     >
-                                        <option value="">Select Category</option>
+                                        <option value="">{t.categorySelect}</option>
                                         {categories.map((cat) => (
                                             <option key={cat.id} value={cat.slug || cat.name}>
-                                                {cat.name?.en || cat.name || cat.slug}
+                                                {cat.name?.[lang] || cat.name || cat.slug}
                                             </option>
                                         ))}
                                     </select>
                                 </div>
                                 <button type="submit" className="bg-etalon-violet-600 text-white font-semibold py-2.5 px-6 rounded-lg hover:bg-etalon-violet-700 transition shadow-md hover:shadow-lg h-[46px]">
-                                    Add New
+                                    {t.addNew}
                                 </button>
                             </form>
 
                             {/* Nutrition Textarea - Full Width */}
                             <div className="mt-4">
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Nutrition Info (Optional)</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">{t.nutritionOptional}</label>
                                 <textarea
                                     value={newProduct.nutrition}
                                     onChange={e => setNewProduct({ ...newProduct, nutrition: e.target.value })}
@@ -352,10 +356,10 @@ export default function AdminDashboard() {
                                 <thead className="bg-gray-100 text-gray-600 uppercase text-sm">
                                     <tr>
                                         <th className="p-4">ID</th>
-                                        <th className="p-4">Image</th>
-                                        <th className="p-4">Name</th>
-                                        <th className="p-4">Expected Price ($)</th>
-                                        <th className="p-4">Actions</th>
+                                        <th className="p-4">{t.productImage}</th>
+                                        <th className="p-4">{t.addProductName}</th>
+                                        <th className="p-4">{t.expectedPrice} (AMD)</th>
+                                        <th className="p-4">{t.actions}</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200">
@@ -368,21 +372,13 @@ export default function AdminDashboard() {
                                                     <img src={product.image_url} alt={product.name} className="w-12 h-12 object-cover rounded-md" />
                                                     : <div className="w-12 h-12 bg-gray-200 rounded-md"></div>}
                                             </td>
-                                            <td className="p-4 font-semibold text-gray-900">{product.name}<br /><span className="text-xs font-normal text-gray-500">{product.category}</span></td>
-                                            <td className="p-4">
-                                                <input
-                                                    type="number"
-                                                    step="0.01"
-                                                    defaultValue={product.price}
-                                                    onBlur={(e) => handleUpdatePrice(product.id, e.target.value)}
-                                                    className="w-24 border border-gray-200 rounded p-1 text-sm focus:border-etalon-violet-500 focus:outline-none"
-                                                />
-                                            </td>
+                                            <td className="p-4 font-semibold text-gray-900">{product.display_names?.[lang] || product.name}<br /><span className="text-xs font-normal text-gray-500">{product.category}</span></td>
+                                            <td className="p-4 text-gray-500 font-bold">AMD</td>
                                             <td className="p-4">
                                                 <button
                                                     onClick={() => handleDeleteProduct(product.id)}
                                                     className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
-                                                    title="Delete Product"
+                                                    title={t.deleteProduct}
                                                 >
                                                     <Trash2 className="w-5 h-5" />
                                                 </button>
@@ -390,7 +386,7 @@ export default function AdminDashboard() {
                                         </tr>
                                     ))}
                                     {products.length === 0 && (
-                                        <tr><td colSpan={5} className="p-8 text-center text-gray-500">No products found. Add one above.</td></tr>
+                                        <tr><td colSpan={5} className="p-8 text-center text-gray-500">{t.noProductsFound}</td></tr>
                                     )}
                                 </tbody>
                             </table>

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { X, Mail, Lock, User, Phone, Loader2 } from 'lucide-react';
+import { X, Mail, Lock, User, Phone, Loader2, Eye, EyeOff } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useLanguageStore } from '../store/useLanguageStore';
 import { translations } from '../lib/translations';
@@ -23,6 +23,8 @@ export default function AuthModal({ isOpen, onClose, initialView }: AuthModalPro
         name: '',
         phone: ''
     });
+    const [showPassword, setShowPassword] = useState(false);
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
     const router = useRouter();
     const { lang } = useLanguageStore();
@@ -56,17 +58,30 @@ export default function AuthModal({ isOpen, onClose, initialView }: AuthModalPro
                 });
                 if (signUpError) throw signUpError;
             } else {
-                const { error: signInError } = await supabase.auth.signInWithPassword({
+                const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
                     email: formData.email,
                     password: formData.password
                 });
-                if (signInError) throw signInError;
-            }
 
-            // Check if user is admin for redirect
-            const { data: { session } } = await supabase.auth.getSession();
-            if (session?.user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL) {
-                router.push('/admin');
+                if (signInError) {
+                    if (signInError.message === 'Invalid login credentials') {
+                        throw new Error('Incorrect Email or Password');
+                    }
+                    throw signInError;
+                }
+
+                // Check if user is admin for warp redirect
+                const user = signInData.user;
+                const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'v.anri01@gmail.com';
+
+                if (user?.email === adminEmail) {
+                    setSuccessMessage('Admin access granted. Redirecting to Dashboard... 🛡️');
+                    setTimeout(() => {
+                        onClose();
+                        router.push('/admin');
+                    }, 1500);
+                    return;
+                }
             }
 
             onClose();
@@ -101,6 +116,12 @@ export default function AuthModal({ isOpen, onClose, initialView }: AuthModalPro
                     {error && (
                         <div className="mb-6 p-4 bg-red-50 text-red-600 rounded-xl text-sm border border-red-100 italic">
                             {error}
+                        </div>
+                    )}
+
+                    {successMessage && (
+                        <div className="mb-6 p-4 bg-green-50 text-green-600 rounded-xl text-sm border border-green-100 font-bold animate-pulse text-center">
+                            {successMessage}
                         </div>
                     )}
 
@@ -147,13 +168,21 @@ export default function AuthModal({ isOpen, onClose, initialView }: AuthModalPro
                         <div className="relative">
                             <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                             <input
-                                type="password"
+                                type={showPassword ? "text" : "password"}
                                 placeholder={t.password}
                                 value={formData.password}
                                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                                className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-3.5 pl-12 pr-4 focus:ring-2 focus:ring-etalon-violet-500 focus:bg-white outline-none transition-all text-gray-900"
+                                className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-3.5 pl-12 pr-12 focus:ring-2 focus:ring-etalon-violet-500 focus:bg-white outline-none transition-all text-gray-900"
                                 required
                             />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-etalon-violet-600 transition-colors"
+                                tabIndex={-1}
+                            >
+                                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                            </button>
                         </div>
 
                         <button

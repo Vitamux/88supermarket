@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import { Eye, EyeOff } from 'lucide-react';
 
 export default function AdminLayout({
     children,
@@ -16,8 +17,7 @@ export default function AdminLayout({
     useEffect(() => {
         const checkAuth = async () => {
             const { data: { session } } = await supabase.auth.getSession();
-
-            const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+            const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'v.anri01@gmail.com';
 
             if (!session || session.user.email !== adminEmail) {
                 router.push('/');

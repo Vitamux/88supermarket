@@ -136,7 +136,7 @@ export default function InventoryPage() {
                 {loading ? (
                     <div className="text-center py-12">
                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-etalon-violet-600 mx-auto"></div>
-                        <p className="text-gray-500 mt-4">Loading inventory...</p>
+                        <p className="text-gray-500 mt-4">{t.loadingInventory}</p>
                     </div>
                 ) : (
                     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
@@ -165,7 +165,7 @@ export default function InventoryPage() {
                                     {filteredProducts.length === 0 ? (
                                         <tr>
                                             <td colSpan={5} className="px-4 py-8 text-center text-gray-500">
-                                                No products found
+                                                {t.noProductsFound}
                                             </td>
                                         </tr>
                                     ) : (

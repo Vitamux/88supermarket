@@ -87,7 +87,7 @@ export default function ActiveOrdersPage() {
                 {loading ? (
                     <div className="text-center py-12">
                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-etalon-violet-600 mx-auto"></div>
-                        <p className="text-gray-500 mt-4">Loading orders...</p>
+                        <p className="text-gray-500 mt-4">{t.loadingOrders}</p>
                     </div>
                 ) : orders.length === 0 ? (
                     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
@@ -95,7 +95,7 @@ export default function ActiveOrdersPage() {
                             📦
                         </div>
                         <h2 className="text-xl font-bold text-gray-900 mb-2">{t.noActiveOrders}</h2>
-                        <p className="text-gray-500">All orders are completed!</p>
+                        <p className="text-gray-500">{t.allOrdersCompleted}</p>
                     </div>
                 ) : (
                     <div className="space-y-4">
@@ -166,9 +166,11 @@ export default function ActiveOrdersPage() {
                                                         )}
                                                     </div>
                                                     <div>
-                                                        <p className="font-medium text-gray-900">{item.name}</p>
+                                                        <p className="font-medium text-gray-900">
+                                                            {item.display_names?.[lang] || item.name}
+                                                        </p>
                                                         <p className="text-sm text-gray-500">
-                                                            Qty: {item.quantity} × {item.price} AMD
+                                                            {t.qty}: {item.quantity} × {item.price} AMD
                                                         </p>
                                                     </div>
                                                 </div>

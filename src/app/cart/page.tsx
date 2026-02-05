@@ -16,90 +16,13 @@ export default function CartPage() {
     const { lang } = useLanguageStore();
     const t = translations[lang];
 
-    const [formData, setFormData] = useState({
-        fullName: '',
-        address: '',
-        phone: ''
-    });
-
     const totalPrice = getTotalPrice();
+    const deliveryFee = 1000;
+    const finalTotal = totalPrice + deliveryFee;
 
-    const handleCheckout = async () => {
-        // Validate form
-        if (!formData.fullName || !formData.address || !formData.phone) {
-            alert(t.fillAllFields);
-            return;
-        }
-
-        // Prepare order data
-        const orderData = {
-            customer_name: formData.fullName,
-            address: formData.address,
-            phone: formData.phone,
-            items: items, // Supabase handles JS arrays as JSONB automatically
-            total_price: totalPrice,
-            status: 'pending'
-        };
-
-        console.log('Submitting order data:', orderData);
-
-        // Insert order into Supabase
-        const { data, error } = await supabase
-            .from('orders')
-            .insert([orderData])
-            .select()
-            .single();
-
-        if (error) {
-            console.error('Full Error:', error);
-            console.error('Error Details:', {
-                message: error.message,
-                details: error.details,
-                hint: error.hint,
-                code: error.code
-            });
-            alert(`Failed to place order: ${error.message || 'Please try again.'}`);
-            return;
-        }
-
-        console.log('Order placed successfully:', data);
-
-        // Subtract inventory for each item in the order
-        for (const item of items) {
-            // Fetch current stock
-            const { data: product, error: fetchError } = await supabase
-                .from('products')
-                .select('stock_quantity')
-                .eq('id', item.id)
-                .single();
-
-            if (fetchError) {
-                console.error(`Error fetching product ${item.id}:`, fetchError);
-                continue; // Skip this item but continue processing others
-            }
-
-            // Calculate new stock (allow negative for now)
-            const currentStock = product?.stock_quantity || 0;
-            const newStock = currentStock - item.quantity;
-
-            // Update stock
-            const { error: updateError } = await supabase
-                .from('products')
-                .update({ stock_quantity: newStock })
-                .eq('id', item.id);
-
-            if (updateError) {
-                console.error(`Error updating stock for product ${item.id}:`, updateError);
-            } else {
-                console.log(`Updated product ${item.id}: ${currentStock} -> ${newStock}`);
-            }
-        }
-
-        alert(t.orderSuccess);
-        clearCart();
-        router.push('/');
+    const handleCheckout = () => {
+        router.push('/checkout');
     };
-
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
@@ -150,7 +73,7 @@ export default function CartPage() {
                                             <h3 className="text-lg font-bold text-gray-900 mb-1">
                                                 {item.display_names?.[lang] || item.name}
                                             </h3>
-                                            <p className="text-etalon-violet-600 font-medium">
+                                            <p className="text-etalon-violet-600 font-medium font-bold">
                                                 {item.price} AMD
                                             </p>
                                         </div>
@@ -192,68 +115,39 @@ export default function CartPage() {
                             })}
                         </div>
 
-                        {/* Summary Card with Checkout Form */}
+                        {/* Summary Card */}
                         <div className="lg:col-span-1">
                             <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 sticky top-24">
                                 <h2 className="text-xl font-bold text-gray-900 mb-6">{t.summary}</h2>
 
-                                {/* Checkout Form */}
                                 <div className="space-y-4 mb-6">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            {t.fullName}
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={formData.fullName}
-                                            onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                                            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-etalon-violet-500 focus:border-transparent outline-none transition-all"
-                                            placeholder="John Doe"
-                                        />
+                                    <div className="flex justify-between text-gray-600">
+                                        <span>Subtotal</span>
+                                        <span className="font-semibold">{totalPrice.toFixed(0)} AMD</span>
                                     </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            {t.deliveryAddress}
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={formData.address}
-                                            onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                                            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-etalon-violet-500 focus:border-transparent outline-none transition-all"
-                                            placeholder="123 Main St, Apt 4"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            {t.phoneNumber}
-                                        </label>
-                                        <input
-                                            type="tel"
-                                            value={formData.phone}
-                                            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-etalon-violet-500 focus:border-transparent outline-none transition-all"
-                                            placeholder="+374 XX XXX XXX"
-                                        />
+                                    <div className="flex justify-between text-gray-600">
+                                        <span>{t.delivery}</span>
+                                        <span className="font-semibold">{deliveryFee.toFixed(0)} AMD</span>
                                     </div>
                                 </div>
 
                                 {/* Total */}
-                                <div className="space-y-4 mb-8 pt-4 border-t border-gray-100">
+                                <div className="space-y-4 mb-8 pt-6 border-t border-gray-100">
                                     <div className="flex justify-between items-end">
                                         <span className="font-bold text-lg text-gray-900">{t.total}</span>
-                                        <span className="font-extrabold text-3xl text-etalon-violet-600">
-                                            {totalPrice.toFixed(0)} AMD
+                                        <span className="font-black text-3xl text-etalon-violet-600">
+                                            {finalTotal.toFixed(0)} AMD
                                         </span>
                                     </div>
                                 </div>
 
                                 <button
                                     onClick={handleCheckout}
-                                    className="w-full bg-gradient-to-r from-etalon-violet-600 to-fuchsia-600 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl hover:opacity-95 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+                                    className="w-full bg-gradient-to-r from-etalon-violet-600 to-fuchsia-600 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl hover:opacity-95 transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2"
                                 >
-                                    {t.checkout}
+                                    <span>{t.checkout}</span>
                                 </button>
-                                <p className="text-xs text-center text-gray-400 mt-4">
+                                <p className="text-[10px] text-center text-gray-400 mt-4 uppercase tracking-widest font-bold">
                                     Secure checkout powered by Etalon
                                 </p>
                             </div>
