@@ -53,18 +53,24 @@ export default function ActiveOrdersPage() {
         fetchOrders();
         fetchStores();
 
-        // Real-time subscription
+        // Real-time subscription - with store-level filtering
         const channel = supabase
             .channel('orders_realtime')
             .on(
                 'postgres_changes',
                 { event: '*', schema: 'public', table: 'orders' },
                 (payload) => {
+                    const newOrder = payload.new as any;
+
+                    // Filter based on store context
+                    const targetStoreId = isManager ? profile?.assigned_store_id : activeStoreId;
+
+                    if (targetStoreId && newOrder.store_id !== targetStoreId) {
+                        return; // Ignore if it doesn't match the current view
+                    }
+
                     if (payload.eventType === 'INSERT') {
-                        const newOrder = payload.new as Order;
-                        // Client side check for store_id if it's a manager
-                        if (isManager && newOrder.store_id !== profile?.assigned_store_id) return;
-                        setOrders(prev => [newOrder, ...prev]);
+                        setOrders(prev => [newOrder as Order, ...prev]);
                     } else if (payload.eventType === 'UPDATE') {
                         const updatedOrder = payload.new as Order;
                         setOrders(prev => prev.map(o => o.id === updatedOrder.id ? updatedOrder : o));
@@ -78,7 +84,7 @@ export default function ActiveOrdersPage() {
         return () => {
             supabase.removeChannel(channel);
         };
-    }, [activeStoreId]); // Re-subscribe/refetch if activeStoreId changes
+    }, [activeStoreId, profile?.assigned_store_id]); // Re-subscribe/refetch if context changes
 
     const fetchStores = async () => {
         const { data } = await supabase.from('stores').select('*');
@@ -206,21 +212,22 @@ export default function ActiveOrdersPage() {
                         ))}
                     </div>
 
-                    <div className="bg-white p-3 rounded-[1.5rem] shadow-xl border-2 border-[#39FF14] flex items-center gap-3 group relative min-w-[200px]">
+                    <div className={`bg-white p-3 rounded-[1.5rem] shadow-xl flex items-center gap-3 group relative min-w-[200px] border-2 ${isOwner ? 'border-[#39FF14]' : 'border-gray-100 opacity-70'}`}>
                         <div className="pl-3">
-                            <Filter className="w-5 h-5 text-[#39FF14]" />
+                            <Store className={`w-5 h-5 ${isOwner ? 'text-[#39FF14]' : 'text-gray-300'}`} />
                         </div>
                         <select
-                            value={activeStoreId || ''}
-                            disabled={isManager}
-                            className="bg-transparent text-[10px] font-black text-gray-900 uppercase tracking-[0.2em] py-2 pr-10 outline-none appearance-none cursor-pointer w-full"
+                            value={activeStoreId || (isManager ? profile?.assigned_store_id : '') || ''}
+                            onChange={(e) => setActiveStoreId(e.target.value || null)}
+                            disabled={!isOwner}
+                            className="bg-transparent text-[10px] font-black text-gray-900 uppercase tracking-[0.2em] py-2 pr-10 outline-none appearance-none cursor-pointer w-full disabled:cursor-not-allowed"
                         >
-                            <option value="" className="bg-white">{t.allBranches}</option>
+                            {isOwner && <option value="" className="bg-white">{t.allBranches}</option>}
                             {stores.map(store => (
                                 <option key={store.id} value={store.id} className="bg-white">{store.name}</option>
                             ))}
                         </select>
-                        <ChevronDown className="w-4 h-4 text-[#39FF14] absolute right-6 pointer-events-none" />
+                        <ChevronDown className={`w-4 h-4 absolute right-6 pointer-events-none ${isOwner ? 'text-[#39FF14]' : 'text-gray-300'}`} />
                     </div>
                 </div>
 
