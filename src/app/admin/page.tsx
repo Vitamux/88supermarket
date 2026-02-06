@@ -10,7 +10,6 @@ import { translations } from '../../lib/translations';
 
 export default function AdminDashboard() {
     const [activeTab, setActiveTab] = useState<'orders' | 'products'>('orders');
-    const [orders, setOrders] = useState<Order[]>([]);
     const [products, setProducts] = useState<any[]>([]);
     const [newProduct, setNewProduct] = useState({
         name: '',
@@ -18,7 +17,13 @@ export default function AdminDashboard() {
         image_url: '',
         category: '',
         display_names: { en: '', ru: '', am: '' },
-        nutrition: ''
+        description: '',
+        nutritional_info: {
+            calories: '',
+            protein: '',
+            carbs: '',
+            fat: ''
+        }
     });
     const [categories, setCategories] = useState<any[]>([]);
     const { lang } = useLanguageStore();
@@ -36,34 +41,7 @@ export default function AdminDashboard() {
         return acc + (item.stock * (prices[item.id] || 0));
     }, 0);
 
-    const updateOrderStatus = useCartStore((state) => state.updateOrderStatus);
-
     useEffect(() => {
-        const fetchOrders = async () => {
-            const { data, error } = await supabase
-                .from('orders')
-                .select('*')
-                .order('created_at', { ascending: false });
-
-            if (error) {
-                console.error('Error fetching orders:', error);
-            } else if (data) {
-                const mappedOrders: Order[] = data.map((order: any) => ({
-                    id: order.id,
-                    customer: {
-                        name: order.customer_name,
-                        address: 'N/A',
-                        phone: 'N/A'
-                    },
-                    items: order.items || [],
-                    total: order.total_price,
-                    date: order.created_at,
-                    status: order.status || 'Pending Pickup'
-                }));
-                setOrders(mappedOrders);
-            }
-        };
-
         const fetchProducts = async () => {
             const { data, error } = await supabase
                 .from('products')
@@ -78,39 +56,13 @@ export default function AdminDashboard() {
             if (data) setCategories(data);
         };
 
-        fetchOrders();
         fetchProducts();
         fetchCategories();
-
-        const channel = supabase
-            .channel('orders_channel')
-            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'orders' }, (payload) => {
-                const newOrderRaw = payload.new;
-                const newOrder: Order = {
-                    id: newOrderRaw.id,
-                    customer: {
-                        name: newOrderRaw.customer_name,
-                        address: 'N/A',
-                        phone: 'N/A'
-                    },
-                    items: newOrderRaw.items || [],
-                    total: newOrderRaw.total_price,
-                    date: newOrderRaw.created_at,
-                    status: newOrderRaw.status || 'Pending Pickup'
-                };
-                setOrders((prev) => [newOrder, ...prev]);
-            })
-            .subscribe();
-
-        return () => {
-            supabase.removeChannel(channel);
-        };
     }, []);
 
     const handleAddProduct = async (e: React.FormEvent) => {
         e.preventDefault();
-        const { price, image_url, category, display_names, nutrition } = newProduct;
-        // Use English name as the primary 'name'
+        const { price, image_url, category, display_names, description, nutritional_info } = newProduct;
         const name = display_names.en;
 
         const { data, error } = await supabase
@@ -121,7 +73,8 @@ export default function AdminDashboard() {
                 image_url,
                 category,
                 display_names,
-                nutrition: nutrition || null
+                description: description || null,
+                nutritional_info: Object.values(nutritional_info).some(v => v !== '') ? nutritional_info : null
             }])
             .select()
             .single();
@@ -137,7 +90,13 @@ export default function AdminDashboard() {
                 image_url: '',
                 category: '',
                 display_names: { en: '', ru: '', am: '' },
-                nutrition: ''
+                description: '',
+                nutritional_info: {
+                    calories: '',
+                    protein: '',
+                    carbs: '',
+                    fat: ''
+                }
             });
             alert(t.productAdded);
         }
@@ -187,7 +146,7 @@ export default function AdminDashboard() {
                                 📦
                             </div>
                             <div className="text-right">
-                                <p className="text-2xl font-bold">{orders.length}</p>
+                                <p className="text-2xl font-bold">0</p>
                                 <p className="text-sm opacity-80">{t.pending}</p>
                             </div>
                         </div>
@@ -230,169 +189,176 @@ export default function AdminDashboard() {
                     </Link>
                 </div>
 
-                {/* Tab Navigation */}
-                <div className="flex gap-4 mb-8 border-b border-gray-200">
-                    <button
-                        className={`pb-4 px-2 font-semibold ${activeTab === 'orders' ? 'text-etalon-violet-600 border-b-2 border-etalon-violet-600' : 'text-gray-500'}`}
-                        onClick={() => setActiveTab('orders')}
-                    >
-                        {t.activeOrders}
-                    </button>
-                    <button
-                        className={`pb-4 px-2 font-semibold ${activeTab === 'products' ? 'text-etalon-violet-600 border-b-2 border-etalon-violet-600' : 'text-gray-500'}`}
-                        onClick={() => setActiveTab('products')}
-                    >
-                        {t.manageProducts}
-                    </button>
-                </div>
+                <div className="space-y-8">
+                    <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-200">
+                        <h3 className="text-xl font-bold text-gray-900 mb-6">{t.addProduct}</h3>
+                        <form onSubmit={handleAddProduct} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 items-end">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">{t.addProductName} (English)</label>
+                                <input required type="text" value={newProduct.display_names.en} onChange={e => setNewProduct({ ...newProduct, display_names: { ...newProduct.display_names, en: e.target.value } })} className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-etalon-violet-500 focus:border-transparent outline-none transition-all" placeholder="Apple" />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">{t.addProductName} (Russian)</label>
+                                <input required type="text" value={newProduct.display_names.ru} onChange={e => setNewProduct({ ...newProduct, display_names: { ...newProduct.display_names, ru: e.target.value } })} className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-etalon-violet-500 focus:border-transparent outline-none transition-all" placeholder="Яблоко" />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">{t.addProductName} (Armenian)</label>
+                                <input required type="text" value={newProduct.display_names.am} onChange={e => setNewProduct({ ...newProduct, display_names: { ...newProduct.display_names, am: e.target.value } })} className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-etalon-violet-500 focus:border-transparent outline-none transition-all" placeholder="Խնձոր" />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">{t.priceLabel} (AMD)</label>
+                                <input required type="number" step="0.01" value={newProduct.price} onChange={e => setNewProduct({ ...newProduct, price: e.target.value })} className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-etalon-violet-500 focus:border-transparent outline-none transition-all" placeholder="0.00" />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">{t.productImage}</label>
+                                <input type="text" value={newProduct.image_url} onChange={e => setNewProduct({ ...newProduct, image_url: e.target.value })} className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-etalon-violet-500 focus:border-transparent outline-none transition-all" placeholder="https://..." />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">{t.productCategory}</label>
+                                <select
+                                    value={newProduct.category}
+                                    onChange={e => setNewProduct({ ...newProduct, category: e.target.value })}
+                                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-etalon-violet-500 focus:border-transparent outline-none transition-all appearance-none bg-white"
+                                >
+                                    <option value="">{t.categorySelect}</option>
+                                    {categories.map((cat) => (
+                                        <option key={cat.id} value={cat.slug || cat.name}>
+                                            {cat.name?.[lang] || cat.name || cat.slug}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <button type="submit" className="bg-etalon-violet-600 text-white font-semibold py-2.5 px-6 rounded-lg hover:bg-etalon-violet-700 transition shadow-md hover:shadow-lg h-[46px]">
+                                {t.addNew}
+                            </button>
+                        </form>
 
-                {activeTab === 'orders' && (
+                        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                            {/* Description and Image Preview */}
+                            <div className="space-y-6">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">{t.description}</label>
+                                    <textarea
+                                        value={newProduct.description}
+                                        onChange={e => setNewProduct({ ...newProduct, description: e.target.value })}
+                                        className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-etalon-violet-500 focus:border-transparent outline-none transition-all resize-vertical"
+                                        rows={4}
+                                        placeholder={t.productDescriptionFallback}
+                                    />
+                                </div>
+
+                                <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                                    <p className="text-sm font-medium text-gray-700 mb-3">{t.imagePreview}</p>
+                                    <div className="aspect-square w-full max-w-[200px] bg-white rounded-lg border border-gray-100 overflow-hidden flex items-center justify-center">
+                                        {newProduct.image_url ? (
+                                            <img
+                                                src={newProduct.image_url}
+                                                alt="Preview"
+                                                className="w-full h-full object-cover"
+                                                onError={(e) => {
+                                                    (e.target as HTMLImageElement).src = 'https://via.placeholder.com/200?text=' + t.invalidUrl;
+                                                }}
+                                            />
+                                        ) : (
+                                            <div className="text-gray-300 text-4xl">🖼️</div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Optional Nutritional Info */}
+                            <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                                <h4 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                                    <span className="w-1.5 h-4 bg-etalon-violet-600 rounded-full"></span>
+                                    {t.nutritionalFacts} ({t.nutritionOptional})
+                                </h4>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-xs font-bold text-gray-400 uppercase mb-1">{t.calories}</label>
+                                        <input
+                                            type="text"
+                                            value={newProduct.nutritional_info.calories}
+                                            onChange={e => setNewProduct({ ...newProduct, nutritional_info: { ...newProduct.nutritional_info, calories: e.target.value } })}
+                                            className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-etalon-violet-500 outline-none"
+                                            placeholder="150"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-bold text-gray-400 uppercase mb-1">{t.protein}</label>
+                                        <input
+                                            type="text"
+                                            value={newProduct.nutritional_info.protein}
+                                            onChange={e => setNewProduct({ ...newProduct, nutritional_info: { ...newProduct.nutritional_info, protein: e.target.value } })}
+                                            className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-etalon-violet-500 outline-none"
+                                            placeholder="5g"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-bold text-gray-400 uppercase mb-1">{t.carbs}</label>
+                                        <input
+                                            type="text"
+                                            value={newProduct.nutritional_info.carbs}
+                                            onChange={e => setNewProduct({ ...newProduct, nutritional_info: { ...newProduct.nutritional_info, carbs: e.target.value } })}
+                                            className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-etalon-violet-500 outline-none"
+                                            placeholder="20g"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-bold text-gray-400 uppercase mb-1">{t.fat}</label>
+                                        <input
+                                            type="text"
+                                            value={newProduct.nutritional_info.fat}
+                                            onChange={e => setNewProduct({ ...newProduct, nutritional_info: { ...newProduct.nutritional_info, fat: e.target.value } })}
+                                            className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-etalon-violet-500 outline-none"
+                                            placeholder="2g"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div className="bg-white rounded-xl shadow-lg overflow-hidden">
                         <table className="w-full text-left">
                             <thead className="bg-gray-100 text-gray-600 uppercase text-sm">
                                 <tr>
-                                    <th className="p-4">{t.orderId}</th>
-                                    <th className="p-4">{t.customer}</th>
-                                    <th className="p-4">{t.items}</th>
-                                    <th className="p-4">{t.total}</th>
-                                    <th className="p-4">{t.status}</th>
+                                    <th className="p-4">ID</th>
+                                    <th className="p-4">{t.productImage}</th>
+                                    <th className="p-4">{t.addProductName}</th>
+                                    <th className="p-4">{t.expectedPrice} (AMD)</th>
+                                    <th className="p-4">{t.actions}</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200">
-                                {orders.length === 0 ? (
-                                    <tr><td colSpan={5} className="p-8 text-center text-gray-500">{t.noActiveOrders}</td></tr>
-                                ) : (
-                                    orders.map((order) => (
-                                        <tr key={order.id} className="hover:bg-gray-50">
-                                            <td className="p-4 font-mono font-bold text-gray-900">#{order.id.toString().slice(0, 8)}...</td>
-                                            <td className="p-4">
-                                                <div className="font-semibold">{order.customer.name}</div>
-                                                <div className="text-xs text-gray-500">{order.customer.address}</div>
-                                            </td>
-                                            <td className="p-4 text-sm text-gray-600">
-                                                {order.items.map(i => `${i.quantity}x ${i.display_names?.[lang] || i.name}`).join(', ')}
-                                            </td>
-                                            <td className="p-4 font-bold text-etalon-violet-600">{order.total.toFixed(0)} AMD</td>
-                                            <td className="p-4">
-                                                <select
-                                                    value={order.status}
-                                                    onChange={(e) => updateOrderStatus(order.id, e.target.value as any)}
-                                                    className="bg-gray-100 border-none rounded-lg text-sm font-medium px-3 py-1 cursor-pointer focus:ring-2 focus:ring-etalon-violet-500"
-                                                >
-                                                    <option value="pending">{t.pendingPickupStatus}</option>
-                                                    <option value="packing">{t.packingStatus}</option>
-                                                    <option value="delivery">{t.deliveryStatus}</option>
-                                                    <option value="completed">{t.completedStatus}</option>
-                                                </select>
-                                            </td>
-                                        </tr>
-                                    ))
+                                {products.map((product) => (
+                                    <tr key={product.id} className="hover:bg-gray-50">
+                                        <td className="p-4 text-gray-500">#{product.id}</td>
+                                        <td className="p-4">
+                                            {product.image_url ?
+                                                // eslint-disable-next-line @next/next/no-img-element
+                                                <img src={product.image_url} alt={product.name} className="w-12 h-12 object-cover rounded-md" />
+                                                : <div className="w-12 h-12 bg-gray-200 rounded-md"></div>}
+                                        </td>
+                                        <td className="p-4 font-semibold text-gray-900">{product.display_names?.[lang] || product.name}<br /><span className="text-xs font-normal text-gray-500">{product.category}</span></td>
+                                        <td className="p-4 text-gray-500 font-bold">{product.price} AMD</td>
+                                        <td className="p-4">
+                                            <button
+                                                onClick={() => handleDeleteProduct(product.id)}
+                                                className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
+                                                title={t.deleteProduct}
+                                            >
+                                                <Trash2 className="w-5 h-5" />
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                                {products.length === 0 && (
+                                    <tr><td colSpan={5} className="p-8 text-center text-gray-500">{t.noProductsFound}</td></tr>
                                 )}
                             </tbody>
                         </table>
                     </div>
-                )}
-
-                {activeTab === 'products' && (
-                    <div className="space-y-8">
-                        <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-200">
-                            <h3 className="text-xl font-bold text-gray-900 mb-6">{t.addProduct}</h3>
-                            <form onSubmit={handleAddProduct} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 items-end">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">{t.addProductName} (English)</label>
-                                    <input required type="text" value={newProduct.display_names.en} onChange={e => setNewProduct({ ...newProduct, display_names: { ...newProduct.display_names, en: e.target.value } })} className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-etalon-violet-500 focus:border-transparent outline-none transition-all" placeholder="Apple" />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">{t.addProductName} (Russian)</label>
-                                    <input required type="text" value={newProduct.display_names.ru} onChange={e => setNewProduct({ ...newProduct, display_names: { ...newProduct.display_names, ru: e.target.value } })} className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-etalon-violet-500 focus:border-transparent outline-none transition-all" placeholder="Яблоко" />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">{t.addProductName} (Armenian)</label>
-                                    <input required type="text" value={newProduct.display_names.am} onChange={e => setNewProduct({ ...newProduct, display_names: { ...newProduct.display_names, am: e.target.value } })} className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-etalon-violet-500 focus:border-transparent outline-none transition-all" placeholder="Խնձոր" />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">{t.priceLabel} (AMD)</label>
-                                    <input required type="number" step="0.01" value={newProduct.price} onChange={e => setNewProduct({ ...newProduct, price: e.target.value })} className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-etalon-violet-500 focus:border-transparent outline-none transition-all" placeholder="0.00" />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">{t.productImage}</label>
-                                    <input type="text" value={newProduct.image_url} onChange={e => setNewProduct({ ...newProduct, image_url: e.target.value })} className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-etalon-violet-500 focus:border-transparent outline-none transition-all" placeholder="https://..." />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">{t.productCategory}</label>
-                                    <select
-                                        value={newProduct.category}
-                                        onChange={e => setNewProduct({ ...newProduct, category: e.target.value })}
-                                        className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-etalon-violet-500 focus:border-transparent outline-none transition-all appearance-none bg-white"
-                                    >
-                                        <option value="">{t.categorySelect}</option>
-                                        {categories.map((cat) => (
-                                            <option key={cat.id} value={cat.slug || cat.name}>
-                                                {cat.name?.[lang] || cat.name || cat.slug}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <button type="submit" className="bg-etalon-violet-600 text-white font-semibold py-2.5 px-6 rounded-lg hover:bg-etalon-violet-700 transition shadow-md hover:shadow-lg h-[46px]">
-                                    {t.addNew}
-                                </button>
-                            </form>
-
-                            {/* Nutrition Textarea - Full Width */}
-                            <div className="mt-4">
-                                <label className="block text-sm font-medium text-gray-700 mb-2">{t.nutritionOptional}</label>
-                                <textarea
-                                    value={newProduct.nutrition}
-                                    onChange={e => setNewProduct({ ...newProduct, nutrition: e.target.value })}
-                                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-etalon-violet-500 focus:border-transparent outline-none transition-all resize-vertical"
-                                    rows={3}
-                                    placeholder="e.g., Calories: 120, Protein: 2g, Carbs: 15g, Fat: 0g"
-                                />
-                            </div>
-                        </div>
-
-                        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-                            <table className="w-full text-left">
-                                <thead className="bg-gray-100 text-gray-600 uppercase text-sm">
-                                    <tr>
-                                        <th className="p-4">ID</th>
-                                        <th className="p-4">{t.productImage}</th>
-                                        <th className="p-4">{t.addProductName}</th>
-                                        <th className="p-4">{t.expectedPrice} (AMD)</th>
-                                        <th className="p-4">{t.actions}</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-200">
-                                    {products.map((product) => (
-                                        <tr key={product.id} className="hover:bg-gray-50">
-                                            <td className="p-4 text-gray-500">#{product.id}</td>
-                                            <td className="p-4">
-                                                {product.image_url ?
-                                                    // eslint-disable-next-line @next/next/no-img-element
-                                                    <img src={product.image_url} alt={product.name} className="w-12 h-12 object-cover rounded-md" />
-                                                    : <div className="w-12 h-12 bg-gray-200 rounded-md"></div>}
-                                            </td>
-                                            <td className="p-4 font-semibold text-gray-900">{product.display_names?.[lang] || product.name}<br /><span className="text-xs font-normal text-gray-500">{product.category}</span></td>
-                                            <td className="p-4 text-gray-500 font-bold">AMD</td>
-                                            <td className="p-4">
-                                                <button
-                                                    onClick={() => handleDeleteProduct(product.id)}
-                                                    className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
-                                                    title={t.deleteProduct}
-                                                >
-                                                    <Trash2 className="w-5 h-5" />
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                    {products.length === 0 && (
-                                        <tr><td colSpan={5} className="p-8 text-center text-gray-500">{t.noProductsFound}</td></tr>
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                )}
+                </div>
             </div>
         </div>
     );

@@ -150,9 +150,8 @@ export default function Home() {
                           ...product,
                           name: product.display_names?.[lang] || product.name,
                           image: product.image_url || 'https://via.placeholder.com/300',
-                          description: product.description || "Premium quality product.",
+                          description: product.description,
                           isLocal: product.category === 'Produce' || product.category === 'Bakery',
-                          nutritional_info: { calories: 0, protein: "0g", carbs: "0g", fat: "0g" },
                           stock_quantity: product.stock_quantity
                         }}
                         onOpenModal={setSelectedProduct}
