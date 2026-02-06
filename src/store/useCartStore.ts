@@ -28,11 +28,13 @@ interface CartStore {
     items: CartItem[];
     orders: Order[];
     searchQuery: string;
+    selectedStoreId: string | null;
     addItem: (item: Omit<CartItem, 'quantity'>) => void;
     removeItem: (id: number) => void;
     updateQuantity: (id: number, delta: number) => void;
     clearCart: () => void;
     setSearchQuery: (query: string) => void;
+    setSelectedStoreId: (id: string | null) => void;
     placeOrder: (customer: Order['customer']) => Promise<string>;
     updateOrderStatus: (orderId: string, status: Order['status']) => void;
     getItemCount: () => number;
@@ -45,6 +47,7 @@ export const useCartStore = create<CartStore>()(
             items: [],
             orders: [],
             searchQuery: '',
+            selectedStoreId: null,
             addItem: (item) => set((state) => {
                 const existingItem = state.items.find((i) => i.id === item.id);
                 if (existingItem) {
@@ -76,6 +79,7 @@ export const useCartStore = create<CartStore>()(
             })),
             clearCart: () => set({ items: [] }),
             setSearchQuery: (query) => set({ searchQuery: query }),
+            setSelectedStoreId: (id) => set({ selectedStoreId: id }),
             placeOrder: async (customer) => {
                 const state = get();
                 const total = state.items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
@@ -86,7 +90,8 @@ export const useCartStore = create<CartStore>()(
                         {
                             customer_name: customer.name,
                             total_price: total,
-                            items: state.items
+                            items: state.items,
+                            store_id: state.selectedStoreId
                         }
                     ])
                     .select()
@@ -98,7 +103,7 @@ export const useCartStore = create<CartStore>()(
                     return '';
                 }
 
-                alert('Order sent to Etalon Market');
+                alert('Order sent to 88 Supermarket');
                 set({ items: [] });
                 return data.id;
             },
@@ -109,8 +114,8 @@ export const useCartStore = create<CartStore>()(
             getTotalPrice: () => get().items.reduce((acc, item) => acc + (item.price * item.quantity), 0),
         }),
         {
-            name: 'etalon-cart-storage',
-            partialize: (state) => ({ items: state.items, orders: state.orders }),
+            name: 'eighty-eight-cart-storage',
+            partialize: (state) => ({ items: state.items, orders: state.orders, selectedStoreId: state.selectedStoreId }),
         }
     )
 );

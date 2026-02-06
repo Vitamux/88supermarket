@@ -54,28 +54,28 @@ export default function CategorySidebar({
     ] as const;
 
     return (
-        <aside className="w-full md:w-64 flex-shrink-0 md:border-r border-gray-200 md:pr-8 mb-8 md:mb-0">
+        <aside className="w-full md:w-64 flex-shrink-0 md:border-r border-gray-100 md:pr-8 mb-8 md:mb-0">
             {/* Search Bar */}
-            <div className="relative mb-6">
+            <div className="relative mb-8">
                 <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder={t.searchPlaceholder}
-                    className="w-full border border-gray-300 rounded-lg pl-10 pr-4 py-2.5 focus:ring-2 focus:ring-etalon-violet-500 focus:border-transparent outline-none transition-all"
+                    placeholder={t.searchProducts}
+                    className="w-full bg-gray-50 border border-gray-100 rounded-2xl pl-12 pr-4 py-3.5 focus:ring-2 focus:ring-[#39FF14]/20 focus:border-[#39FF14] outline-none transition-all text-sm font-medium"
                 />
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             </div>
 
             {/* Language Switcher */}
-            <div className="flex gap-2 mb-6">
+            <div className="flex gap-2 mb-10 overflow-x-auto pb-2 scrollbar-hide">
                 {flags.map((flag) => (
                     <button
                         key={flag.code}
                         onClick={() => setLang(flag.code)}
-                        className={`text-xl p-2 rounded-lg transition-colors ${lang === flag.code
-                            ? 'bg-violet-100 ring-1 ring-violet-200'
-                            : 'hover:bg-gray-100'
+                        className={`text-xl p-3 rounded-xl transition-all font-black ${lang === flag.code
+                            ? 'bg-[#39FF14] text-black shadow-lg shadow-[#39FF14]/20 scale-105'
+                            : 'bg-gray-50 text-gray-400 hover:bg-gray-100'
                             }`}
                     >
                         {flag.label}
@@ -83,19 +83,22 @@ export default function CategorySidebar({
                 ))}
             </div>
 
-            <h3 className="font-bold text-gray-900 mb-4 px-2 hidden md:block">
-                {t.categories}
-            </h3>
+            <div className="flex items-center gap-3 mb-6 px-2">
+                <div className="h-4 w-1 bg-[#39FF14] rounded-full"></div>
+                <h3 className="font-black text-[10px] text-gray-400 uppercase tracking-[0.3em]">
+                    {t.categories}
+                </h3>
+            </div>
 
             {/* Mobile: Horizontal Scroll */}
-            <div className="flex md:hidden overflow-x-auto pb-4 gap-2 scrollbar-hide">
+            <div className="flex md:hidden overflow-x-auto pb-6 gap-3 scrollbar-hide">
                 {allCategories.map((category) => (
                     <button
                         key={category.slug}
                         onClick={() => onSelectCategory(category.slug)}
-                        className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition-colors ${activeCategory === category.slug
-                            ? 'bg-violet-100 text-violet-900 shadow-sm ring-1 ring-violet-200'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        className={`whitespace-nowrap px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeCategory === category.slug
+                            ? 'bg-black text-white shadow-xl scale-105'
+                            : 'bg-gray-50 text-gray-500 hover:bg-gray-100'
                             }`}
                     >
                         {category.name?.[lang] || category.name?.en || category.slug}
@@ -104,17 +107,22 @@ export default function CategorySidebar({
             </div>
 
             {/* Desktop: Vertical List */}
-            <div className="hidden md:flex flex-col gap-1">
+            <div className="hidden md:flex flex-col gap-2">
                 {allCategories.map((category) => (
                     <button
                         key={category.slug}
                         onClick={() => onSelectCategory(category.slug)}
-                        className={`text-left px-4 py-3 rounded-lg text-sm font-medium transition-all ${activeCategory === category.slug
-                            ? 'bg-violet-100 text-violet-900 border-l-4 border-violet-600'
-                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                        className={`text-left px-4 py-4 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeCategory === category.slug
+                            ? 'bg-[#39FF14] text-black shadow-lg shadow-[#39FF14]/10 transform translate-x-2'
+                            : 'text-gray-400 hover:bg-gray-50 hover:text-gray-900 group'
                             }`}
                     >
-                        {category.name?.[lang] || category.name?.en || category.slug}
+                        <span className="flex items-center justify-between">
+                            {category.name?.[lang] || category.name?.en || category.slug}
+                            {activeCategory === category.slug && (
+                                <div className="w-1.5 h-1.5 rounded-full bg-black"></div>
+                            )}
+                        </span>
                     </button>
                 ))}
             </div>

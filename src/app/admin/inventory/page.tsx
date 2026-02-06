@@ -7,6 +7,8 @@ import { supabase } from '../../../lib/supabase';
 import { Search, Edit2, Check, X } from 'lucide-react';
 import Link from 'next/link';
 
+import { useAdminStore } from '../../../store/useAdminStore';
+
 interface Product {
     id: number;
     name: string;
@@ -14,9 +16,11 @@ interface Product {
     price: number;
     stock_quantity: number;
     image_url?: string;
+    store_id?: string;
 }
 
 export default function InventoryPage() {
+    const { profile, activeStoreId } = useAdminStore();
     const [products, setProducts] = useState<Product[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [loading, setLoading] = useState(true);
@@ -26,16 +30,26 @@ export default function InventoryPage() {
     const { lang } = useLanguageStore();
     const t = translations[lang];
 
+    const isManager = profile?.role === 'manager';
+
     useEffect(() => {
         fetchProducts();
-    }, []);
+    }, [activeStoreId]);
 
     const fetchProducts = async () => {
         setLoading(true);
-        const { data, error } = await supabase
+        let query = supabase
             .from('products')
             .select('*')
             .order('name', { ascending: true });
+
+        if (activeStoreId) {
+            query = query.eq('store_id', activeStoreId);
+        } else if (isManager && profile?.assigned_store_id) {
+            query = query.eq('store_id', profile.assigned_store_id);
+        }
+
+        const { data, error } = await query;
 
         if (error) {
             console.error('Error fetching products:', error);
@@ -114,9 +128,9 @@ export default function InventoryPage() {
                     </div>
                     <Link
                         href="/admin"
-                        className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+                        className="px-5 py-2.5 bg-black text-white rounded-xl hover:bg-[#39FF14] hover:text-black transition-all font-black text-xs uppercase tracking-widest shadow-lg active:scale-95"
                     >
-                        Back to Admin
+                        {t.backToAdmin}
                     </Link>
                 </div>
 
@@ -128,15 +142,15 @@ export default function InventoryPage() {
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder={t.searchProducts}
-                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-etalon-violet-500 focus:border-transparent outline-none"
+                        className="w-full pl-10 pr-4 py-3 border border-gray-100 bg-white rounded-xl focus:ring-2 focus:ring-[#39FF14]/20 focus:border-[#39FF14] outline-none shadow-sm transition-all font-medium"
                     />
                 </div>
 
                 {/* Table */}
                 {loading ? (
                     <div className="text-center py-12">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-etalon-violet-600 mx-auto"></div>
-                        <p className="text-gray-500 mt-4">{t.loadingInventory}</p>
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#39FF14] mx-auto transition-all"></div>
+                        <p className="text-gray-500 mt-4 font-black text-xs uppercase tracking-widest">{t.loadingInventory}</p>
                     </div>
                 ) : (
                     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
@@ -202,7 +216,7 @@ export default function InventoryPage() {
                                                                 type="number"
                                                                 value={editStock}
                                                                 onChange={(e) => setEditStock(parseInt(e.target.value) || 0)}
-                                                                className="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-etalon-violet-500 focus:border-transparent outline-none text-lg font-semibold"
+                                                                className="w-24 px-3 py-2 border border-black rounded-lg focus:ring-2 focus:ring-[#39FF14]/20 focus:border-[#39FF14] outline-none text-lg font-black"
                                                                 min="0"
                                                             />
                                                         ) : (
@@ -224,11 +238,11 @@ export default function InventoryPage() {
                                                                     type="number"
                                                                     value={editPrice}
                                                                     onChange={(e) => setEditPrice(parseFloat(e.target.value) || 0)}
-                                                                    className="w-28 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-etalon-violet-500 focus:border-transparent outline-none text-lg font-semibold text-right"
+                                                                    className="w-28 px-3 py-2 border border-black rounded-lg focus:ring-2 focus:ring-[#39FF14]/20 focus:border-[#39FF14] outline-none text-lg font-black text-right"
                                                                     min="0"
                                                                     step="0.01"
                                                                 />
-                                                                <span className="text-gray-500 font-medium">AMD</span>
+                                                                <span className="text-gray-400 font-black text-xs uppercase tracking-widest">AMD</span>
                                                             </div>
                                                         ) : (
                                                             <span className="text-gray-900 font-semibold">
@@ -258,7 +272,7 @@ export default function InventoryPage() {
                                                             ) : (
                                                                 <button
                                                                     onClick={() => handleEdit(product)}
-                                                                    className="p-2 bg-etalon-violet-100 text-etalon-violet-700 rounded-lg hover:bg-etalon-violet-200 transition-colors"
+                                                                    className="p-2 bg-[#39FF14]/10 text-black border border-[#39FF14]/30 rounded-lg hover:bg-[#39FF14] transition-all"
                                                                     title={t.edit}
                                                                 >
                                                                     <Edit2 className="w-5 h-5" />

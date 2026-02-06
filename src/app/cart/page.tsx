@@ -46,7 +46,7 @@ export default function CartPage() {
                         <p className="text-gray-500 mb-8 max-w-sm mx-auto">Looks like you haven't added anything to your cart yet.</p>
                         <Link
                             href="/"
-                            className="bg-etalon-violet-600 text-white px-8 py-3.5 rounded-full font-semibold hover:bg-etalon-violet-700 hover:shadow-lg transition-all transform hover:-translate-y-0.5"
+                            className="bg-[#39FF14] text-black px-10 py-4 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-[#32E612] hover:shadow-xl transition-all transform hover:-translate-y-1 active:scale-95 shadow-lg shadow-[#39FF14]/20"
                         >
                             {t.backToShop}
                         </Link>
@@ -73,7 +73,7 @@ export default function CartPage() {
                                             <h3 className="text-lg font-bold text-gray-900 mb-1">
                                                 {item.display_names?.[lang] || item.name}
                                             </h3>
-                                            <p className="text-etalon-violet-600 font-medium font-bold">
+                                            <p className="text-[#39FF14] drop-shadow-[0_0_1px_rgba(57,255,20,0.5)] font-black uppercase text-xs tracking-widest">
                                                 {item.price} AMD
                                             </p>
                                         </div>
@@ -90,7 +90,7 @@ export default function CartPage() {
                                                 <span className="font-bold text-gray-900 w-4 text-center">{item.quantity}</span>
                                                 <button
                                                     onClick={() => updateQuantity(item.id, 1)}
-                                                    className="w-8 h-8 flex items-center justify-center rounded-full bg-white shadow-sm hover:bg-etalon-violet-50 text-etalon-violet-600 transition-colors"
+                                                    className="w-8 h-8 flex items-center justify-center rounded-full bg-white shadow-sm hover:bg-gray-100 text-gray-600 transition-colors border border-gray-100"
                                                 >
                                                     <Plus className="w-4 h-4" />
                                                 </button>
@@ -135,20 +135,20 @@ export default function CartPage() {
                                 <div className="space-y-4 mb-8 pt-6 border-t border-gray-100">
                                     <div className="flex justify-between items-end">
                                         <span className="font-bold text-lg text-gray-900">{t.total}</span>
-                                        <span className="font-black text-3xl text-etalon-violet-600">
-                                            {finalTotal.toFixed(0)} AMD
+                                        <span className="font-black text-3xl text-gray-900 tracking-tighter">
+                                            {finalTotal.toFixed(0)} <span className="text-sm uppercase opacity-40">AMD</span>
                                         </span>
                                     </div>
                                 </div>
 
                                 <button
                                     onClick={handleCheckout}
-                                    className="w-full bg-gradient-to-r from-etalon-violet-600 to-fuchsia-600 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl hover:opacity-95 transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2"
+                                    className="w-full bg-[#39FF14] text-black font-black py-4 rounded-xl shadow-lg hover:shadow-xl hover:bg-[#32E612] transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2 uppercase tracking-widest text-xs"
                                 >
                                     <span>{t.checkout}</span>
                                 </button>
                                 <p className="text-[10px] text-center text-gray-400 mt-4 uppercase tracking-widest font-bold">
-                                    Secure checkout powered by Etalon
+                                    Secure checkout powered by 88 Supermarket
                                 </p>
                             </div>
                         </div>

@@ -109,9 +109,9 @@ export default function CategoriesPage() {
                 <div className="flex items-center gap-4 mb-8">
                     <button
                         onClick={() => router.push('/admin')}
-                        className="p-2 hover:bg-gray-100 rounded-lg transition"
+                        className="p-2 hover:bg-[#39FF14]/10 rounded-xl transition group"
                     >
-                        <ArrowLeft className="w-6 h-6 text-gray-600" />
+                        <ArrowLeft className="w-6 h-6 text-gray-900 group-hover:text-[#39FF14]" />
                     </button>
                     <h1 className="text-3xl font-bold text-gray-900">{t.manageCategories}</h1>
                 </div>
@@ -128,7 +128,7 @@ export default function CategoriesPage() {
                                 type="text"
                                 value={newCategory.nameEn}
                                 onChange={e => setNewCategory({ ...newCategory, nameEn: e.target.value })}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-etalon-violet-500 focus:border-transparent outline-none transition-all"
+                                className="w-full border border-gray-100 bg-gray-50 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-[#39FF14]/20 focus:border-[#39FF14] focus:bg-white outline-none transition-all font-medium"
                                 placeholder="Bakery"
                                 required
                             />
@@ -141,7 +141,7 @@ export default function CategoriesPage() {
                                 type="text"
                                 value={newCategory.nameRu}
                                 onChange={e => setNewCategory({ ...newCategory, nameRu: e.target.value })}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-etalon-violet-500 focus:border-transparent outline-none transition-all"
+                                className="w-full border border-gray-100 bg-gray-50 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-[#39FF14]/20 focus:border-[#39FF14] focus:bg-white outline-none transition-all font-medium"
                                 placeholder="Выпечка"
                                 required
                             />
@@ -154,7 +154,7 @@ export default function CategoriesPage() {
                                 type="text"
                                 value={newCategory.nameAm}
                                 onChange={e => setNewCategory({ ...newCategory, nameAm: e.target.value })}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-etalon-violet-500 focus:border-transparent outline-none transition-all"
+                                className="w-full border border-gray-100 bg-gray-50 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-[#39FF14]/20 focus:border-[#39FF14] focus:bg-white outline-none transition-all font-medium"
                                 placeholder="Հացաբուլկեղեն"
                                 required
                             />
@@ -167,7 +167,7 @@ export default function CategoriesPage() {
                                 type="text"
                                 value={newCategory.slug}
                                 onChange={e => setNewCategory({ ...newCategory, slug: e.target.value })}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-etalon-violet-500 focus:border-transparent outline-none transition-all"
+                                className="w-full border border-gray-100 bg-gray-50 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-[#39FF14]/20 focus:border-[#39FF14] focus:bg-white outline-none transition-all font-medium"
                                 placeholder="bakery"
                                 required
                             />
@@ -175,7 +175,7 @@ export default function CategoriesPage() {
                         <div className="flex items-end">
                             <button
                                 type="submit"
-                                className="w-full bg-etalon-violet-600 text-white font-semibold py-2.5 px-6 rounded-lg hover:bg-etalon-violet-700 transition shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+                                className="w-full bg-black text-white font-black text-xs uppercase tracking-widest py-3.5 px-6 rounded-xl hover:bg-[#39FF14] hover:text-black transition shadow-lg active:scale-95 flex items-center justify-center gap-2"
                             >
                                 <Plus className="w-5 h-5" />
                                 {t.addCategory}
@@ -222,7 +222,7 @@ export default function CategoriesPage() {
                                     {categories.map((category) => (
                                         <tr key={category.id} className="hover:bg-gray-50 transition">
                                             <td className="px-6 py-4 whitespace-nowrap">
-                                                <code className="text-sm bg-gray-100 px-2 py-1 rounded text-violet-700 font-mono">
+                                                <code className="text-[10px] bg-black text-[#39FF14] px-2 py-1 rounded font-black uppercase tracking-widest">
                                                     {category.slug}
                                                 </code>
                                             </td>

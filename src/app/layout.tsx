@@ -5,8 +5,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Etalon | Premium Fresh Market",
-  description: "Your premium online market for fresh produce, bakery, and meats.",
+  title: "88 Supermarket | Fresh & Fast",
+  description: "Your favorite local supermarket with 8+ locations. Fresh produce, bakery, and meats delivered to your door.",
 };
 
 export default function RootLayout({

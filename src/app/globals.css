@@ -1,19 +1,17 @@
 @import "tailwindcss";
 
 @theme {
-  --color-etalon-violet-100: #F5F3FF;
-  --color-etalon-violet-500: #8B5CF6;
-  --color-etalon-violet-600: #7C3AED;
-  /* Primary Vivid Violet */
-  --color-etalon-violet-700: #5B21B6;
-  /* Dark Header/Hover */
-  --color-etalon-accent: #f59e0b;
-  /* Staying Gold for 'Gold Standard' feel */
+  --color-eighty-eight-bg: #FFFFFF;
+  --color-eighty-eight-card: #F9FAFB;
+  --color-eighty-eight-neon: #39FF14;
+  --color-eighty-eight-neon-hover: #32E612;
+  --color-eighty-eight-text: #111827;
+  --color-eighty-eight-text-dim: #4B5563;
 }
 
 /* Custom Base Styles */
 body {
-  @apply bg-gray-50 text-gray-900 antialiased;
+  @apply bg-eighty-eight-bg text-eighty-eight-text antialiased;
 }
 
 @keyframes bounce-elastic {

@@ -108,8 +108,8 @@ export default function AuthModal({ isOpen, onClose, initialView }: AuthModalPro
                         <h2 className="text-3xl font-bold text-gray-900 mb-2">
                             {view === 'login' ? t.login : t.register}
                         </h2>
-                        <p className="text-gray-500">
-                            {view === 'login' ? 'Welcome back to Etalon Market' : 'Join the gold standard of shopping'}
+                        <p className="text-gray-500 font-medium">
+                            {view === 'login' ? 'Welcome back to 88 Supermarket' : 'Join the new standard of fresh shopping'}
                         </p>
                     </div>
 
@@ -135,7 +135,7 @@ export default function AuthModal({ isOpen, onClose, initialView }: AuthModalPro
                                         placeholder={t.fullName}
                                         value={formData.name}
                                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                        className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-3.5 pl-12 pr-4 focus:ring-2 focus:ring-etalon-violet-500 focus:bg-white outline-none transition-all text-gray-900"
+                                        className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-3.5 pl-12 pr-4 focus:ring-2 focus:ring-[#39FF14]/20 focus:border-[#39FF14] focus:bg-white outline-none transition-all text-gray-900 font-medium"
                                         required
                                     />
                                 </div>
@@ -146,7 +146,7 @@ export default function AuthModal({ isOpen, onClose, initialView }: AuthModalPro
                                         placeholder={t.phoneNumber}
                                         value={formData.phone}
                                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                        className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-3.5 pl-12 pr-4 focus:ring-2 focus:ring-etalon-violet-500 focus:bg-white outline-none transition-all text-gray-900"
+                                        className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-3.5 pl-12 pr-4 focus:ring-2 focus:ring-[#39FF14]/20 focus:border-[#39FF14] focus:bg-white outline-none transition-all text-gray-900 font-medium"
                                         required
                                     />
                                 </div>
@@ -160,7 +160,7 @@ export default function AuthModal({ isOpen, onClose, initialView }: AuthModalPro
                                 placeholder={t.email}
                                 value={formData.email}
                                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-3.5 pl-12 pr-4 focus:ring-2 focus:ring-etalon-violet-500 focus:bg-white outline-none transition-all text-gray-900"
+                                className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-3.5 pl-12 pr-4 focus:ring-2 focus:ring-[#39FF14]/20 focus:border-[#39FF14] focus:bg-white outline-none transition-all text-gray-900 font-medium"
                                 required
                             />
                         </div>
@@ -172,13 +172,13 @@ export default function AuthModal({ isOpen, onClose, initialView }: AuthModalPro
                                 placeholder={t.password}
                                 value={formData.password}
                                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                                className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-3.5 pl-12 pr-12 focus:ring-2 focus:ring-etalon-violet-500 focus:bg-white outline-none transition-all text-gray-900"
+                                className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-3.5 pl-12 pr-12 focus:ring-2 focus:ring-[#39FF14]/20 focus:border-[#39FF14] focus:bg-white outline-none transition-all text-gray-900 font-medium"
                                 required
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-etalon-violet-600 transition-colors"
+                                className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-[#39FF14] transition-colors"
                                 tabIndex={-1}
                             >
                                 {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -188,7 +188,7 @@ export default function AuthModal({ isOpen, onClose, initialView }: AuthModalPro
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-etalon-violet-600 hover:bg-etalon-violet-700 text-white font-bold py-4 rounded-2xl shadow-lg shadow-violet-200 transition-all active:scale-95 flex items-center justify-center gap-2"
+                            className="w-full bg-black hover:bg-[#39FF14] hover:text-black text-white font-black text-xs uppercase tracking-[0.2em] py-5 rounded-[1.25rem] shadow-xl shadow-gray-200 transition-all active:scale-95 flex items-center justify-center gap-2"
                         >
                             {loading ? (
                                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -204,7 +204,7 @@ export default function AuthModal({ isOpen, onClose, initialView }: AuthModalPro
                                 {t.dontHaveAccount}{' '}
                                 <button
                                     onClick={() => setView('register')}
-                                    className="text-etalon-violet-600 font-bold hover:underline"
+                                    className="text-black font-black hover:text-[#39FF14] transition-colors"
                                 >
                                     {t.register}
                                 </button>
@@ -214,7 +214,7 @@ export default function AuthModal({ isOpen, onClose, initialView }: AuthModalPro
                                 {t.alreadyHaveAccount}{' '}
                                 <button
                                     onClick={() => setView('login')}
-                                    className="text-etalon-violet-600 font-bold hover:underline"
+                                    className="text-black font-black hover:text-[#39FF14] transition-colors"
                                 >
                                     {t.login}
                                 </button>

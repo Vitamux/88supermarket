@@ -20,12 +20,17 @@ interface Order {
 }
 
 export default function ActiveOrdersPage() {
+    const { profile, activeStoreId } = useAdminStore();
     const [orders, setOrders] = useState<Order[]>([]);
     const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
     const [statusFilter, setStatusFilter] = useState('all');
+    const [stores, setStores] = useState<any[]>([]);
     const { lang } = useLanguageStore();
     const t = translations[lang];
+
+    const isOwner = profile?.role === 'owner';
+    const isManager = profile?.role === 'manager';
 
     const statusColors: { [key: string]: string } = {
         pending: 'bg-yellow-100 text-yellow-800 border-yellow-200',
@@ -45,6 +50,7 @@ export default function ActiveOrdersPage() {
 
     useEffect(() => {
         fetchOrders();
+        fetchStores();
 
         // Real-time subscription
         const channel = supabase
@@ -55,6 +61,8 @@ export default function ActiveOrdersPage() {
                 (payload) => {
                     if (payload.eventType === 'INSERT') {
                         const newOrder = payload.new as Order;
+                        // Client side check for store_id if it's a manager
+                        if (isManager && newOrder.store_id !== profile?.assigned_store_id) return;
                         setOrders(prev => [newOrder, ...prev]);
                     } else if (payload.eventType === 'UPDATE') {
                         const updatedOrder = payload.new as Order;
@@ -69,22 +77,43 @@ export default function ActiveOrdersPage() {
         return () => {
             supabase.removeChannel(channel);
         };
-    }, []);
+    }, [activeStoreId]); // Re-subscribe/refetch if activeStoreId changes
+
+    const fetchStores = async () => {
+        const { data } = await supabase.from('stores').select('*');
+        if (data) setStores(data);
+    };
 
     useEffect(() => {
-        if (statusFilter === 'all') {
-            setFilteredOrders(orders);
-        } else {
-            setFilteredOrders(orders.filter(o => o.status === statusFilter));
+        let result = [...orders];
+
+        if (statusFilter !== 'all') {
+            result = result.filter(o => o.status === statusFilter);
         }
-    }, [orders, statusFilter]);
+
+        // Additional filtering based on store context
+        if (activeStoreId) {
+            result = result.filter(o => (o as any).store_id === activeStoreId);
+        }
+
+        setFilteredOrders(result);
+    }, [orders, statusFilter, activeStoreId]);
 
     const fetchOrders = async () => {
         setLoading(true);
-        const { data, error } = await supabase
+        let query = supabase
             .from('orders')
             .select('*')
             .order('created_at', { ascending: false });
+
+        // Filter by store if required
+        if (activeStoreId) {
+            query = query.eq('store_id', activeStoreId);
+        } else if (isManager && profile?.assigned_store_id) {
+            query = query.eq('store_id', profile.assigned_store_id);
+        }
+
+        const { data, error } = await query;
 
         if (error) {
             console.error('Error fetching orders:', error);
@@ -152,28 +181,46 @@ export default function ActiveOrdersPage() {
                 </div>
 
                 {/* Filter Bar */}
-                <div className="bg-white p-2 rounded-2xl shadow-sm border border-gray-200 mb-8 flex flex-wrap gap-2">
-                    <button
-                        onClick={() => setStatusFilter('all')}
-                        className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${statusFilter === 'all' ? 'bg-etalon-violet-600 text-white shadow-md' : 'text-gray-500 hover:bg-gray-50'}`}
-                    >
-                        {t.allStatuses}
-                    </button>
-                    {['pending', 'packing', 'delivery', 'completed'].map((status) => (
+                <div className="flex flex-col md:flex-row gap-4 mb-8">
+                    <div className="flex-1 bg-white p-2 rounded-2xl shadow-sm border border-gray-100 flex flex-wrap gap-2">
                         <button
-                            key={status}
-                            onClick={() => setStatusFilter(status)}
-                            className={`px-4 py-2 rounded-xl text-sm font-bold transition-all border ${statusFilter === status ? statusColors[status] + ' shadow-sm' : 'text-gray-500 hover:bg-gray-50 border-transparent'}`}
+                            onClick={() => setStatusFilter('all')}
+                            className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${statusFilter === 'all' ? 'bg-black text-white shadow-lg' : 'text-gray-400 hover:bg-gray-50'}`}
                         >
-                            {statusLabels[status]}
+                            {t.allStatuses}
                         </button>
-                    ))}
+                        {['pending', 'packing', 'delivery', 'completed'].map((status) => (
+                            <button
+                                key={status}
+                                onClick={() => setStatusFilter(status)}
+                                className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all border ${statusFilter === status ? statusColors[status] + ' shadow-sm' : 'text-gray-400 hover:bg-gray-50 border-transparent'}`}
+                            >
+                                {statusLabels[status]}
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="bg-white p-2 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-2">
+                        <div className="pl-4 pr-2">
+                            <Filter className="w-4 h-4 text-gray-400" />
+                        </div>
+                        <select
+                            value={storeFilter}
+                            onChange={(e) => setStoreFilter(e.target.value)}
+                            className="bg-transparent text-sm font-black uppercase tracking-widest py-2 pr-8 outline-none appearance-none"
+                        >
+                            <option value="all">{t.allBranches}</option>
+                            {stores.map(store => (
+                                <option key={store.id} value={store.id}>{store.name?.[lang] || store.name}</option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
 
                 {/* Orders List */}
                 {loading ? (
                     <div className="text-center py-12">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-etalon-violet-600 mx-auto"></div>
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#39FF14] mx-auto"></div>
                         <p className="text-gray-500 mt-4">{t.loadingOrders}</p>
                     </div>
                 ) : filteredOrders.length === 0 ? (
@@ -201,7 +248,7 @@ export default function ActiveOrdersPage() {
                                             <div className="flex items-center gap-2">
                                                 <h3 className="font-black text-gray-900 text-xl tracking-tight">{order.customer_name}</h3>
                                                 {isNewOrder(order.created_at) && (
-                                                    <span className="bg-amber-500 text-white px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider animate-pulse">
+                                                    <span className="bg-[#39FF14] text-black px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider animate-pulse shadow-[0_0_10px_rgba(57,255,20,0.5)]">
                                                         {t.newBadge}
                                                     </span>
                                                 )}
@@ -238,9 +285,9 @@ export default function ActiveOrdersPage() {
                                 <div className="grid md:grid-cols-2 gap-4 mb-6">
                                     <a
                                         href={`tel:${order.phone}`}
-                                        className="flex items-center gap-4 p-4 bg-gray-50 rounded-2xl border border-gray-100 group hover:border-etalon-violet-200 transition-all"
+                                        className="flex items-center gap-4 p-4 bg-gray-50 rounded-2xl border border-gray-100 group hover:border-[#39FF14]/30 transition-all"
                                     >
-                                        <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-gray-400 group-hover:text-etalon-violet-600 shadow-sm">
+                                        <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-gray-400 group-hover:text-[#39FF14] shadow-sm">
                                             <Phone className="w-5 h-5" />
                                         </div>
                                         <div>
@@ -261,7 +308,7 @@ export default function ActiveOrdersPage() {
                                         </div>
                                         <button
                                             onClick={() => handleCopyAddress(order.address)}
-                                            className="p-2 text-gray-400 hover:text-etalon-violet-600 hover:bg-white rounded-lg transition-all"
+                                            className="p-2 text-gray-400 hover:text-[#39FF14] hover:bg-white rounded-lg transition-all"
                                             title="Copy Address"
                                         >
                                             <Copy className="w-4 h-4" />
@@ -296,7 +343,7 @@ export default function ActiveOrdersPage() {
                                                 className="flex items-center justify-between p-3 border-b border-gray-100 last:border-0 hover:bg-white transition-colors"
                                             >
                                                 <div className="flex items-center gap-3">
-                                                    <span className="text-xs font-black text-etalon-violet-600 bg-etalon-violet-50 w-6 h-6 rounded flex items-center justify-center">
+                                                    <span className="text-[10px] font-black text-black bg-[#39FF14] w-6 h-6 rounded-lg flex items-center justify-center shadow-sm">
                                                         {item.quantity}
                                                     </span>
                                                     <p className="font-bold text-gray-700 text-sm">
@@ -315,16 +362,16 @@ export default function ActiveOrdersPage() {
                                 <div className="flex items-end justify-between pt-6 border-t-2 border-dotted border-gray-100">
                                     <div>
                                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">{t.total}</p>
-                                        <p className="text-3xl font-black text-etalon-violet-600 tracking-tighter">
-                                            {order.total_price.toFixed(0)} <span className="text-lg font-bold">AMD</span>
+                                        <p className="text-3xl font-black text-gray-900 tracking-tighter">
+                                            {order.total_price.toFixed(0)} <span className="text-lg font-bold opacity-40">AMD</span>
                                         </p>
                                     </div>
                                     {order.status !== 'completed' && (
                                         <button
                                             onClick={() => handleUpdateStatus(order.id, 'completed')}
-                                            className="bg-etalon-violet-600 hover:bg-etalon-violet-700 text-white font-black px-8 py-4 rounded-2xl transition-all flex items-center gap-2 shadow-lg shadow-etalon-violet-200 hover:-translate-y-1 active:translate-y-0"
+                                            className="bg-[#39FF14] hover:bg-[#32E612] text-black font-black px-8 py-4 rounded-2xl transition-all flex items-center gap-2 shadow-lg shadow-[#39FF14]/20 hover:-translate-y-1 active:scale-95 text-xs uppercase tracking-widest"
                                         >
-                                            <Check className="w-5 h-5" />
+                                            <Check className="w-5 h-5 stroke-[3px]" />
                                             {t.markAsCompleted}
                                         </button>
                                     )}

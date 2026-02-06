@@ -21,17 +21,17 @@ export default function SuccessPage() {
     return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
             <div className="bg-white w-full max-w-lg p-10 rounded-3xl shadow-xl text-center">
-                <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce-elastic">
-                    <Check className="w-12 h-12 text-green-600" strokeWidth={3} />
+                <div className="w-24 h-24 bg-[#39FF14]/10 rounded-full flex items-center justify-center mx-auto mb-8 animate-bounce-elastic border-2 border-[#39FF14]/20 shadow-lg shadow-[#39FF14]/10">
+                    <Check className="w-12 h-12 text-[#32E612]" strokeWidth={4} />
                 </div>
 
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">Order Received!</h1>
-                <p className="text-xl text-etalon-violet-600 font-semibold mb-6">
-                    {latestOrder ? `Order #${latestOrder.id}` : 'Order Processing...'}
+                <h1 className="text-3xl font-black text-gray-900 mb-2 uppercase tracking-tight">Order Received!</h1>
+                <p className="text-xl text-black font-black mb-6 uppercase tracking-widest text-sm">
+                    {latestOrder ? `Order #${latestOrder.id.slice(0, 8).toUpperCase()}` : 'Order Processing...'}
                 </p>
 
-                <p className="text-gray-600 mb-8 leading-relaxed">
-                    We are currently picking your fresh items at Etalon Market.
+                <p className="text-gray-500 mb-10 leading-relaxed font-medium">
+                    We are currently picking your fresh items at 88 Supermarket.
                     You will receive a confirmation email shortly.
                 </p>
 
@@ -41,7 +41,7 @@ export default function SuccessPage() {
 
                 <Link
                     href="/"
-                    className="block w-full bg-gray-900 text-white font-bold py-4 rounded-xl hover:bg-gray-800 transition-all"
+                    className="block w-full bg-black text-white font-black text-xs uppercase tracking-[0.2em] py-5 rounded-2xl hover:bg-[#39FF14] hover:text-black transition-all shadow-xl shadow-gray-200 active:scale-95"
                 >
                     Return Home
                 </Link>
