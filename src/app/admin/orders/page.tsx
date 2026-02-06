@@ -165,32 +165,33 @@ export default function ActiveOrdersPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#0F0F0F] text-white p-4 md:p-8">
+        <div className="min-h-screen bg-gray-50 text-gray-900 p-4 md:p-8">
             <div className="max-w-4xl mx-auto">
                 {/* Header */}
-                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8">
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-12">
                     <div>
-                        <h1 className="text-3xl font-black text-white uppercase tracking-tighter italic">
-                            88 <span className="text-[#39FF14]">Active</span> Orders
+                        <h1 className="text-4xl font-black text-gray-900 uppercase tracking-tighter italic">
+                            88 <span className="text-[#39FF14] drop-shadow-[0_0_10px_rgba(57,255,20,0.4)]">Active</span> Orders
                         </h1>
-                        <p className="text-gray-500 mt-1 uppercase text-[10px] font-black tracking-widest">
+                        <p className="text-gray-400 mt-2 uppercase text-[10px] font-black tracking-[0.4em]">
                             {orders.filter(o => o.status !== 'completed').length} {t.pending} shipments
                         </p>
                     </div>
                     <Link
                         href="/admin"
-                        className="px-6 py-3 bg-[#1A1A1A] border border-gray-800 text-white rounded-2xl hover:border-[#39FF14] transition-all shadow-sm font-black text-[10px] uppercase tracking-widest flex items-center gap-2"
+                        className="px-8 py-4 bg-black text-[#39FF14] rounded-2xl hover:bg-[#39FF14] hover:text-black transition-all shadow-2xl font-black text-[10px] uppercase tracking-[0.2em] flex items-center gap-3 border-2 border-black"
                     >
                         {t.backToAdmin}
+                        <div className="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></div>
                     </Link>
                 </div>
 
                 {/* Filter Bar */}
-                <div className="flex flex-col md:flex-row gap-4 mb-8">
-                    <div className="flex-1 bg-[#1A1A1A] p-2 rounded-2xl shadow-xl border border-gray-800 flex flex-wrap gap-2">
+                <div className="flex flex-col md:flex-row gap-6 mb-12">
+                    <div className="flex-1 bg-white p-3 rounded-[1.5rem] shadow-xl border-2 border-gray-50 flex flex-wrap gap-2">
                         <button
                             onClick={() => setStatusFilter('all')}
-                            className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${statusFilter === 'all' ? 'bg-[#39FF14] text-black shadow-[0_0_15px_rgba(57,255,20,0.4)]' : 'text-gray-500 hover:text-white'}`}
+                            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all ${statusFilter === 'all' ? 'bg-[#39FF14] text-black shadow-[0_10px_20px_rgba(57,255,20,0.3)]' : 'text-gray-400 hover:text-gray-900 hover:bg-gray-50'}`}
                         >
                             {t.allStatuses}
                         </button>
@@ -198,91 +199,93 @@ export default function ActiveOrdersPage() {
                             <button
                                 key={status}
                                 onClick={() => setStatusFilter(status)}
-                                className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${statusFilter === status ? 'border-[#39FF14] text-[#39FF14] shadow-[0_0_10px_rgba(57,255,20,0.2)]' : 'border-transparent text-gray-500 hover:text-white'}`}
+                                className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all border-2 ${statusFilter === status ? 'border-[#39FF14] bg-[#39FF14]/5 text-[#39FF14] shadow-[0_5px_15px_rgba(57,255,20,0.2)]' : 'border-transparent text-gray-400 hover:text-gray-900 hover:bg-gray-50'}`}
                             >
                                 {statusLabels[status]}
                             </button>
                         ))}
                     </div>
 
-                    <div className="bg-[#1A1A1A] p-2 rounded-2xl shadow-xl border border-gray-800 flex items-center gap-2">
-                        <div className="pl-4 pr-2">
-                            <Filter className="w-4 h-4 text-[#39FF14]" />
+                    <div className="bg-white p-3 rounded-[1.5rem] shadow-xl border-2 border-[#39FF14] flex items-center gap-3 group relative min-w-[200px]">
+                        <div className="pl-3">
+                            <Filter className="w-5 h-5 text-[#39FF14]" />
                         </div>
                         <select
                             value={activeStoreId || ''}
                             disabled={isManager}
-                            className="bg-transparent text-[10px] font-black text-white uppercase tracking-widest py-2 pr-8 outline-none appearance-none cursor-pointer"
+                            className="bg-transparent text-[10px] font-black text-gray-900 uppercase tracking-[0.2em] py-2 pr-10 outline-none appearance-none cursor-pointer w-full"
                         >
-                            <option value="" className="bg-[#1A1A1A]">{t.allBranches}</option>
+                            <option value="" className="bg-white">{t.allBranches}</option>
                             {stores.map(store => (
-                                <option key={store.id} value={store.id} className="bg-[#1A1A1A]">{store.name}</option>
+                                <option key={store.id} value={store.id} className="bg-white">{store.name}</option>
                             ))}
                         </select>
+                        <ChevronDown className="w-4 h-4 text-[#39FF14] absolute right-6 pointer-events-none" />
                     </div>
                 </div>
 
                 {/* Orders List */}
                 {loading ? (
-                    <div className="text-center py-12">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#39FF14] mx-auto"></div>
-                        <p className="text-gray-500 mt-4">{t.loadingOrders}</p>
+                    <div className="text-center py-20">
+                        <div className="animate-spin rounded-full h-16 w-16 border-4 border-[#39FF14] border-t-transparent mx-auto mb-6 shadow-[0_0_20px_rgba(57,255,20,0.2)]"></div>
+                        <p className="text-gray-400 font-black text-[10px] uppercase tracking-[0.4em] animate-pulse">{t.loadingOrders}</p>
                     </div>
                 ) : filteredOrders.length === 0 ? (
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-16 text-center">
-                        <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6 text-5xl">
+                    <div className="bg-white rounded-[3rem] shadow-2xl border-2 border-gray-50 p-24 text-center relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-[#39FF14]/5 blur-[100px] -mr-32 -mt-32 rounded-full"></div>
+                        <div className="w-24 h-24 bg-gray-50 rounded-[2rem] flex items-center justify-center mx-auto mb-8 text-5xl shadow-inner border-2 border-white animate-bounce-elastic">
                             {statusFilter === 'all' ? '📦' : '✨'}
                         </div>
-                        <h2 className="text-2xl font-black text-gray-900 mb-2">{t.noActiveOrders}</h2>
-                        <p className="text-gray-500 max-w-sm mx-auto">{t.allOrdersCompleted}</p>
+                        <h2 className="text-3xl font-black text-gray-900 mb-4 uppercase tracking-tighter italic">{t.noActiveOrders}</h2>
+                        <p className="text-gray-400 max-w-sm mx-auto font-medium italic">{t.allOrdersCompleted}</p>
                     </div>
                 ) : (
-                    <div className="space-y-6">
+                    <div className="space-y-10">
                         {filteredOrders.map((order) => (
                             <div
                                 key={order.id}
-                                className="bg-[#1A1A1A] rounded-3xl shadow-2xl border border-gray-800/50 p-8 hover:border-[#39FF14]/30 transition-all group overflow-hidden relative"
+                                className="bg-white rounded-[3rem] shadow-2xl border-2 border-gray-50 p-10 hover:border-[#39FF14]/40 transition-all group overflow-hidden relative"
                             >
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-[#39FF14]/5 blur-[60px] -mr-16 -mt-16 rounded-full group-hover:bg-[#39FF14]/10 transition-all"></div>
+                                <div className="absolute top-0 right-0 w-48 h-48 bg-[#39FF14]/5 blur-[80px] -mr-24 -mt-24 rounded-full group-hover:bg-[#39FF14]/10 transition-all"></div>
                                 {/* Order Header */}
-                                <div className="flex items-start justify-between mb-8">
-                                    <div className="flex items-center gap-5">
-                                        <div className="w-16 h-16 rounded-2xl bg-black border border-gray-800 flex items-center justify-center shadow-inner">
-                                            <Package className="w-8 h-8 text-[#39FF14]" />
+                                <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-10 gap-6">
+                                    <div className="flex items-center gap-6">
+                                        <div className="w-20 h-20 rounded-[1.5rem] bg-gray-50 border-2 border-gray-100 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform duration-500">
+                                            <Package className="w-10 h-10 text-[#39FF14]" />
                                         </div>
                                         <div>
-                                            <div className="flex items-center gap-3">
-                                                <h3 className="font-black text-white text-2xl tracking-tight uppercase italic">{order.customer_name}</h3>
+                                            <div className="flex items-center gap-4">
+                                                <h3 className="font-black text-gray-900 text-3xl tracking-tighter uppercase italic">{order.customer_name}</h3>
                                                 {isNewOrder(order.created_at) && (
-                                                    <span className="bg-[#39FF14] text-black px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider animate-pulse shadow-[0_0_15px_rgba(57,255,20,0.6)]">
+                                                    <span className="bg-black text-[#39FF14] px-3 py-1 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] shadow-[0_0_15px_rgba(0,0,0,0.2)] animate-pulse">
                                                         NEW
                                                     </span>
                                                 )}
                                             </div>
-                                            <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mt-1">ID: #{order.id.slice(0, 8).toUpperCase()}</p>
+                                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.4em] mt-1.5">Shipment ID: {order.id.slice(0, 8).toUpperCase()}</p>
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center gap-2">
-                                        <div className="relative group">
+                                    <div className="flex items-center gap-4">
+                                        <div className="relative group/status min-w-[160px]">
                                             <select
                                                 value={order.status}
                                                 onChange={(e) => handleUpdateStatus(order.id, e.target.value)}
-                                                className={`appearance-none font-bold text-xs uppercase tracking-widest px-4 py-2 rounded-xl border-2 transition-all cursor-pointer outline-none ${getStatusColor(order.status)}`}
+                                                className={`appearance-none font-black text-[10px] uppercase tracking-[0.2em] px-6 py-3.5 rounded-2xl border-2 transition-all cursor-pointer outline-none w-full ${getStatusColor(order.status)} shadow-sm hover:translate-y-[-2px] active:translate-y-0`}
                                             >
-                                                <option value="pending">{t.pendingLabel}</option>
-                                                <option value="packing">{t.packingLabel}</option>
-                                                <option value="delivery">{t.deliveryLabel}</option>
-                                                <option value="completed">{t.completedLabel}</option>
+                                                <option value="pending" className="bg-white">{t.pendingLabel}</option>
+                                                <option value="packing" className="bg-white">{t.packingLabel}</option>
+                                                <option value="delivery" className="bg-white">{t.deliveryLabel}</option>
+                                                <option value="completed" className="bg-white">{t.completedLabel}</option>
                                             </select>
-                                            <ChevronDown className={`w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none ${getStatusColor(order.status).split(' ')[1]}`} />
+                                            <ChevronDown className="w-4 h-4 absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-current" />
                                         </div>
                                         <button
                                             onClick={() => handleDeleteOrder(order.id)}
-                                            className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                                            className="p-3.5 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all border-2 border-gray-50 bg-white shadow-sm"
                                             title="Delete Order"
                                         >
-                                            <Trash2 className="w-5 h-5" />
+                                            <Trash2 className="w-6 h-6" />
                                         </button>
                                     </div>
                                 </div>
@@ -365,19 +368,19 @@ export default function ActiveOrdersPage() {
                                 </div>
 
                                 {/* Order Footer */}
-                                <div className="flex items-end justify-between pt-6 border-t-2 border-dotted border-gray-100">
+                                <div className="flex flex-col md:flex-row items-end md:items-center justify-between pt-10 border-t-2 border-dashed border-gray-100 gap-6">
                                     <div>
-                                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">{t.total}</p>
-                                        <p className="text-3xl font-black text-gray-900 tracking-tighter">
-                                            {order.total_price.toFixed(0)} <span className="text-lg font-bold opacity-40">AMD</span>
+                                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.4em] mb-2">{t.total}</p>
+                                        <p className="text-4xl font-black text-gray-900 tracking-tighter italic">
+                                            {order.total_price.toLocaleString()} <span className="text-[10px] font-black text-[#39FF14] uppercase ml-1 drop-shadow-[0_0_5px_rgba(57,255,20,0.3)]">AMD FULL TOTAL</span>
                                         </p>
                                     </div>
                                     {order.status !== 'completed' && (
                                         <button
                                             onClick={() => handleUpdateStatus(order.id, 'completed')}
-                                            className="bg-[#39FF14] hover:bg-[#32E612] text-black font-black px-8 py-4 rounded-2xl transition-all flex items-center gap-2 shadow-lg shadow-[#39FF14]/20 hover:-translate-y-1 active:scale-95 text-xs uppercase tracking-widest"
+                                            className="bg-black text-[#39FF14] font-black px-10 py-5 rounded-[1.5rem] transition-all flex items-center gap-3 shadow-2xl hover:bg-[#39FF14] hover:text-black hover:-translate-y-1 active:scale-95 text-[10px] uppercase tracking-[0.4em] border-2 border-black w-full md:w-auto justify-center"
                                         >
-                                            <Check className="w-5 h-5 stroke-[3px]" />
+                                            <Check className="w-6 h-6 stroke-[4px]" />
                                             {t.markAsCompleted}
                                         </button>
                                     )}

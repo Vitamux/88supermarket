@@ -15,7 +15,7 @@ export const useLanguageStore = create<LanguageStore>()(
             setLang: (lang) => set({ lang }),
         }),
         {
-            name: 'etalon-language-storage',
+            name: 'eighty-eight-language-storage',
         }
     )
 );

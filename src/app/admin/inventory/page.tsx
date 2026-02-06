@@ -118,54 +118,54 @@ export default function InventoryPage() {
     });
 
     return (
-        <div className="min-h-screen bg-[#0F0F0F] text-white p-4 md:p-8">
+        <div className="min-h-screen bg-gray-50 text-gray-900 p-4 md:p-8">
             <div className="max-w-6xl mx-auto">
                 {/* Header */}
-                <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center justify-between mb-12">
                     <div>
-                        <h1 className="text-4xl font-black text-white tracking-tighter uppercase italic">88 <span className="text-[#39FF14]">Stock</span></h1>
-                        <p className="text-gray-500 font-black text-[10px] uppercase tracking-[0.2em] mt-1">{filteredProducts.length} active units</p>
+                        <h1 className="text-4xl font-black text-gray-900 tracking-tighter uppercase italic">88 <span className="text-[#39FF14] drop-shadow-[0_0_10px_rgba(57,255,20,0.4)]">Stock</span></h1>
+                        <p className="text-gray-400 font-black text-[10px] uppercase tracking-[0.4em] mt-2">{filteredProducts.length} active units across stores</p>
                     </div>
                     <Link
                         href="/admin"
-                        className="px-6 py-3 bg-[#1A1A1A] text-gray-500 border border-gray-800 rounded-xl hover:text-[#39FF14] hover:border-[#39FF14] transition-all font-black text-[10px] uppercase tracking-widest shadow-lg active:scale-95"
+                        className="px-8 py-4 bg-black text-[#39FF14] rounded-2xl transition-all font-black text-[10px] uppercase tracking-[0.2em] shadow-2xl active:scale-95 border-2 border-black hover:bg-[#39FF14] hover:text-black"
                     >
                         {t.backToAdmin}
                     </Link>
                 </div>
 
                 {/* Search */}
-                <div className="mb-8 relative group">
-                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5 group-focus-within:text-[#39FF14] transition-colors" />
+                <div className="mb-12 relative group">
+                    <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-gray-400 w-6 h-6 group-focus-within:text-[#39FF14] transition-all" />
                     <input
                         type="text"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder={t.searchProducts}
-                        className="w-full pl-12 pr-4 py-4 bg-[#1A1A1A] border border-gray-800 rounded-2xl focus:ring-2 focus:ring-[#39FF14]/20 focus:border-[#39FF14] outline-none shadow-sm transition-all font-black text-white placeholder-gray-700 uppercase tracking-widest text-[10px]"
+                        className="w-full pl-16 pr-8 py-6 bg-white border-2 border-gray-100 rounded-[2rem] focus:ring-4 focus:ring-[#39FF14]/10 focus:border-[#39FF14] outline-none shadow-xl transition-all font-black text-gray-900 placeholder-gray-300 uppercase tracking-widest text-[11px]"
                     />
                 </div>
 
                 {/* Table */}
                 {loading ? (
-                    <div className="text-center py-12">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#39FF14] mx-auto transition-all"></div>
-                        <p className="text-gray-500 mt-4 font-black text-xs uppercase tracking-widest">{t.loadingInventory}</p>
+                    <div className="text-center py-20">
+                        <div className="animate-spin rounded-full h-16 w-16 border-4 border-[#39FF14] border-t-transparent mx-auto mb-6 shadow-[0_0_20px_rgba(57,255,20,0.2)]"></div>
+                        <p className="text-gray-400 font-black text-[10px] uppercase tracking-[0.4em] animate-pulse">{t.loadingInventory}</p>
                     </div>
                 ) : (
-                    <div className="bg-[#1A1A1A] rounded-[2.5rem] shadow-2xl border border-gray-800 overflow-hidden">
+                    <div className="bg-white rounded-[3.5rem] shadow-2xl border-2 border-gray-50 overflow-hidden">
                         <div className="overflow-x-auto">
                             <table className="w-full">
-                                <thead className="bg-black border-b border-gray-800">
+                                <thead className="bg-gray-50/50 border-b-2 border-gray-50">
                                     <tr>
-                                        <th className="px-6 py-5 text-left text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">Product</th>
-                                        <th className="px-6 py-5 text-left text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">{t.currentStock}</th>
-                                        <th className="px-6 py-5 text-left text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">Status</th>
-                                        <th className="px-6 py-5 text-right text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">{t.priceLabel}</th>
-                                        <th className="px-6 py-5 text-center text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">Actions</th>
+                                        <th className="px-8 py-6 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.4em]">Product</th>
+                                        <th className="px-8 py-6 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.4em]">{t.currentStock}</th>
+                                        <th className="px-8 py-6 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.4em]">Status</th>
+                                        <th className="px-8 py-6 text-right text-[10px] font-black text-gray-400 uppercase tracking-[0.4em]">{t.priceLabel}</th>
+                                        <th className="px-8 py-6 text-center text-[10px] font-black text-gray-400 uppercase tracking-[0.4em]">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-800">
+                                <tbody className="divide-y-2 divide-gray-50">
                                     {filteredProducts.length === 0 ? (
                                         <tr>
                                             <td colSpan={5} className="px-4 py-8 text-center text-gray-500">
@@ -179,10 +179,10 @@ export default function InventoryPage() {
                                             const isEditing = editingId === product.id;
 
                                             return (
-                                                <tr key={product.id} className="hover:bg-black/40 transition-colors group">
-                                                    <td className="px-6 py-6">
-                                                        <div className="flex items-center gap-4">
-                                                            <div className="w-16 h-16 bg-black rounded-2xl overflow-hidden border border-gray-800 group-hover:scale-105 transition-transform flex-shrink-0">
+                                                <tr key={product.id} className="hover:bg-gray-50/50 transition-colors group">
+                                                    <td className="px-8 py-8">
+                                                        <div className="flex items-center gap-6">
+                                                            <div className="w-20 h-20 bg-gray-50 rounded-[1.5rem] overflow-hidden border-2 border-gray-100 group-hover:scale-105 transition-transform flex-shrink-0 shadow-sm">
                                                                 {/* eslint-disable-next-line @next/next/no-img-element */}
                                                                 <img
                                                                     src={imageUrl}
@@ -191,82 +191,82 @@ export default function InventoryPage() {
                                                                 />
                                                             </div>
                                                             <div>
-                                                                <div className="font-black text-white text-sm uppercase italic tracking-tight">
+                                                                <div className="font-black text-gray-900 text-lg uppercase italic tracking-tighter">
                                                                     {product.display_names?.[lang] || product.name}
                                                                 </div>
-                                                                <div className="text-[10px] font-black text-gray-500 uppercase tracking-widest mt-1">
-                                                                    ID: {product.id.slice(0, 8)}...
+                                                                <div className="text-[10px] font-black text-gray-400 uppercase tracking-[0.4em] mt-1.5 opacity-50">
+                                                                    REF: {product.id.toString().slice(0, 8).toUpperCase()}
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td className="px-6 py-6">
+                                                    <td className="px-8 py-8">
                                                         {isEditing ? (
                                                             <input
                                                                 type="number"
                                                                 value={editStock}
                                                                 onChange={(e) => setEditStock(parseInt(e.target.value) || 0)}
-                                                                className="w-24 bg-black border border-gray-800 rounded-xl px-4 py-2 focus:ring-2 focus:ring-[#39FF14]/20 focus:border-[#39FF14] outline-none text-lg font-black text-white"
+                                                                className="w-28 bg-gray-50 border-2 border-gray-100 rounded-xl px-5 py-3 focus:ring-4 focus:ring-[#39FF14]/10 focus:border-[#39FF14] outline-none text-xl font-black text-gray-900"
                                                                 min="0"
                                                             />
                                                         ) : (
-                                                            <span className="text-white font-black text-lg">
+                                                            <span className="text-gray-900 font-black text-2xl tracking-tighter italic">
                                                                 {product.stock_quantity || 0}
                                                             </span>
                                                         )}
                                                     </td>
-                                                    <td className="px-6 py-6">
-                                                        <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border ${status.color}`}>
+                                                    <td className="px-8 py-8">
+                                                        <span className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] border-2 ${status.color.replace('/10', '/5')} shadow-sm`}>
                                                             <span>{status.icon}</span>
                                                             {status.label}
                                                         </span>
                                                     </td>
-                                                    <td className="px-6 py-6 text-right">
+                                                    <td className="px-8 py-8 text-right">
                                                         {isEditing ? (
-                                                            <div className="flex items-center justify-end gap-2">
+                                                            <div className="flex items-center justify-end gap-3">
                                                                 <input
                                                                     type="number"
                                                                     value={editPrice}
                                                                     onChange={(e) => setEditPrice(parseFloat(e.target.value) || 0)}
-                                                                    className="w-32 bg-black border border-gray-800 rounded-xl px-4 py-2 focus:ring-2 focus:ring-[#39FF14]/20 focus:border-[#39FF14] outline-none text-lg font-black text-white text-right"
+                                                                    className="w-36 bg-gray-50 border-2 border-gray-100 rounded-xl px-5 py-3 focus:ring-4 focus:ring-[#39FF14]/10 focus:border-[#39FF14] outline-none text-xl font-black text-gray-900 text-right"
                                                                     min="0"
-                                                                    step="0.01"
+                                                                    step="100"
                                                                 />
-                                                                <span className="text-gray-500 font-black text-[10px] uppercase tracking-widest">AMD</span>
+                                                                <span className="text-[#39FF14] font-black text-[10px] uppercase tracking-widest drop-shadow-[0_0_5px_rgba(57,255,20,0.3)]">AMD</span>
                                                             </div>
                                                         ) : (
                                                             <div className="flex flex-col items-end">
-                                                                <span className="text-white font-black text-lg">{product.price.toLocaleString()}</span>
-                                                                <span className="text-[#39FF14] text-[10px] font-black uppercase tracking-widest">AMD</span>
+                                                                <span className="text-gray-900 font-black text-2xl tracking-tighter italic">{product.price.toLocaleString()}</span>
+                                                                <span className="text-[#39FF14] text-[10px] font-black uppercase tracking-widest drop-shadow-[0_0_5px_rgba(57,255,20,0.3)]">AMD</span>
                                                             </div>
                                                         )}
                                                     </td>
-                                                    <td className="px-6 py-6 text-center">
-                                                        <div className="flex items-center justify-center gap-2">
+                                                    <td className="px-8 py-8 text-center">
+                                                        <div className="flex items-center justify-center gap-3">
                                                             {isEditing ? (
                                                                 <>
                                                                     <button
                                                                         onClick={() => handleUpdate(product.id)}
-                                                                        className="p-3 bg-[#39FF14]/10 text-[#39FF14] rounded-xl hover:bg-[#39FF14] hover:text-black transition-all border border-[#39FF14]/20"
+                                                                        className="p-4 bg-black text-[#39FF14] rounded-2xl hover:bg-[#39FF14] hover:text-black transition-all border-2 border-black shadow-lg"
                                                                         title={t.save}
                                                                     >
-                                                                        <Check className="w-5 h-5" />
+                                                                        <Check className="w-6 h-6 stroke-[3px]" />
                                                                     </button>
                                                                     <button
                                                                         onClick={handleCancel}
-                                                                        className="p-3 bg-red-500/10 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all border border-red-500/20"
+                                                                        className="p-4 bg-white text-red-500 rounded-2xl hover:bg-red-500 hover:text-white transition-all border-2 border-gray-100 shadow-lg"
                                                                         title={t.cancel}
                                                                     >
-                                                                        <X className="w-5 h-5" />
+                                                                        <X className="w-6 h-6 stroke-[3px]" />
                                                                     </button>
                                                                 </>
                                                             ) : (
                                                                 <button
                                                                     onClick={() => handleEdit(product)}
-                                                                    className="p-3 bg-[#39FF14]/10 text-gray-400 rounded-xl hover:bg-[#39FF14] hover:text-black transition-all border border-[#39FF14]/20"
+                                                                    className="p-4 bg-white text-gray-300 rounded-2xl hover:text-[#39FF14] hover:border-[#39FF14] transition-all border-2 border-gray-100 shadow-sm"
                                                                     title={t.edit}
                                                                 >
-                                                                    <Edit2 className="w-5 h-5" />
+                                                                    <Edit2 className="w-6 h-6" />
                                                                 </button>
                                                             )}
                                                         </div>
