@@ -44,9 +44,9 @@ export default function ProductCard({ product, onOpenModal, onAddToCart }: Produ
     };
 
     return (
-        <div className="bg-white rounded-2xl p-4 border border-gray-100 hover:border-[#39FF14]/50 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 group">
+        <div className="bg-white rounded-[2rem] p-5 border-2 border-gray-50 hover:border-[#39FF14]/30 hover:shadow-[0_20px_50px_rgba(57,255,20,0.1)] hover:-translate-y-2 transition-all duration-500 group relative overflow-hidden">
             <div
-                className="aspect-square bg-gray-50 rounded-xl mb-4 relative overflow-hidden cursor-pointer border border-gray-100"
+                className="aspect-square bg-gray-50 rounded-2xl mb-6 relative overflow-hidden cursor-pointer border border-gray-100"
                 onClick={() => onOpenModal(product)}
             >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -58,48 +58,57 @@ export default function ProductCard({ product, onOpenModal, onAddToCart }: Produ
 
                 {/* Out of Stock Badge */}
                 {isOutOfStock && (
-                    <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center rounded-xl">
-                        <span className="bg-[#FF3131] text-white px-5 py-2.5 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-[0_0_20px_rgba(255,49,49,0.4)] border border-red-400/30">
+                    <div className="absolute inset-0 bg-white/60 backdrop-blur-md flex items-center justify-center rounded-xl">
+                        <span className="bg-[#FF3131] text-white px-6 py-2.5 rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] shadow-[0_0_20px_rgba(255,49,49,0.4)] border border-red-400/30">
                             {t.outOfStockBadge}
                         </span>
                     </div>
                 )}
 
                 {product.isLocal && (
-                    <div className="absolute top-2 left-2 bg-[#39FF14] px-2 py-1 rounded-lg flex items-center gap-1 shadow-sm">
-                        <svg className="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
-                        <span className="text-[10px] font-black text-black uppercase tracking-wider">Local</span>
+                    <div className="absolute top-3 left-3 bg-[#39FF14] text-black px-3 py-1.5 rounded-full flex items-center gap-2 shadow-[0_0_15px_rgba(57,255,20,0.3)]">
+                        <div className="w-1.5 h-1.5 bg-black rounded-full animate-pulse"></div>
+                        <span className="text-[10px] font-black uppercase tracking-widest">Local</span>
                     </div>
                 )}
             </div>
 
-            <div onClick={() => onOpenModal(product)} className="cursor-pointer">
-                <div className="flex items-center gap-2 mb-1">
-                    <span className="text-[10px] font-black text-[#39FF14] uppercase tracking-widest opacity-80 group-hover:opacity-100 transition-opacity">
-                        {(product as any).category || 'Premium'}
+            <div onClick={() => onOpenModal(product)} className="cursor-pointer mb-6 text-center">
+                <div className="flex flex-col items-center gap-1 mb-2">
+                    <span className="text-[10px] font-black text-[#39FF14] uppercase tracking-[0.3em] drop-shadow-[0_0_8px_rgba(57,255,20,0.4)]">
+                        {(product as any).category || 'Premium Selection'}
                     </span>
+                    <div className="h-0.5 w-8 bg-[#39FF14]/30 rounded-full group-hover:w-12 transition-all duration-500"></div>
                 </div>
-                <h3 className="font-bold text-gray-900 truncate text-lg">{(product as any).display_names?.[lang] || product.name}</h3>
-                <p className="text-gray-500 text-xs truncate mb-4">{product.description || '88 Supermarket Selection'}</p>
+                <h3 className="font-black text-gray-900 truncate text-xl uppercase tracking-tighter italic">{(product as any).display_names?.[lang] || product.name}</h3>
+                <p className="text-gray-400 text-xs truncate mt-1 font-medium italic opacity-60">{product.description || '88 Supermarket Quality'}</p>
             </div>
 
-            <div className="flex items-center justify-between mt-auto">
+            <div className="flex items-center justify-between gap-4">
                 <div className="flex flex-col">
-                    <span className="text-xl font-black text-gray-900 tracking-tighter">
-                        {product.price.toFixed(0)} <span className="text-xs font-bold opacity-40 uppercase">AMD</span>
+                    <span className="text-2xl font-black text-gray-900 tracking-tighter">
+                        {product.price.toLocaleString()} <span className="text-[10px] font-black text-[#39FF14] uppercase tracking-widest block -mt-1 drop-shadow-[0_0_5px_rgba(57,255,20,0.3)]">AMD</span>
                     </span>
                 </div>
                 <button
                     onClick={handleAdd}
                     disabled={isOutOfStock}
-                    className={`p-3 rounded-xl transition-all shadow-lg active:scale-90 ${isOutOfStock
-                        ? 'bg-gray-50 text-red-500 cursor-not-allowed border-2 border-red-500/20 shadow-none scale-95 opacity-80'
+                    className={`h-14 w-14 rounded-2xl transition-all shadow-xl active:scale-90 flex items-center justify-center border-2 ${isOutOfStock
+                        ? 'bg-gray-50 text-red-500 border-red-500/10 grayscale opacity-40 shadow-none'
                         : isAdded
-                            ? 'bg-black text-white shadow-xl'
-                            : 'bg-[#39FF14] hover:bg-[#32E612] text-black shadow-[0_0_15px_rgba(57,255,20,0.2)] hover:shadow-[0_0_25px_rgba(57,255,20,0.3)]'
+                            ? 'bg-black text-[#39FF14] border-black scale-110 shadow-[0_0_20px_rgba(0,0,0,0.2)]'
+                            : 'bg-[#39FF14] hover:bg-black text-black hover:text-[#39FF14] border-[#39FF14] shadow-[0_10px_20px_rgba(57,255,20,0.2)] hover:shadow-[0_15px_30px_rgba(57,255,20,0.3)]'
                         }`}
                 >
-                    {isOutOfStock ? <span className="text-[10px] font-black uppercase tracking-widest px-1 drop-shadow-sm font-black">SOLD</span> : <Plus className="w-6 h-6 stroke-[3px]" />}
+                    {isOutOfStock ? (
+                        <span className="text-[8px] font-black uppercase leading-none text-center">No<br />Stock</span>
+                    ) : isAdded ? (
+                        <div className="animate-bounce-elastic">
+                            <Plus className="w-7 h-7 stroke-[4px]" />
+                        </div>
+                    ) : (
+                        <Plus className="w-7 h-7 stroke-[4px]" />
+                    )}
                 </button>
             </div>
         </div>

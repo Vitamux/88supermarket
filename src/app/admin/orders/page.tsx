@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useLanguageStore } from '../../../store/useLanguageStore';
 import { translations } from '../../../lib/translations';
 import { supabase } from '../../../lib/supabase';
+import { useAdminStore } from '../../../store/useAdminStore';
 import { Phone, MapPin, Package, Check, Copy, ChevronDown, Filter, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 // Removed unused toast import
@@ -164,17 +165,21 @@ export default function ActiveOrdersPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 p-4 md:p-8">
+        <div className="min-h-screen bg-[#0F0F0F] text-white p-4 md:p-8">
             <div className="max-w-4xl mx-auto">
                 {/* Header */}
                 <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900">{t.activeOrders}</h1>
-                        <p className="text-gray-500 mt-1">{orders.filter(o => o.status !== 'completed').length} {t.pending} orders</p>
+                        <h1 className="text-3xl font-black text-white uppercase tracking-tighter italic">
+                            88 <span className="text-[#39FF14]">Active</span> Orders
+                        </h1>
+                        <p className="text-gray-500 mt-1 uppercase text-[10px] font-black tracking-widest">
+                            {orders.filter(o => o.status !== 'completed').length} {t.pending} shipments
+                        </p>
                     </div>
                     <Link
                         href="/admin"
-                        className="px-5 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 transition-all shadow-sm font-medium flex items-center gap-2"
+                        className="px-6 py-3 bg-[#1A1A1A] border border-gray-800 text-white rounded-2xl hover:border-[#39FF14] transition-all shadow-sm font-black text-[10px] uppercase tracking-widest flex items-center gap-2"
                     >
                         {t.backToAdmin}
                     </Link>
@@ -182,10 +187,10 @@ export default function ActiveOrdersPage() {
 
                 {/* Filter Bar */}
                 <div className="flex flex-col md:flex-row gap-4 mb-8">
-                    <div className="flex-1 bg-white p-2 rounded-2xl shadow-sm border border-gray-100 flex flex-wrap gap-2">
+                    <div className="flex-1 bg-[#1A1A1A] p-2 rounded-2xl shadow-xl border border-gray-800 flex flex-wrap gap-2">
                         <button
                             onClick={() => setStatusFilter('all')}
-                            className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${statusFilter === 'all' ? 'bg-black text-white shadow-lg' : 'text-gray-400 hover:bg-gray-50'}`}
+                            className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${statusFilter === 'all' ? 'bg-[#39FF14] text-black shadow-[0_0_15px_rgba(57,255,20,0.4)]' : 'text-gray-500 hover:text-white'}`}
                         >
                             {t.allStatuses}
                         </button>
@@ -193,25 +198,25 @@ export default function ActiveOrdersPage() {
                             <button
                                 key={status}
                                 onClick={() => setStatusFilter(status)}
-                                className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all border ${statusFilter === status ? statusColors[status] + ' shadow-sm' : 'text-gray-400 hover:bg-gray-50 border-transparent'}`}
+                                className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${statusFilter === status ? 'border-[#39FF14] text-[#39FF14] shadow-[0_0_10px_rgba(57,255,20,0.2)]' : 'border-transparent text-gray-500 hover:text-white'}`}
                             >
                                 {statusLabels[status]}
                             </button>
                         ))}
                     </div>
 
-                    <div className="bg-white p-2 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-2">
+                    <div className="bg-[#1A1A1A] p-2 rounded-2xl shadow-xl border border-gray-800 flex items-center gap-2">
                         <div className="pl-4 pr-2">
-                            <Filter className="w-4 h-4 text-gray-400" />
+                            <Filter className="w-4 h-4 text-[#39FF14]" />
                         </div>
                         <select
-                            value={storeFilter}
-                            onChange={(e) => setStoreFilter(e.target.value)}
-                            className="bg-transparent text-sm font-black uppercase tracking-widest py-2 pr-8 outline-none appearance-none"
+                            value={activeStoreId || ''}
+                            disabled={isManager}
+                            className="bg-transparent text-[10px] font-black text-white uppercase tracking-widest py-2 pr-8 outline-none appearance-none cursor-pointer"
                         >
-                            <option value="all">{t.allBranches}</option>
+                            <option value="" className="bg-[#1A1A1A]">{t.allBranches}</option>
                             {stores.map(store => (
-                                <option key={store.id} value={store.id}>{store.name?.[lang] || store.name}</option>
+                                <option key={store.id} value={store.id} className="bg-[#1A1A1A]">{store.name}</option>
                             ))}
                         </select>
                     </div>
@@ -236,24 +241,25 @@ export default function ActiveOrdersPage() {
                         {filteredOrders.map((order) => (
                             <div
                                 key={order.id}
-                                className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
+                                className="bg-[#1A1A1A] rounded-3xl shadow-2xl border border-gray-800/50 p-8 hover:border-[#39FF14]/30 transition-all group overflow-hidden relative"
                             >
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-[#39FF14]/5 blur-[60px] -mr-16 -mt-16 rounded-full group-hover:bg-[#39FF14]/10 transition-all"></div>
                                 {/* Order Header */}
-                                <div className="flex items-start justify-between mb-6">
-                                    <div className="flex items-center gap-4">
-                                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-inner ${getStatusColor(order.status).split(' ')[0]}`}>
-                                            <Package className={`w-7 h-7 ${getStatusColor(order.status).split(' ')[1]}`} />
+                                <div className="flex items-start justify-between mb-8">
+                                    <div className="flex items-center gap-5">
+                                        <div className="w-16 h-16 rounded-2xl bg-black border border-gray-800 flex items-center justify-center shadow-inner">
+                                            <Package className="w-8 h-8 text-[#39FF14]" />
                                         </div>
                                         <div>
-                                            <div className="flex items-center gap-2">
-                                                <h3 className="font-black text-gray-900 text-xl tracking-tight">{order.customer_name}</h3>
+                                            <div className="flex items-center gap-3">
+                                                <h3 className="font-black text-white text-2xl tracking-tight uppercase italic">{order.customer_name}</h3>
                                                 {isNewOrder(order.created_at) && (
-                                                    <span className="bg-[#39FF14] text-black px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider animate-pulse shadow-[0_0_10px_rgba(57,255,20,0.5)]">
-                                                        {t.newBadge}
+                                                    <span className="bg-[#39FF14] text-black px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider animate-pulse shadow-[0_0_15px_rgba(57,255,20,0.6)]">
+                                                        NEW
                                                     </span>
                                                 )}
                                             </div>
-                                            <p className="text-sm font-mono font-bold text-gray-400">#{order.id.slice(0, 8).toUpperCase()}</p>
+                                            <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mt-1">ID: #{order.id.slice(0, 8).toUpperCase()}</p>
                                         </div>
                                     </div>
 

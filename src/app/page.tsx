@@ -68,43 +68,46 @@ export default function Home() {
 
       <main className="flex-grow">
         {/* Dynamic Hero Section */}
-        <section className="bg-gray-50 py-20 md:py-32 relative overflow-hidden border-b border-gray-100">
+        <section className="bg-white py-24 md:py-40 relative overflow-hidden">
           <div className="container mx-auto px-4 relative z-10 text-center">
-            <div className="inline-flex items-center gap-2 mb-6 bg-[#39FF14]/10 border border-[#39FF14]/20 px-4 py-1.5 rounded-full">
-              <span className="relative flex h-2 w-2">
+            <div className="inline-flex items-center gap-3 mb-8 bg-[#39FF14]/10 border-2 border-[#39FF14]/20 px-6 py-2.5 rounded-full shadow-[0_0_30px_rgba(57,255,20,0.1)]">
+              <span className="relative flex h-3 w-3">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#39FF14] opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#39FF14]"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-[#39FF14]"></span>
               </span>
-              <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest">Now Open: 8+ Locations</span>
+              <span className="text-[12px] font-black text-gray-900 uppercase tracking-[0.3em]">Now Open: 8+ Locations</span>
             </div>
-            <h1 className="text-5xl md:text-8xl font-black text-gray-900 mb-8 tracking-tighter leading-none uppercase">
+            <h1 className="text-6xl md:text-9xl font-black text-gray-900 mb-10 tracking-tighter leading-[0.9] uppercase italic">
               {t.heroTitle} <br />
-              <span className="text-[#39FF14] drop-shadow-[0_0_2px_rgba(57,255,20,0.5)]">{t.heroSubtitle}</span>
+              <span className="text-[#39FF14] drop-shadow-[0_0_15px_rgba(57,255,20,0.5)]">{t.heroSubtitle}</span>
             </h1>
-            <p className="text-lg md:text-xl text-gray-500 mb-12 max-w-2xl mx-auto font-medium leading-relaxed">
-              Premium groceries delivered to your door. Experience the convenience of 88 Supermarket.
+            <p className="text-xl md:text-2xl text-gray-400 mb-14 max-w-2xl mx-auto font-bold leading-relaxed italic opacity-80">
+              Premium groceries delivered to your door. <br className="hidden md:block" /> Experience the convenience of 88 Supermarket.
             </p>
             <button
               onClick={() => { setSelectedCategory('all'); scrollToProductGrid(); }}
-              className="bg-[#39FF14] text-black text-xs font-black uppercase tracking-widest px-10 py-5 rounded-2xl hover:bg-[#32E612] shadow-[0_0_20px_rgba(57,255,20,0.2)] hover:shadow-[0_0_35px_rgba(57,255,20,0.4)] transition-all transform hover:-translate-y-1 active:translate-y-0"
+              className="bg-black text-[#39FF14] text-xs font-black uppercase tracking-[0.3em] px-14 py-6 rounded-[2rem] hover:bg-[#39FF14] hover:text-black shadow-[0_20px_40px_rgba(0,0,0,0.2)] hover:shadow-[0_20px_50px_rgba(57,255,20,0.4)] transition-all transform hover:-translate-y-2 active:translate-y-0 border-2 border-black"
             >
               {t.shopCollection}
             </button>
           </div>
 
-          <div className="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-[#39FF14]/10 rounded-full blur-[100px] opacity-10"></div>
-          <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-[#39FF14]/5 rounded-full blur-[100px] opacity-10"></div>
+          <div className="absolute top-0 right-0 -mr-40 -mt-40 w-[600px] h-[600px] bg-[#39FF14]/5 rounded-full blur-[150px] opacity-20"></div>
+          <div className="absolute bottom-0 left-0 -ml-40 -mb-40 w-[500px] h-[500px] bg-[#39FF14]/10 rounded-full blur-[150px] opacity-20"></div>
         </section>
 
         {/* Featured Categories */}
-        <section className="py-16 bg-white">
+        <section className="py-24 bg-gray-50 border-y-2 border-gray-100">
           <div className="container mx-auto px-4">
-            <div className="flex items-center justify-between mb-16 px-4">
-              <h2 className="text-xs font-black text-gray-400 uppercase tracking-[0.3em]">{t.browseAisles}</h2>
-              <div className="h-px flex-1 bg-gray-100 mx-8"></div>
+            <div className="flex items-center justify-between mb-20 px-6">
+              <div className="flex items-center gap-4">
+                <div className="h-8 w-2 bg-[#39FF14] rounded-full shadow-[0_0_10px_#39FF14]"></div>
+                <h2 className="text-[12px] font-black text-gray-900 uppercase tracking-[0.5em] italic">{t.browseAisles}</h2>
+              </div>
+              <div className="h-0.5 flex-1 bg-gray-200 mx-10 opacity-50"></div>
             </div>
 
-            <div className="flex flex-wrap justify-center gap-8 md:gap-14">
+            <div className="flex flex-wrap justify-center gap-10 md:gap-20">
               <CategoryCircle
                 title="Bakery"
                 image="https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=400&q=80"
@@ -125,9 +128,9 @@ export default function Home() {
         </section>
 
         {/* Main Shop Section */}
-        <section id="product-grid" className="py-20 bg-white border-t border-gray-100">
+        <section id="product-grid" className="py-24 bg-white">
           <div className="container mx-auto px-4">
-            <div className="flex flex-col md:flex-row gap-8">
+            <div className="flex flex-col md:flex-row gap-12">
               {/* Sidebar */}
               <CategorySidebar
                 activeCategory={selectedCategory}
@@ -138,22 +141,23 @@ export default function Home() {
 
               {/* Product Grid */}
               <div className="flex-1">
-                <div className="flex justify-between items-end mb-12">
+                <div className="flex justify-between items-end mb-16">
                   <div>
-                    <h2 className="text-3xl font-black text-gray-900 italic tracking-tighter uppercase">
+                    <h2 className="text-4xl md:text-5xl font-black text-gray-900 italic tracking-tighter uppercase leading-none">
                       {selectedCategory === 'all'
                         ? (lang === 'en' ? 'All Products' : lang === 'ru' ? 'Все продукты' : 'Բոլոր ապրանքները')
                         : selectedCategory}
+                      <span className="text-[#39FF14] ml-2">.</span>
                     </h2>
-                    <div className="h-1 w-12 bg-[#39FF14] mt-2 rounded-full shadow-[0_0_4px_#39FF14]"></div>
-                    <p className="text-gray-400 mt-4 text-xs font-bold uppercase tracking-widest">
+                    <div className="h-2 w-16 bg-[#39FF14] mt-4 rounded-full shadow-[0_4px_12px_rgba(57,255,20,0.4)]"></div>
+                    <p className="text-gray-400 mt-6 text-[10px] font-black uppercase tracking-[0.3em]">
                       {filteredProducts.length} {t.resultsFound}
                     </p>
                   </div>
                 </div>
 
                 {filteredProducts.length > 0 ? (
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                     {filteredProducts.map((product) => (
                       <ProductCard
                         key={product.id}
@@ -171,13 +175,13 @@ export default function Home() {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-24 text-gray-400 bg-gray-50 rounded-2xl border border-gray-100 shadow-sm">
-                    <div className="mb-6 text-6xl opacity-20">🔍</div>
-                    <p className="text-xl font-black text-gray-900 mb-2 uppercase tracking-tight">{t.noProducts}</p>
-                    <p className="text-gray-400 text-sm mb-8">Try adjusting your filters or search query.</p>
+                  <div className="text-center py-32 text-gray-400 bg-gray-50 rounded-[3rem] border-2 border-gray-100 shadow-inner">
+                    <div className="mb-8 text-8xl opacity-10 inline-block animate-pulse">🔍</div>
+                    <p className="text-2xl font-black text-gray-900 mb-2 uppercase tracking-tight italic">{t.noProducts}</p>
+                    <p className="text-gray-400 text-sm mb-12 font-medium">Try adjusting your filters or search query.</p>
                     <button
                       onClick={() => { setSelectedCategory("all"); setSearchQuery(''); }}
-                      className="px-8 py-3 bg-[#39FF14] text-black text-xs font-black uppercase tracking-widest rounded-xl hover:bg-[#32E612] transition-all active:scale-95 shadow-sm"
+                      className="px-12 py-5 bg-black text-[#39FF14] text-[10px] font-black uppercase tracking-[0.3em] rounded-2xl hover:bg-[#39FF14] hover:text-black transition-all active:scale-95 shadow-2xl"
                     >
                       {t.clearFilters}
                     </button>
@@ -189,51 +193,52 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="bg-gray-900 text-gray-400 py-20">
-        <div className="container mx-auto px-4 grid md:grid-cols-4 gap-12">
+      <footer className="bg-black text-gray-400 py-24 relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-1 bg-[#39FF14] shadow-[0_0_20px_#39FF14] opacity-50"></div>
+        <div className="container mx-auto px-4 grid md:grid-cols-4 gap-16 relative z-10">
           <div>
-            <div className="flex items-center gap-2 mb-8 text-[#39FF14]">
-              <span className="font-black text-3xl tracking-tighter drop-shadow-[0_0_8px_rgba(57,255,20,0.3)]">88 SUPERMARKET</span>
+            <div className="flex items-center gap-2 mb-10 text-[#39FF14]">
+              <span className="font-black text-4xl tracking-tighter drop-shadow-[0_0_15px_rgba(57,255,20,0.6)] italic">88 SUPERMARKET</span>
             </div>
-            <p className="text-sm opacity-60 mb-8 leading-relaxed">
+            <p className="text-sm opacity-50 mb-10 leading-relaxed font-medium italic">
               Redefining the standard for premium online grocery shopping with 88 Supermarket's fulfillment.
             </p>
-            <div className="text-xs space-y-3 opacity-90 uppercase tracking-widest font-bold">
-              <p>88 Center Plaza, Armenian Highlands</p>
-              <p>Opening Hours:</p>
-              <p className="text-white">8 AM - 11 PM Daily</p>
+            <div className="text-[10px] space-y-4 opacity-80 uppercase tracking-[0.3em] font-black">
+              <p className="flex items-center gap-3"><div className="w-1.5 h-1.5 bg-[#39FF14] rounded-full"></div> 88 Center Plaza, Armenian Highlands</p>
+              <p className="flex items-center gap-3"><div className="w-1.5 h-1.5 bg-[#39FF14] rounded-full"></div> Opening Hours:</p>
+              <p className="text-[#39FF14] bg-[#39FF14]/10 px-4 py-2 rounded-lg inline-block">8 AM - 11 PM Daily</p>
             </div>
           </div>
           <div>
-            <h4 className="text-white font-black text-xs uppercase tracking-[0.2em] mb-8">{t.shop}</h4>
-            <ul className="space-y-4 text-sm font-medium">
-              <li><Link href="#" className="hover:text-[#39FF14] transition-colors">Weekly Ads</Link></li>
-              <li><Link href="#" className="hover:text-[#39FF14] transition-colors">{t.browseAisles}</Link></li>
-              <li><Link href="#" className="hover:text-[#39FF14] transition-colors">Meat & Seafood</Link></li>
-              <li><Link href="#" className="hover:text-[#39FF14] transition-colors">Bakery</Link></li>
+            <h4 className="text-white font-black text-[10px] uppercase tracking-[0.5em] mb-10 italic">{t.shop}</h4>
+            <ul className="space-y-5 text-xs font-black uppercase tracking-widest">
+              <li><Link href="#" className="hover:text-[#39FF14] transition-all hover:translate-x-2 inline-block">Weekly Ads</Link></li>
+              <li><Link href="#" className="hover:text-[#39FF14] transition-all hover:translate-x-2 inline-block">{t.browseAisles}</Link></li>
+              <li><Link href="#" className="hover:text-[#39FF14] transition-all hover:translate-x-2 inline-block">Meat & Seafood</Link></li>
+              <li><Link href="#" className="hover:text-[#39FF14] transition-all hover:translate-x-2 inline-block">Bakery</Link></li>
             </ul>
           </div>
           <div>
-            <h4 className="text-white font-black text-xs uppercase tracking-[0.2em] mb-8">{t.support}</h4>
-            <ul className="space-y-4 text-sm font-medium">
-              <li><Link href="#" className="hover:text-[#39FF14] transition-colors">Help Center</Link></li>
-              <li><Link href="#" className="hover:text-[#39FF14] transition-colors">Return Policy</Link></li>
-              <li><Link href="#" className="hover:text-[#39FF14] transition-colors">Contact Us</Link></li>
-              <li><Link href="/admin" className="hover:text-[#39FF14] opacity-30 text-[10px] mt-8 block">ADMIN PORTAL</Link></li>
+            <h4 className="text-white font-black text-[10px] uppercase tracking-[0.5em] mb-10 italic">{t.support}</h4>
+            <ul className="space-y-5 text-xs font-black uppercase tracking-widest">
+              <li><Link href="#" className="hover:text-[#39FF14] transition-all hover:translate-x-2 inline-block">Help Center</Link></li>
+              <li><Link href="#" className="hover:text-[#39FF14] transition-all hover:translate-x-2 inline-block">Return Policy</Link></li>
+              <li><Link href="#" className="hover:text-[#39FF14] transition-all hover:translate-x-2 inline-block">Contact Us</Link></li>
+              <li><Link href="/admin" className="text-[#39FF14] opacity-50 hover:opacity-100 transition-all mt-10 block border-t border-gray-900 pt-5">ADMIN PORTAL</Link></li>
             </ul>
           </div>
           <div>
-            <h4 className="text-white font-black text-xs uppercase tracking-[0.2em] mb-8">{t.stayConnected}</h4>
-            <p className="text-sm mb-6 opacity-60 leading-relaxed">{t.joinClub}</p>
-            <div className="flex flex-col gap-3">
-              <input type="email" placeholder="Email address" className="bg-gray-800 border-none rounded-xl px-4 py-3 w-full focus:ring-1 focus:ring-[#39FF14] focus:border-[#39FF14] outline-none transition-all text-sm" />
-              <button className="bg-[#39FF14] px-4 py-3 rounded-xl text-black font-black text-xs uppercase tracking-widest hover:bg-[#32E612] transition-all shadow-[0_0_10px_rgba(57,255,20,0.2)]">
+            <h4 className="text-white font-black text-[10px] uppercase tracking-[0.5em] mb-10 italic">{t.stayConnected}</h4>
+            <p className="text-sm mb-8 opacity-50 leading-relaxed font-medium italic">{t.joinClub}</p>
+            <div className="flex flex-col gap-4">
+              <input type="email" placeholder="Email address" className="bg-gray-900/50 border-2 border-gray-800 rounded-2xl px-6 py-4 w-full focus:ring-4 focus:ring-[#39FF14]/10 focus:border-[#39FF14] outline-none transition-all text-sm font-bold placeholder:text-gray-700" />
+              <button className="bg-[#39FF14] px-6 py-4 rounded-2xl text-black font-black text-[10px] uppercase tracking-[0.3em] hover:bg-white hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] transition-all active:scale-95 shadow-xl">
                 {t.join}
               </button>
             </div>
           </div>
         </div>
-        <div className="border-t border-gray-800 mt-20 pt-8 text-center text-[10px] uppercase font-bold tracking-[0.3em] opacity-30">
+        <div className="border-t border-gray-900 mt-24 pt-10 text-center text-[8px] uppercase font-black tracking-[0.8em] opacity-20">
           © {new Date().getFullYear()} 88 SUPERMARKET. ALL RIGHTS RESERVED.
         </div>
       </footer>

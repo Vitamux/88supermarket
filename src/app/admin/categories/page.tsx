@@ -101,81 +101,86 @@ export default function CategoriesPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            <Header />
-
-            <div className="container mx-auto px-4 py-8">
+        <div className="min-h-screen bg-[#0F0F0F] text-white">
+            <div className="container mx-auto px-4 py-12">
                 {/* Header */}
-                <div className="flex items-center gap-4 mb-8">
+                <div className="flex items-center gap-6 mb-12">
                     <button
                         onClick={() => router.push('/admin')}
-                        className="p-2 hover:bg-[#39FF14]/10 rounded-xl transition group"
+                        className="p-3 bg-[#1A1A1A] border border-gray-800 rounded-2xl hover:border-[#39FF14] transition-all group"
                     >
-                        <ArrowLeft className="w-6 h-6 text-gray-900 group-hover:text-[#39FF14]" />
+                        <ArrowLeft className="w-6 h-6 text-gray-500 group-hover:text-[#39FF14]" />
                     </button>
-                    <h1 className="text-3xl font-bold text-gray-900">{t.manageCategories}</h1>
+                    <div>
+                        <h1 className="text-4xl font-black text-white tracking-tighter uppercase italic">88 <span className="text-[#39FF14]">Categories</span></h1>
+                        <p className="text-gray-500 font-black text-[10px] uppercase tracking-[0.2em] mt-1">{categories.length} active departments</p>
+                    </div>
                 </div>
 
                 {/* Add Category Form */}
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-8">
-                    <h2 className="text-xl font-bold text-gray-900 mb-6">{t.addCategory}</h2>
-                    <form onSubmit={handleAddCategory} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                <div className="bg-[#1A1A1A] rounded-[2.5rem] shadow-2xl border border-gray-800 p-10 mb-12 relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-1.5 h-full bg-[#39FF14]"></div>
+                    <h2 className="text-xl font-black text-white uppercase tracking-widest mb-10 flex items-center gap-4">
+                        <Plus className="w-6 h-6 text-[#39FF14]" />
+                        {t.addCategory}
+                    </h2>
+                    <form onSubmit={handleAddCategory} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 items-end">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-3 pl-1">
                                 {t.categoryName} (English)
                             </label>
                             <input
                                 type="text"
                                 value={newCategory.nameEn}
                                 onChange={e => setNewCategory({ ...newCategory, nameEn: e.target.value })}
-                                className="w-full border border-gray-100 bg-gray-50 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-[#39FF14]/20 focus:border-[#39FF14] focus:bg-white outline-none transition-all font-medium"
-                                placeholder="Bakery"
+                                className="w-full bg-black border border-gray-800 rounded-2xl px-5 py-4 focus:ring-2 focus:ring-[#39FF14]/20 focus:border-[#39FF14] outline-none transition-all font-black text-white placeholder-gray-700"
+                                placeholder="..."
                                 required
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-3 pl-1">
                                 {t.categoryName} (Русский)
                             </label>
                             <input
                                 type="text"
                                 value={newCategory.nameRu}
                                 onChange={e => setNewCategory({ ...newCategory, nameRu: e.target.value })}
-                                className="w-full border border-gray-100 bg-gray-50 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-[#39FF14]/20 focus:border-[#39FF14] focus:bg-white outline-none transition-all font-medium"
-                                placeholder="Выпечка"
+                                className="w-full bg-black border border-gray-800 rounded-2xl px-5 py-4 focus:ring-2 focus:ring-[#39FF14]/20 focus:border-[#39FF14] outline-none transition-all font-black text-white placeholder-gray-700"
+                                placeholder="..."
                                 required
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-3 pl-1">
                                 {t.categoryName} (Հայերեն)
                             </label>
                             <input
                                 type="text"
                                 value={newCategory.nameAm}
                                 onChange={e => setNewCategory({ ...newCategory, nameAm: e.target.value })}
-                                className="w-full border border-gray-100 bg-gray-50 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-[#39FF14]/20 focus:border-[#39FF14] focus:bg-white outline-none transition-all font-medium"
-                                placeholder="Հացաբուլկեղեն"
+                                className="w-full bg-black border border-gray-800 rounded-2xl px-5 py-4 focus:ring-2 focus:ring-[#39FF14]/20 focus:border-[#39FF14] outline-none transition-all font-black text-white placeholder-gray-700"
+                                placeholder="..."
                                 required
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-3 pl-1">
                                 Slug
                             </label>
                             <input
                                 type="text"
                                 value={newCategory.slug}
                                 onChange={e => setNewCategory({ ...newCategory, slug: e.target.value })}
-                                className="w-full border border-gray-100 bg-gray-50 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-[#39FF14]/20 focus:border-[#39FF14] focus:bg-white outline-none transition-all font-medium"
-                                placeholder="bakery"
+                                className="w-full bg-black border border-gray-800 rounded-2xl px-5 py-4 focus:ring-2 focus:ring-[#39FF14]/20 focus:border-[#39FF14] outline-none transition-all font-black text-white placeholder-gray-700"
+                                placeholder="slug..."
                                 required
                             />
                         </div>
                         <div className="flex items-end">
                             <button
                                 type="submit"
-                                className="w-full bg-black text-white font-black text-xs uppercase tracking-widest py-3.5 px-6 rounded-xl hover:bg-[#39FF14] hover:text-black transition shadow-lg active:scale-95 flex items-center justify-center gap-2"
+                                className="w-full bg-[#39FF14] text-black font-black text-[10px] uppercase tracking-[0.2em] py-5 px-6 rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-[0_0_25px_rgba(57,255,20,0.3)] flex items-center justify-center gap-2 h-[58px]"
                             >
                                 <Plus className="w-5 h-5" />
                                 {t.addCategory}
@@ -185,60 +190,53 @@ export default function CategoriesPage() {
                 </div>
 
                 {/* Categories List */}
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-                    <div className="p-6 border-b border-gray-200">
-                        <h2 className="text-xl font-bold text-gray-900">{t.categories}</h2>
+                <div className="bg-[#1A1A1A] rounded-[3.5rem] shadow-2xl border border-gray-800 overflow-hidden">
+                    <div className="p-10 border-b border-gray-800 bg-black/20">
+                        <h2 className="text-xl font-black text-white uppercase tracking-tight italic">{t.categories}</h2>
                     </div>
 
                     {loading ? (
-                        <div className="p-8 text-center text-gray-500">Loading...</div>
+                        <div className="p-20 text-center text-gray-500 font-black text-[10px] uppercase tracking-widest">
+                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#39FF14] mx-auto mb-4"></div>
+                            Processing...
+                        </div>
                     ) : categories.length === 0 ? (
-                        <div className="p-8 text-center text-gray-500">
-                            No categories yet. Add your first category above!
+                        <div className="p-20 text-center text-gray-500 font-black text-[10px] uppercase tracking-widest italic">
+                            No categories yet. Add your first department above!
                         </div>
                     ) : (
                         <div className="overflow-x-auto">
-                            <table className="w-full">
-                                <thead className="bg-gray-50 border-b border-gray-200">
+                            <table className="w-full text-left">
+                                <thead className="bg-black border-b border-gray-800">
                                     <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Slug
-                                        </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            English
-                                        </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Русский
-                                        </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Հայերեն
-                                        </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Actions
-                                        </th>
+                                        <th className="px-8 py-5 text-[10px] font-black text-gray-500 uppercase tracking-widest">Slug</th>
+                                        <th className="px-8 py-5 text-[10px] font-black text-gray-500 uppercase tracking-widest">English</th>
+                                        <th className="px-8 py-5 text-[10px] font-black text-gray-500 uppercase tracking-widest">Русский</th>
+                                        <th className="px-8 py-5 text-[10px] font-black text-gray-500 uppercase tracking-widest">Հայերեն</th>
+                                        <th className="px-8 py-5 text-right text-[10px] font-black text-gray-500 uppercase tracking-widest">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody className="bg-white divide-y divide-gray-200">
+                                <tbody className="divide-y divide-gray-800">
                                     {categories.map((category) => (
-                                        <tr key={category.id} className="hover:bg-gray-50 transition">
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <code className="text-[10px] bg-black text-[#39FF14] px-2 py-1 rounded font-black uppercase tracking-widest">
+                                        <tr key={category.id} className="hover:bg-black/40 transition-colors group">
+                                            <td className="px-8 py-6 whitespace-nowrap">
+                                                <code className="text-[10px] bg-black border border-gray-800 text-[#39FF14] px-3 py-1 rounded-full font-black uppercase tracking-widest">
                                                     {category.slug}
                                                 </code>
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                            <td className="px-8 py-6 whitespace-nowrap text-sm font-black text-white italic">
                                                 {category.name?.en || '-'}
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                            <td className="px-8 py-6 whitespace-nowrap text-sm font-black text-gray-400">
                                                 {category.name?.ru || '-'}
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                            <td className="px-8 py-6 whitespace-nowrap text-sm font-black text-gray-400">
                                                 {category.name?.am || '-'}
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
+                                            <td className="px-8 py-6 whitespace-nowrap text-right">
                                                 <button
                                                     onClick={() => handleDeleteCategory(category.id, category.name?.[lang] || category.slug)}
-                                                    className="text-red-600 hover:text-red-800 transition p-2 hover:bg-red-50 rounded-lg"
+                                                    className="p-3 text-red-900/50 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all"
                                                     title={t.deleteCategory}
                                                 >
                                                     <Trash2 className="w-5 h-5" />

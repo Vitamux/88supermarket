@@ -67,99 +67,102 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart }: 
 
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 z-20 bg-gray-50 p-3 rounded-full hover:bg-gray-100 transition-all shadow-md active:scale-95 border border-gray-100"
+                    className="absolute top-6 right-6 z-20 bg-white p-4 rounded-2xl hover:bg-[#39FF14] hover:text-black transition-all shadow-xl active:scale-95 border-2 border-gray-50 hover:border-[#39FF14]"
                     aria-label="Close modal"
                 >
-                    <X className="w-6 h-6 text-gray-500" />
+                    <X className="w-6 h-6" />
                 </button>
 
-                <div className="relative w-full md:w-1/2 h-72 md:h-auto bg-gray-50">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                        src={imageUrl}
-                        alt={product.name}
-                        className="w-full h-full object-cover"
-                    />
-                    {isOutOfStock && (
-                        <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px] flex items-center justify-center">
-                            <span className="bg-[#FF3131] text-white px-8 py-3 rounded-full font-black text-sm uppercase tracking-[0.3em] shadow-[0_0_30px_rgba(255,49,49,0.5)] border border-red-400/30 rotate-[-5deg]">
-                                {t.outOfStockBadge}
-                            </span>
-                        </div>
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent md:hidden" />
+                <div className="relative w-full md:w-1/2 h-80 md:h-auto bg-gray-50 p-6">
+                    <div className="w-full h-full rounded-[2.5rem] overflow-hidden border-4 border-white shadow-2xl relative">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                            src={imageUrl}
+                            alt={product.name}
+                            className="w-full h-full object-cover"
+                        />
+                        {isOutOfStock && (
+                            <div className="absolute inset-0 bg-white/40 backdrop-blur-md flex items-center justify-center">
+                                <span className="bg-[#FF3131] text-white px-10 py-4 rounded-[2rem] font-black text-xs uppercase tracking-[0.4em] shadow-[0_0_40px_rgba(255,49,49,0.5)] border-2 border-red-400/30 rotate-[-5deg] scale-110">
+                                    {t.outOfStockBadge}
+                                </span>
+                            </div>
+                        )}
+                    </div>
                 </div>
 
-                <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col h-full bg-white">
+                <div className="w-full md:w-1/2 p-8 md:p-14 flex flex-col h-full bg-white relative">
                     <div className="mb-auto">
-                        <div className="flex flex-col items-center mb-8">
-                            <span className="text-[10px] font-black text-[#39FF14] uppercase tracking-[0.3em] mb-4">
+                        <div className="flex flex-col items-center mb-10 text-center">
+                            <span className="text-[12px] font-black text-[#39FF14] uppercase tracking-[0.4em] mb-4 drop-shadow-[0_0_8px_rgba(57,255,20,0.4)]">
                                 {(product as any).category || '88 Selection'}
                             </span>
-                            <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-2 text-center uppercase tracking-tight">{(product as any).display_names?.[lang] || product.name}</h2>
-                            <div className="h-1 w-12 bg-[#39FF14] rounded-full shadow-sm mb-4"></div>
-                            <p className="text-3xl font-black text-gray-900 tracking-tighter">{product.price.toFixed(0)} <span className="text-xs font-bold uppercase opacity-40">AMD</span></p>
+                            <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-4 uppercase tracking-tighter italic">{(product as any).display_names?.[lang] || product.name}</h2>
+                            <div className="h-1.5 w-16 bg-[#39FF14] rounded-full shadow-[0_0_10px_#39FF14] mb-6"></div>
+                            <p className="text-4xl font-black text-gray-900 tracking-tighter">
+                                {product.price.toLocaleString()} <span className="text-xs font-black text-[#39FF14] uppercase tracking-widest ml-1">AMD</span>
+                            </p>
                         </div>
 
-                        <p className="text-gray-500 mb-10 leading-relaxed text-center font-medium">
+                        <p className="text-gray-400 mb-12 leading-relaxed text-center font-medium italic text-lg opacity-80">
                             {product.description || t.premiumFallback}
                         </p>
 
                         {((product as any).nutritional_info || product.nutrition) && (
-                            <div className="bg-gray-50 rounded-2xl p-6 mb-10 border border-gray-100">
-                                <h3 className="font-black text-gray-400 mb-6 text-[10px] uppercase tracking-[0.2em] flex items-center justify-center gap-3">
-                                    <div className="h-px w-8 bg-gray-200"></div>
-                                    {t.nutritionalFacts}
-                                    <div className="h-px w-8 bg-gray-200"></div>
+                            <div className="bg-gray-50 rounded-[2.5rem] p-8 mb-12 border-2 border-gray-100/50 shadow-inner">
+                                <h3 className="font-black text-gray-400 mb-8 text-[10px] uppercase tracking-[0.3em] flex items-center justify-center gap-4">
+                                    <div className="h-px w-10 bg-gray-200"></div>
+                                    <span className="text-[#39FF14] drop-shadow-[0_0_5px_rgba(57,255,20,0.3)]">{t.nutritionalFacts}</span>
+                                    <div className="h-px w-10 bg-gray-200"></div>
                                 </h3>
                                 {product.nutritional_info ? (
                                     <div className="grid grid-cols-2 gap-4">
-                                        <div className="bg-white p-4 rounded-xl border border-gray-100">
-                                            <p className="text-[10px] text-gray-400 uppercase font-black mb-1 text-center tracking-widest">{t.calories}</p>
-                                            <p className="text-xl font-black text-gray-900 text-center">{(product as any).nutritional_info?.calories || '0'}</p>
+                                        <div className="bg-white p-5 rounded-2xl border-2 border-gray-50 flex flex-col items-center shadow-sm hover:border-[#39FF14]/30 transition-colors group">
+                                            <p className="text-[10px] text-gray-400 uppercase font-black mb-1 tracking-widest group-hover:text-[#39FF14] transition-colors">{t.calories}</p>
+                                            <p className="text-2xl font-black text-gray-900">{(product as any).nutritional_info?.calories || '0'}</p>
                                         </div>
-                                        <div className="bg-white p-4 rounded-xl border border-gray-100">
-                                            <p className="text-[10px] text-gray-400 uppercase font-black mb-1 text-center tracking-widest">{t.protein}</p>
-                                            <p className="text-xl font-black text-gray-900 text-center">{(product as any).nutritional_info?.protein || '0g'}</p>
+                                        <div className="bg-white p-5 rounded-2xl border-2 border-gray-50 flex flex-col items-center shadow-sm hover:border-[#39FF14]/30 transition-colors group">
+                                            <p className="text-[10px] text-gray-400 uppercase font-black mb-1 tracking-widest group-hover:text-[#39FF14] transition-colors">{t.protein}</p>
+                                            <p className="text-2xl font-black text-gray-900">{(product as any).nutritional_info?.protein || '0g'}</p>
                                         </div>
-                                        <div className="bg-white p-4 rounded-xl border border-gray-100">
-                                            <p className="text-[10px] text-gray-400 uppercase font-black mb-1 text-center tracking-widest">{t.carbs}</p>
-                                            <p className="text-xl font-black text-gray-900 text-center">{(product as any).nutritional_info?.carbs || '0g'}</p>
+                                        <div className="bg-white p-5 rounded-2xl border-2 border-gray-50 flex flex-col items-center shadow-sm hover:border-[#39FF14]/30 transition-colors group">
+                                            <p className="text-[10px] text-gray-400 uppercase font-black mb-1 tracking-widest group-hover:text-[#39FF14] transition-colors">{t.carbs}</p>
+                                            <p className="text-2xl font-black text-gray-900">{(product as any).nutritional_info?.carbs || '0g'}</p>
                                         </div>
-                                        <div className="bg-white p-4 rounded-xl border border-gray-100">
-                                            <p className="text-[10px] text-gray-400 uppercase font-black mb-1 text-center tracking-widest">{t.fat}</p>
-                                            <p className="text-xl font-black text-gray-900 text-center">{(product as any).nutritional_info?.fat || '0g'}</p>
+                                        <div className="bg-white p-5 rounded-2xl border-2 border-gray-50 flex flex-col items-center shadow-sm hover:border-[#39FF14]/30 transition-colors group">
+                                            <p className="text-[10px] text-gray-400 uppercase font-black mb-1 tracking-widest group-hover:text-[#39FF14] transition-colors">{t.fat}</p>
+                                            <p className="text-2xl font-black text-gray-900">{(product as any).nutritional_info?.fat || '0g'}</p>
                                         </div>
                                     </div>
                                 ) : product.nutrition && (
-                                    <p className="text-gray-500 whitespace-pre-line leading-relaxed text-sm bg-white p-4 rounded-xl border border-gray-100 text-center font-medium italic">{product.nutrition}</p>
+                                    <p className="text-gray-500 whitespace-pre-line leading-relaxed text-sm bg-white p-6 rounded-2xl border-2 border-gray-50 text-center font-bold italic shadow-sm">{product.nutrition}</p>
                                 )}
                             </div>
                         )}
                     </div>
 
-                    <div className="flex gap-4">
-                        <div className="flex-1 flex items-center bg-gray-50 border border-gray-100 rounded-2xl px-4">
+                    <div className="flex gap-6 mt-auto">
+                        <div className="flex-1 flex items-center bg-gray-50 border-2 border-gray-100 rounded-[1.5rem] px-4 py-1">
                             <button
                                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                                className="p-3 text-gray-400 hover:text-[#39FF14] transition-colors"
+                                className="p-4 text-gray-300 hover:text-[#39FF14] transition-colors"
                             >
-                                <Minus className="w-5 h-5 stroke-[3px]" />
+                                <Minus className="w-6 h-6 stroke-[4px]" />
                             </button>
-                            <span className="flex-1 text-center font-black text-xl text-gray-900">{quantity}</span>
+                            <span className="flex-1 text-center font-black text-2xl text-gray-900">{quantity}</span>
                             <button
                                 onClick={() => setQuantity(quantity + 1)}
-                                className="p-3 text-gray-400 hover:text-[#39FF14] transition-colors"
+                                className="p-4 text-gray-300 hover:text-[#39FF14] transition-colors"
                             >
-                                <Plus className="w-5 h-5 stroke-[3px]" />
+                                <Plus className="w-6 h-6 stroke-[4px]" />
                             </button>
                         </div>
                         <button
                             onClick={handleAddToCart}
                             disabled={isOutOfStock}
-                            className={`flex-[2] font-black text-xs uppercase tracking-widest py-5 px-8 rounded-2xl transition-all shadow-lg active:scale-95 ${isOutOfStock
-                                    ? 'bg-gray-100 text-red-500 cursor-not-allowed border-2 border-red-500/20 opacity-80'
-                                    : 'bg-[#39FF14] hover:bg-[#32E612] text-black hover:-translate-y-1'
+                            className={`flex-[1.8] font-black text-xs uppercase tracking-[0.2em] py-6 px-10 rounded-[1.5rem] transition-all shadow-2xl active:scale-95 flex items-center justify-center ${isOutOfStock
+                                ? 'bg-gray-100 text-red-500 cursor-not-allowed border-2 border-red-500/20 grayscale opacity-40'
+                                : 'bg-black text-[#39FF14] hover:bg-[#39FF14] hover:text-black hover:-translate-y-2'
                                 }`}
                         >
                             {isOutOfStock ? t.outOfStockBadge : t.addToCart}

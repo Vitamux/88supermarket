@@ -93,19 +93,19 @@ export default function InventoryPage() {
     const getStockStatus = (quantity: number) => {
         if (quantity === 0) {
             return {
-                color: 'bg-red-100 text-red-700 border-red-200',
+                color: 'bg-red-500/10 text-red-500 border-red-500/20',
                 icon: '🔴',
                 label: t.outOfStock
             };
         } else if (quantity <= 10) {
             return {
-                color: 'bg-yellow-100 text-yellow-700 border-yellow-200',
+                color: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20',
                 icon: '🟡',
                 label: t.lowStock
             };
         } else {
             return {
-                color: 'bg-green-100 text-green-700 border-green-200',
+                color: 'bg-[#39FF14]/10 text-[#39FF14] border-[#39FF14]/20',
                 icon: '🟢',
                 label: t.inStock
             };
@@ -118,31 +118,31 @@ export default function InventoryPage() {
     });
 
     return (
-        <div className="min-h-screen bg-gray-50 p-4 md:p-8">
+        <div className="min-h-screen bg-[#0F0F0F] text-white p-4 md:p-8">
             <div className="max-w-6xl mx-auto">
                 {/* Header */}
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center justify-between mb-8">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900">{t.inventory}</h1>
-                        <p className="text-gray-500 mt-1">{filteredProducts.length} products</p>
+                        <h1 className="text-4xl font-black text-white tracking-tighter uppercase italic">88 <span className="text-[#39FF14]">Stock</span></h1>
+                        <p className="text-gray-500 font-black text-[10px] uppercase tracking-[0.2em] mt-1">{filteredProducts.length} active units</p>
                     </div>
                     <Link
                         href="/admin"
-                        className="px-5 py-2.5 bg-black text-white rounded-xl hover:bg-[#39FF14] hover:text-black transition-all font-black text-xs uppercase tracking-widest shadow-lg active:scale-95"
+                        className="px-6 py-3 bg-[#1A1A1A] text-gray-500 border border-gray-800 rounded-xl hover:text-[#39FF14] hover:border-[#39FF14] transition-all font-black text-[10px] uppercase tracking-widest shadow-lg active:scale-95"
                     >
                         {t.backToAdmin}
                     </Link>
                 </div>
 
                 {/* Search */}
-                <div className="mb-6 relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <div className="mb-8 relative group">
+                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5 group-focus-within:text-[#39FF14] transition-colors" />
                     <input
                         type="text"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder={t.searchProducts}
-                        className="w-full pl-10 pr-4 py-3 border border-gray-100 bg-white rounded-xl focus:ring-2 focus:ring-[#39FF14]/20 focus:border-[#39FF14] outline-none shadow-sm transition-all font-medium"
+                        className="w-full pl-12 pr-4 py-4 bg-[#1A1A1A] border border-gray-800 rounded-2xl focus:ring-2 focus:ring-[#39FF14]/20 focus:border-[#39FF14] outline-none shadow-sm transition-all font-black text-white placeholder-gray-700 uppercase tracking-widest text-[10px]"
                     />
                 </div>
 
@@ -153,29 +153,19 @@ export default function InventoryPage() {
                         <p className="text-gray-500 mt-4 font-black text-xs uppercase tracking-widest">{t.loadingInventory}</p>
                     </div>
                 ) : (
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div className="bg-[#1A1A1A] rounded-[2.5rem] shadow-2xl border border-gray-800 overflow-hidden">
                         <div className="overflow-x-auto">
                             <table className="w-full">
-                                <thead className="bg-gray-50 border-b border-gray-200">
+                                <thead className="bg-black border-b border-gray-800">
                                     <tr>
-                                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                            Product
-                                        </th>
-                                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                            {t.currentStock}
-                                        </th>
-                                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                            Status
-                                        </th>
-                                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                            {t.priceLabel}
-                                        </th>
-                                        <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                            Actions
-                                        </th>
+                                        <th className="px-6 py-5 text-left text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">Product</th>
+                                        <th className="px-6 py-5 text-left text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">{t.currentStock}</th>
+                                        <th className="px-6 py-5 text-left text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">Status</th>
+                                        <th className="px-6 py-5 text-right text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">{t.priceLabel}</th>
+                                        <th className="px-6 py-5 text-center text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-200">
+                                <tbody className="divide-y divide-gray-800">
                                     {filteredProducts.length === 0 ? (
                                         <tr>
                                             <td colSpan={5} className="px-4 py-8 text-center text-gray-500">
@@ -189,10 +179,10 @@ export default function InventoryPage() {
                                             const isEditing = editingId === product.id;
 
                                             return (
-                                                <tr key={product.id} className="hover:bg-gray-50 transition-colors">
-                                                    <td className="px-4 py-4">
-                                                        <div className="flex items-center gap-3">
-                                                            <div className="w-12 h-12 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                                                <tr key={product.id} className="hover:bg-black/40 transition-colors group">
+                                                    <td className="px-6 py-6">
+                                                        <div className="flex items-center gap-4">
+                                                            <div className="w-16 h-16 bg-black rounded-2xl overflow-hidden border border-gray-800 group-hover:scale-105 transition-transform flex-shrink-0">
                                                                 {/* eslint-disable-next-line @next/next/no-img-element */}
                                                                 <img
                                                                     src={imageUrl}
@@ -201,69 +191,70 @@ export default function InventoryPage() {
                                                                 />
                                                             </div>
                                                             <div>
-                                                                <div className="font-medium text-gray-900">
+                                                                <div className="font-black text-white text-sm uppercase italic tracking-tight">
                                                                     {product.display_names?.[lang] || product.name}
                                                                 </div>
-                                                                <div className="text-sm text-gray-500">
-                                                                    ID: {product.id}
+                                                                <div className="text-[10px] font-black text-gray-500 uppercase tracking-widest mt-1">
+                                                                    ID: {product.id.slice(0, 8)}...
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td className="px-4 py-4">
+                                                    <td className="px-6 py-6">
                                                         {isEditing ? (
                                                             <input
                                                                 type="number"
                                                                 value={editStock}
                                                                 onChange={(e) => setEditStock(parseInt(e.target.value) || 0)}
-                                                                className="w-24 px-3 py-2 border border-black rounded-lg focus:ring-2 focus:ring-[#39FF14]/20 focus:border-[#39FF14] outline-none text-lg font-black"
+                                                                className="w-24 bg-black border border-gray-800 rounded-xl px-4 py-2 focus:ring-2 focus:ring-[#39FF14]/20 focus:border-[#39FF14] outline-none text-lg font-black text-white"
                                                                 min="0"
                                                             />
                                                         ) : (
-                                                            <span className="text-gray-900 font-semibold text-lg">
+                                                            <span className="text-white font-black text-lg">
                                                                 {product.stock_quantity || 0}
                                                             </span>
                                                         )}
                                                     </td>
-                                                    <td className="px-4 py-4">
-                                                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border ${status.color}`}>
+                                                    <td className="px-6 py-6">
+                                                        <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border ${status.color}`}>
                                                             <span>{status.icon}</span>
                                                             {status.label}
                                                         </span>
                                                     </td>
-                                                    <td className="px-4 py-4 text-right">
+                                                    <td className="px-6 py-6 text-right">
                                                         {isEditing ? (
                                                             <div className="flex items-center justify-end gap-2">
                                                                 <input
                                                                     type="number"
                                                                     value={editPrice}
                                                                     onChange={(e) => setEditPrice(parseFloat(e.target.value) || 0)}
-                                                                    className="w-28 px-3 py-2 border border-black rounded-lg focus:ring-2 focus:ring-[#39FF14]/20 focus:border-[#39FF14] outline-none text-lg font-black text-right"
+                                                                    className="w-32 bg-black border border-gray-800 rounded-xl px-4 py-2 focus:ring-2 focus:ring-[#39FF14]/20 focus:border-[#39FF14] outline-none text-lg font-black text-white text-right"
                                                                     min="0"
                                                                     step="0.01"
                                                                 />
-                                                                <span className="text-gray-400 font-black text-xs uppercase tracking-widest">AMD</span>
+                                                                <span className="text-gray-500 font-black text-[10px] uppercase tracking-widest">AMD</span>
                                                             </div>
                                                         ) : (
-                                                            <span className="text-gray-900 font-semibold">
-                                                                {product.price} AMD
-                                                            </span>
+                                                            <div className="flex flex-col items-end">
+                                                                <span className="text-white font-black text-lg">{product.price.toLocaleString()}</span>
+                                                                <span className="text-[#39FF14] text-[10px] font-black uppercase tracking-widest">AMD</span>
+                                                            </div>
                                                         )}
                                                     </td>
-                                                    <td className="px-4 py-4">
+                                                    <td className="px-6 py-6 text-center">
                                                         <div className="flex items-center justify-center gap-2">
                                                             {isEditing ? (
                                                                 <>
                                                                     <button
                                                                         onClick={() => handleUpdate(product.id)}
-                                                                        className="p-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors"
+                                                                        className="p-3 bg-[#39FF14]/10 text-[#39FF14] rounded-xl hover:bg-[#39FF14] hover:text-black transition-all border border-[#39FF14]/20"
                                                                         title={t.save}
                                                                     >
                                                                         <Check className="w-5 h-5" />
                                                                     </button>
                                                                     <button
                                                                         onClick={handleCancel}
-                                                                        className="p-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors"
+                                                                        className="p-3 bg-red-500/10 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all border border-red-500/20"
                                                                         title={t.cancel}
                                                                     >
                                                                         <X className="w-5 h-5" />
@@ -272,7 +263,7 @@ export default function InventoryPage() {
                                                             ) : (
                                                                 <button
                                                                     onClick={() => handleEdit(product)}
-                                                                    className="p-2 bg-[#39FF14]/10 text-black border border-[#39FF14]/30 rounded-lg hover:bg-[#39FF14] transition-all"
+                                                                    className="p-3 bg-[#39FF14]/10 text-gray-400 rounded-xl hover:bg-[#39FF14] hover:text-black transition-all border border-[#39FF14]/20"
                                                                     title={t.edit}
                                                                 >
                                                                     <Edit2 className="w-5 h-5" />

@@ -1,12 +1,12 @@
 @import "tailwindcss";
 
 @theme {
-  --color-eighty-eight-bg: #FFFFFF;
-  --color-eighty-eight-card: #F9FAFB;
+  --color-eighty-eight-bg: #0F0F0F;
+  --color-eighty-eight-card: #1A1A1A;
   --color-eighty-eight-neon: #39FF14;
   --color-eighty-eight-neon-hover: #32E612;
-  --color-eighty-eight-text: #111827;
-  --color-eighty-eight-text-dim: #4B5563;
+  --color-eighty-eight-text: #FFFFFF;
+  --color-eighty-eight-text-dim: #A1A1AA;
 }
 
 /* Custom Base Styles */

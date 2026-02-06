@@ -67,7 +67,7 @@ export default function Header() {
                 <div className="container mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
                     <div className="flex items-center justify-between w-full md:w-auto gap-8">
                         <Link href="/" className="flex items-center gap-2 group">
-                            <span className="text-2xl font-black tracking-tighter text-[#39FF14] transition-all dropdown-link drop-shadow-[0_0_2px_rgba(57,255,20,0.5)]">
+                            <span className="text-2xl font-black tracking-tighter text-[#39FF14] transition-all dropdown-link drop-shadow-[0_0_15px_rgba(57,255,20,0.6)] group-hover:drop-shadow-[0_0_25px_rgba(57,255,20,0.8)]">
                                 88 SUPERMARKET
                             </span>
                         </Link>
@@ -77,7 +77,7 @@ export default function Header() {
                             <select
                                 value={selectedStoreId || ''}
                                 onChange={(e) => setSelectedStoreId(e.target.value)}
-                                className="appearance-none bg-gray-50 text-gray-900 text-xs font-black uppercase tracking-widest pl-4 pr-10 py-2.5 rounded-xl border border-gray-200 focus:border-[#39FF14] outline-none transition-all cursor-pointer"
+                                className="appearance-none bg-white text-gray-900 text-[10px] font-black uppercase tracking-[0.2em] pl-6 pr-12 py-3.5 rounded-2xl border-2 border-gray-100 focus:border-[#39FF14] focus:ring-4 focus:ring-[#39FF14]/10 outline-none transition-all cursor-pointer shadow-sm"
                             >
                                 <option value="" disabled>{t.selectStore}</option>
                                 {stores.map((store) => (
@@ -86,7 +86,7 @@ export default function Header() {
                                     </option>
                                 ))}
                             </select>
-                            <ChevronDown className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none transition-transform group-hover:translate-y-[-40%]" />
+                            <ChevronDown className="w-5 h-5 absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none transition-transform group-hover:translate-y-[-40%] group-hover:text-[#39FF14]" />
                         </div>
                     </div>
 
@@ -96,22 +96,22 @@ export default function Header() {
                                 <div className="relative">
                                     <button
                                         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                                        className="flex items-center gap-2 text-gray-900 hover:text-[#39FF14] transition-colors font-bold bg-gray-50 px-4 py-2 rounded-xl border border-gray-100"
+                                        className="flex items-center gap-3 text-gray-900 hover:text-[#39FF14] transition-all font-black bg-white px-5 py-2.5 rounded-2xl border-2 border-gray-50 hover:border-[#39FF14]/30 shadow-sm"
                                     >
-                                        <div className="w-8 h-8 rounded-full bg-[#39FF14]/10 flex items-center justify-center text-[#39FF14] text-sm font-black border border-[#39FF14]/20">
+                                        <div className="w-8 h-8 rounded-full bg-[#39FF14] flex items-center justify-center text-black text-xs font-black shadow-[0_0_15px_rgba(57,255,20,0.4)]">
                                             {user.user_metadata?.full_name?.charAt(0) || user.email?.charAt(0).toUpperCase()}
                                         </div>
-                                        <span className="hidden md:block truncate max-w-[120px]">
+                                        <span className="hidden md:block truncate max-w-[120px] text-[10px] uppercase tracking-widest">
                                             {isAdmin ? "Admin" : (user.user_metadata?.full_name || t.myAccount)}
                                         </span>
                                         <ChevronDown className={`w-3 h-3 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
                                     </button>
 
                                     {isDropdownOpen && (
-                                        <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-[100] animate-in fade-in slide-in-from-top-2 duration-200">
-                                            <div className="px-4 py-3 border-b border-gray-50 mb-2">
-                                                <p className="text-[10px] text-gray-400 uppercase tracking-widest font-black mb-0.5">{t.account}</p>
-                                                <p className="text-sm font-bold text-gray-900 truncate">{user.email}</p>
+                                        <div className="absolute right-0 mt-3 w-64 bg-white rounded-[2rem] shadow-2xl border border-gray-100 py-3 z-[100] animate-in fade-in slide-in-from-top-4 duration-300">
+                                            <div className="px-6 py-4 border-b border-gray-50 mb-2">
+                                                <p className="text-[10px] text-gray-400 uppercase tracking-widest font-black mb-1">{t.account}</p>
+                                                <p className="text-sm font-black text-gray-900 truncate tracking-tight">{user.email}</p>
                                             </div>
                                             <button
                                                 onClick={() => {
@@ -122,46 +122,46 @@ export default function Header() {
                                                         alert(t.featureComingSoon);
                                                     }
                                                 }}
-                                                className="w-full text-left px-4 py-3 text-sm text-gray-800 hover:bg-[#39FF14]/10 hover:text-[#39FF14] transition-colors flex items-center gap-3"
+                                                className="w-full text-left px-6 py-4 text-xs font-black uppercase tracking-widest text-gray-600 hover:bg-[#39FF14]/10 hover:text-[#39FF14] transition-all flex items-center gap-4"
                                             >
                                                 <User className="w-4 h-4" />
-                                                <span className="font-bold">{isAdmin ? "Admin Dashboard" : t.myAccount}</span>
+                                                <span>{isAdmin ? "Admin Dashboard" : t.myAccount}</span>
                                             </button>
                                             <button
                                                 onClick={handleSignOut}
-                                                className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center gap-3 border-t border-gray-50 mt-1"
+                                                className="w-full text-left px-6 py-4 text-xs font-black uppercase tracking-widest text-red-500 hover:bg-red-50 transition-all flex items-center gap-4 border-t border-gray-50 mt-1"
                                             >
                                                 <LogOut className="w-4 h-4" />
-                                                <span className="font-bold">{t.logout}</span>
+                                                <span>{t.logout}</span>
                                             </button>
                                         </div>
                                     )}
                                 </div>
                             ) : (
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-4">
                                     <button
                                         onClick={() => { setAuthView('login'); setIsAuthModalOpen(true); }}
-                                        className="px-5 py-2 text-gray-500 hover:text-gray-900 transition-colors font-black text-xs uppercase tracking-widest"
+                                        className="px-6 py-3 text-gray-400 hover:text-gray-900 transition-colors font-black text-[10px] uppercase tracking-[0.2em]"
                                     >
                                         {t.login}
                                     </button>
                                     <button
                                         onClick={() => { setAuthView('register'); setIsAuthModalOpen(true); }}
-                                        className="px-6 py-2.5 bg-[#39FF14] text-black rounded-xl font-black text-xs hover:bg-[#32E612] transition-all shadow-[0_0_15px_rgba(57,255,20,0.2)] active:scale-95 uppercase tracking-widest"
+                                        className="px-8 py-3.5 bg-black text-[#39FF14] rounded-2xl font-black text-[10px] hover:bg-[#39FF14] hover:text-black transition-all shadow-xl active:scale-95 uppercase tracking-[0.2em] border border-black"
                                     >
                                         {t.register}
                                     </button>
                                 </div>
                             )
                         ) : (
-                            <div className="w-32 h-10 bg-gray-50 rounded-xl animate-pulse"></div>
+                            <div className="w-32 h-12 bg-gray-50 rounded-2xl animate-pulse"></div>
                         )}
 
                         <Link href="/cart" className="relative group">
-                            <div className="p-2.5 bg-gray-50 rounded-xl group-hover:bg-[#39FF14]/10 transition-colors border border-gray-100 group-hover:border-[#39FF14]/30">
-                                <ShoppingBag className="w-6 h-6 text-gray-600 group-hover:text-[#39FF14] transition-colors" />
+                            <div className="p-3.5 bg-white rounded-2xl group-hover:bg-[#39FF14]/5 transition-all border-2 border-gray-50 group-hover:border-[#39FF14]/20 shadow-sm group-hover:shadow-md">
+                                <ShoppingBag className="w-6 h-6 text-gray-400 group-hover:text-[#39FF14] transition-colors" />
                                 {mounted && itemCount > 0 && (
-                                    <span className="absolute -top-1 -right-1 bg-black text-white text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-full shadow-lg ring-2 ring-white transform group-hover:scale-110 transition-all">
+                                    <span className="absolute -top-1 -right-1 bg-black text-[#39FF14] text-[10px] font-black w-6 h-6 flex items-center justify-center rounded-full shadow-lg ring-4 ring-white transform group-hover:scale-110 transition-all border border-[#39FF14]/30">
                                         {itemCount}
                                     </span>
                                 )}
