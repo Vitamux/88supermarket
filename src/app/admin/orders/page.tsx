@@ -5,7 +5,7 @@ import { useLanguageStore } from '../../../store/useLanguageStore';
 import { translations } from '../../../lib/translations';
 import { supabase } from '../../../lib/supabase';
 import { useAdminStore } from '../../../store/useAdminStore';
-import { Phone, MapPin, Package, Check, Copy, ChevronDown, Filter, Trash2 } from 'lucide-react';
+import { Phone, MapPin, Package, Check, Copy, ChevronDown, Filter, Trash2, Store } from 'lucide-react';
 import Link from 'next/link';
 // Removed unused toast import
 
@@ -21,7 +21,7 @@ interface Order {
 }
 
 export default function ActiveOrdersPage() {
-    const { profile, activeStoreId } = useAdminStore();
+    const { profile, activeStoreId, setActiveStoreId } = useAdminStore();
     const [orders, setOrders] = useState<Order[]>([]);
     const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
