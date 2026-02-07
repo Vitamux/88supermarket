@@ -27,6 +27,7 @@ export default function ActiveOrdersPage() {
     const [loading, setLoading] = useState(true);
     const [statusFilter, setStatusFilter] = useState('all');
     const [stores, setStores] = useState<any[]>([]);
+    const [audioEnabled, setAudioEnabled] = useState(false);
     const { lang } = useLanguageStore();
     const t = translations[lang];
 
@@ -71,6 +72,17 @@ export default function ActiveOrdersPage() {
 
                     if (payload.eventType === 'INSERT') {
                         setOrders(prev => [newOrder as Order, ...prev]);
+
+                        // Play notification sound if it matches the current view
+                        // Only play if the order belongs to the active store (for owners) or assigned store (for managers)
+                        if (!targetStoreId || newOrder.store_id === targetStoreId) {
+                            try {
+                                const audio = new Audio('/sounds/notification.mp3');
+                                audio.play().catch(e => console.log('Audio play failed (user interaction required):', e));
+                            } catch (error) {
+                                console.error('Error playing notification sound:', error);
+                            }
+                        }
                     } else if (payload.eventType === 'UPDATE') {
                         const updatedOrder = payload.new as Order;
                         setOrders(prev => prev.map(o => o.id === updatedOrder.id ? updatedOrder : o));
@@ -212,22 +224,47 @@ export default function ActiveOrdersPage() {
                         ))}
                     </div>
 
-                    <div className={`bg-white p-3 rounded-[1.5rem] shadow-xl flex items-center gap-3 group relative min-w-[200px] border-2 ${isOwner ? 'border-[#39FF14]' : 'border-gray-100 opacity-70'}`}>
-                        <div className="pl-3">
-                            <Store className={`w-5 h-5 ${isOwner ? 'text-[#39FF14]' : 'text-gray-300'}`} />
-                        </div>
-                        <select
-                            value={activeStoreId || (isManager ? profile?.assigned_store_id : '') || ''}
-                            onChange={(e) => setActiveStoreId(e.target.value || null)}
-                            disabled={!isOwner}
-                            className="bg-transparent text-[10px] font-black text-gray-900 uppercase tracking-[0.2em] py-2 pr-10 outline-none appearance-none cursor-pointer w-full disabled:cursor-not-allowed"
+                    <div className="flex items-center gap-4">
+                        <button
+                            onClick={() => {
+                                const audio = new Audio('/sounds/notification.mp3');
+                                audio.play().then(() => {
+                                    audio.pause();
+                                    audio.currentTime = 0;
+                                    setAudioEnabled(true);
+                                }).catch(() => alert("Please interact with the document first"));
+                            }}
+                            className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${audioEnabled ? 'bg-[#39FF14]/20 text-gray-900 border-2 border-[#39FF14]' : 'bg-gray-200 text-gray-500 border-2 border-transparent'}`}
                         >
-                            {isOwner && <option value="" className="bg-white">{t.allBranches}</option>}
-                            {stores.map(store => (
-                                <option key={store.id} value={store.id} className="bg-white">{store.name}</option>
-                            ))}
-                        </select>
-                        <ChevronDown className={`w-4 h-4 absolute right-6 pointer-events-none ${isOwner ? 'text-[#39FF14]' : 'text-gray-300'}`} />
+                            {audioEnabled ? '🔔 AUDIO ON' : '🔕 ENABLE AUDIO'}
+                        </button>
+
+                        <div className={`bg-white p-3 rounded-[1.5rem] shadow-xl flex items-center gap-3 group relative min-w-[200px] border-2 ${isOwner ? 'border-[#39FF14]' : 'border-gray-100 opacity-70'}`}>
+                            <div className="pl-3">
+                                <Store className={`w-5 h-5 ${isOwner ? 'text-[#39FF14]' : 'text-gray-300'}`} />
+                            </div>
+                            <select
+                                value={activeStoreId || (isManager ? profile?.assigned_store_id : '') || ''}
+                                onChange={(e) => setActiveStoreId(e.target.value || null)}
+                                disabled={!isOwner}
+                                className="bg-transparent text-[10px] font-black text-gray-900 uppercase tracking-[0.2em] py-2 pr-10 outline-none appearance-none cursor-pointer w-full disabled:cursor-not-allowed"
+                            >
+                                {isOwner && <option value="" className="bg-white">{t.allBranches}</option>}
+                                {Object.entries(stores.reduce((acc, store) => {
+                                    const district = store.district || 'Other';
+                                    if (!acc[district]) acc[district] = [];
+                                    acc[district].push(store);
+                                    return acc;
+                                }, {} as Record<string, any[]>)).map(([district, districtStores]) => (
+                                    <optgroup key={district} label={district}>
+                                        {(districtStores as any[]).map((store: any) => (
+                                            <option key={store.id} value={store.id} className="bg-white">{store.name}</option>
+                                        ))}
+                                    </optgroup>
+                                ))}
+                            </select>
+                            <ChevronDown className={`w-4 h-4 absolute right-6 pointer-events-none ${isOwner ? 'text-[#39FF14]' : 'text-gray-300'}`} />
+                        </div>
                     </div>
                 </div>
 

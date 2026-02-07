@@ -13,8 +13,9 @@ import { translations } from "../lib/translations";
 export default function Header() {
     const itemCount = useCartStore((state) => state.getItemCount());
     const selectedStoreId = useCartStore((state) => state.selectedStoreId);
-    const setSelectedStoreId = useCartStore((state) => state.setSelectedStoreId);
-    const { lang } = useLanguageStore();
+    const setSelectedStoreId = useCartStore((state) => state.setSelectedStoreId); // No longer needed for direct select
+    const setIsLocationModalOpen = useCartStore((state) => state.setIsLocationModalOpen);
+    const { lang, setLang } = useLanguageStore();
     const t = translations[lang];
 
     const [mounted, setMounted] = useState(false);
@@ -72,21 +73,39 @@ export default function Header() {
                             </span>
                         </Link>
 
-                        {/* Branch Selector */}
-                        <div className="relative group">
-                            <select
-                                value={selectedStoreId || ''}
-                                onChange={(e) => setSelectedStoreId(e.target.value)}
-                                className="appearance-none bg-white text-gray-900 text-[10px] font-black uppercase tracking-[0.2em] pl-6 pr-12 py-3.5 rounded-2xl border-2 border-gray-100 focus:border-[#39FF14] focus:ring-4 focus:ring-[#39FF14]/10 outline-none transition-all cursor-pointer shadow-sm"
-                            >
-                                <option value="" disabled>{t.selectStore}</option>
-                                {stores.map((store) => (
-                                    <option key={store.id} value={store.id} className="bg-white text-gray-900">
-                                        {store.name}
-                                    </option>
+                        {/* Language Switcher & Location Trigger */}
+                        <div className="flex items-center gap-4">
+                            {/* Language Switcher */}
+                            <div className="flex items-center bg-gray-50 rounded-xl p-1 border border-gray-100">
+                                {[
+                                    { code: 'en', label: '🇺🇸' },
+                                    { code: 'ru', label: '🇷🇺' },
+                                    { code: 'am', label: '🇦🇲' },
+                                ].map((flag) => (
+                                    <button
+                                        key={flag.code}
+                                        onClick={() => setLang(flag.code as any)}
+                                        className={`px-3 py-1.5 rounded-lg text-sm transition-all ${lang === flag.code
+                                            ? 'bg-white text-black shadow-sm font-bold'
+                                            : 'text-gray-400 hover:text-gray-600'
+                                            }`}
+                                    >
+                                        {flag.label}
+                                    </button>
                                 ))}
-                            </select>
-                            <ChevronDown className="w-5 h-5 absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none transition-transform group-hover:translate-y-[-40%] group-hover:text-[#39FF14]" />
+                            </div>
+
+                            {/* Location Trigger */}
+                            <button
+                                onClick={() => setIsLocationModalOpen(true)}
+                                className="hidden md:flex items-center gap-2 bg-white border-2 border-gray-100 hover:border-[#39FF14] px-4 py-2.5 rounded-xl transition-all group"
+                            >
+                                <div className="w-2 h-2 rounded-full bg-[#39FF14] animate-pulse"></div>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-gray-900 group-hover:text-[#39FF14] transition-colors max-w-[150px] truncate">
+                                    {stores.find(s => s.id === selectedStoreId)?.name || t.selectStore}
+                                </span>
+                                <ChevronDown className="w-3 h-3 text-gray-400 group-hover:text-[#39FF14]" />
+                            </button>
                         </div>
                     </div>
 

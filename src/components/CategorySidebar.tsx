@@ -67,21 +67,7 @@ export default function CategorySidebar({
                 <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 text-gray-300 w-6 h-6 group-focus-within:text-[#39FF14] transition-colors" />
             </div>
 
-            {/* Language Switcher */}
-            <div className="flex gap-3 mb-12 overflow-x-auto pb-2 scrollbar-hide">
-                {flags.map((flag) => (
-                    <button
-                        key={flag.code}
-                        onClick={() => setLang(flag.code)}
-                        className={`text-xl p-4 rounded-2xl transition-all font-black border-2 ${lang === flag.code
-                            ? 'bg-[#39FF14] text-black border-[#39FF14] shadow-[0_0_20px_rgba(57,255,20,0.3)] scale-105'
-                            : 'bg-white text-gray-300 border-gray-50 hover:border-gray-200 hover:bg-gray-50'
-                            }`}
-                    >
-                        {flag.label}
-                    </button>
-                ))}
-            </div>
+            {/* Language Switcher Removed (Moved to Header) */}
 
             <div className="flex items-center gap-4 mb-8 px-2">
                 <div className="h-6 w-1.5 bg-[#39FF14] rounded-full shadow-[0_0_8px_#39FF14]"></div>

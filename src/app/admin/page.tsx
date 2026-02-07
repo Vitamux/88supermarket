@@ -13,13 +13,27 @@ export default function AdminDashboard() {
     const { profile, activeStoreId, setActiveStoreId } = useAdminStore();
     const [activeTab, setActiveTab] = useState<'overview' | 'orders' | 'products'>('overview');
     const [products, setProducts] = useState<any[]>([]);
-    const [newProduct, setNewProduct] = useState({
+    const [defaultTab, setDefaultTab] = useState<'en' | 'ru' | 'am'>('en');
+    const [newProduct, setNewProduct] = useState<{
+        name: string;
+        price: string;
+        image_url: string;
+        category: string;
+        display_names: { en: string; ru: string; am: string };
+        description: { en: string; ru: string; am: string };
+        nutritional_info: {
+            calories: string;
+            protein: string;
+            carbs: string;
+            fat: string;
+        };
+    }>({
         name: '',
         price: '',
         image_url: '',
         category: '',
         display_names: { en: '', ru: '', am: '' },
-        description: '',
+        description: { en: '', ru: '', am: '' }, // Initialized as object for multi-lang
         nutritional_info: {
             calories: '',
             protein: '',
@@ -104,7 +118,7 @@ export default function AdminDashboard() {
                 image_url: '',
                 category: '',
                 display_names: { en: '', ru: '', am: '' },
-                description: '',
+                description: { en: '', ru: '', am: '' },
                 nutritional_info: {
                     calories: '',
                     protein: '',
@@ -287,38 +301,94 @@ export default function AdminDashboard() {
                                 {t.addProduct}
                             </h2>
 
-                            <form onSubmit={handleAddProduct} className="grid grid-cols-1 md:grid-cols-3 gap-10 items-end">
-                                <div className="space-y-4">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.4em] pl-1">{t.addProductName} (EN)</label>
-                                    <input required type="text" value={newProduct.display_names.en} onChange={e => setNewProduct({ ...newProduct, display_names: { ...newProduct.display_names, en: e.target.value } })} className="w-full bg-gray-50 border-2 border-gray-100 rounded-[1.5rem] px-6 py-5 focus:ring-4 focus:ring-[#39FF14]/10 focus:border-[#39FF14] outline-none transition-all font-black text-gray-900 placeholder-gray-300" placeholder="Product name..." />
-                                </div>
-                                <div className="space-y-4">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.4em] pl-1">{t.priceLabel} (AMD)</label>
-                                    <input required type="number" step="100" value={newProduct.price} onChange={e => setNewProduct({ ...newProduct, price: e.target.value })} className="w-full bg-gray-50 border-2 border-gray-100 rounded-[1.5rem] px-6 py-5 focus:ring-4 focus:ring-[#39FF14]/10 focus:border-[#39FF14] outline-none transition-all font-black text-gray-900 placeholder-gray-300" placeholder="8800" />
-                                </div>
-                                <div className="space-y-4">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.4em] pl-1">{t.productCategory}</label>
-                                    <div className="relative">
-                                        <select
-                                            value={newProduct.category}
-                                            onChange={e => setNewProduct({ ...newProduct, category: e.target.value })}
-                                            className="w-full bg-gray-50 border-2 border-gray-100 rounded-[1.5rem] px-6 py-5 focus:ring-4 focus:ring-[#39FF14]/10 focus:border-[#39FF14] outline-none transition-all font-black text-gray-900 appearance-none cursor-pointer"
-                                        >
-                                            <option value="" className="bg-white">Select Category</option>
-                                            {categories.map((cat) => (
-                                                <option key={cat.id} value={cat.slug || cat.name} className="bg-white">{cat.name?.[lang] || cat.name}</option>
-                                            ))}
-                                        </select>
-                                        <ChevronDown className="w-5 h-5 text-gray-300 absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none" />
+                            <form onSubmit={handleAddProduct} className="grid grid-cols-1 md:grid-cols-2 gap-10 items-start">
+                                {/* Left Column: Tabs & Inputs */}
+                                <div className="space-y-8">
+                                    <div className="flex gap-2 p-1 bg-gray-100 rounded-xl w-fit">
+                                        {(['en', 'ru', 'am'] as const).map((tab) => (
+                                            <button
+                                                key={tab}
+                                                type="button"
+                                                onClick={() => setDefaultTab(tab)}
+                                                className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${defaultTab === tab
+                                                    ? 'bg-black text-[#39FF14] shadow-md'
+                                                    : 'text-gray-400 hover:text-gray-900'
+                                                    }`}
+                                            >
+                                                {tab === 'am' ? 'HY' : tab.toUpperCase()}
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    <div className="space-y-6">
+                                        <div className="space-y-4">
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.4em] pl-1">
+                                                Product Name ({defaultTab.toUpperCase()})
+                                            </label>
+                                            <input
+                                                required
+                                                type="text"
+                                                value={newProduct.display_names[defaultTab]}
+                                                onChange={e => setNewProduct({
+                                                    ...newProduct,
+                                                    display_names: { ...newProduct.display_names, [defaultTab]: e.target.value }
+                                                })}
+                                                className="w-full bg-gray-50 border-2 border-gray-100 rounded-[1.5rem] px-6 py-5 focus:ring-4 focus:ring-[#39FF14]/10 focus:border-[#39FF14] outline-none transition-all font-black text-gray-900 placeholder-gray-300"
+                                                placeholder={`Name in ${defaultTab.toUpperCase()}...`}
+                                            />
+                                        </div>
+
+                                        <div className="space-y-4">
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.4em] pl-1">
+                                                Description ({defaultTab.toUpperCase()})
+                                            </label>
+                                            <textarea
+                                                value={newProduct.description[defaultTab]}
+                                                onChange={e => setNewProduct({
+                                                    ...newProduct,
+                                                    description: { ...newProduct.description, [defaultTab]: e.target.value }
+                                                })}
+                                                className="w-full bg-gray-50 border-2 border-gray-100 rounded-[1.5rem] px-6 py-5 focus:ring-4 focus:ring-[#39FF14]/10 focus:border-[#39FF14] outline-none transition-all font-medium text-gray-900 placeholder-gray-300 min-h-[120px] resize-none"
+                                                placeholder={`Description in ${defaultTab.toUpperCase()}...`}
+                                            />
+                                        </div>
                                     </div>
                                 </div>
-                                <div className="md:col-span-2 space-y-4">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.4em] pl-1">{t.productImage} URL</label>
-                                    <input type="text" value={newProduct.image_url} onChange={e => setNewProduct({ ...newProduct, image_url: e.target.value })} className="w-full bg-gray-50 border-2 border-gray-100 rounded-[1.5rem] px-6 py-5 focus:ring-4 focus:ring-[#39FF14]/10 focus:border-[#39FF14] outline-none transition-all font-black text-gray-900 placeholder-gray-300" placeholder="https://..." />
+
+                                {/* Right Column: Price, Category, Image */}
+                                <div className="space-y-6">
+                                    <div className="grid grid-cols-2 gap-6">
+                                        <div className="space-y-4">
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.4em] pl-1">{t.priceLabel}</label>
+                                            <input required type="number" step="100" value={newProduct.price} onChange={e => setNewProduct({ ...newProduct, price: e.target.value })} className="w-full bg-gray-50 border-2 border-gray-100 rounded-[1.5rem] px-6 py-5 focus:ring-4 focus:ring-[#39FF14]/10 focus:border-[#39FF14] outline-none transition-all font-black text-gray-900 placeholder-gray-300" placeholder="0" />
+                                        </div>
+                                        <div className="space-y-4">
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.4em] pl-1">{t.productCategory}</label>
+                                            <div className="relative">
+                                                <select
+                                                    value={newProduct.category}
+                                                    onChange={e => setNewProduct({ ...newProduct, category: e.target.value })}
+                                                    className="w-full bg-gray-50 border-2 border-gray-100 rounded-[1.5rem] px-6 py-5 focus:ring-4 focus:ring-[#39FF14]/10 focus:border-[#39FF14] outline-none transition-all font-black text-gray-900 appearance-none cursor-pointer"
+                                                >
+                                                    <option value="" className="bg-white">Select</option>
+                                                    {categories.map((cat) => (
+                                                        <option key={cat.id} value={cat.slug || cat.name} className="bg-white">{cat.name?.[lang] || cat.name}</option>
+                                                    ))}
+                                                </select>
+                                                <ChevronDown className="w-5 h-5 text-gray-300 absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.4em] pl-1">{t.productImage} URL</label>
+                                        <input type="text" value={newProduct.image_url} onChange={e => setNewProduct({ ...newProduct, image_url: e.target.value })} className="w-full bg-gray-50 border-2 border-gray-100 rounded-[1.5rem] px-6 py-5 focus:ring-4 focus:ring-[#39FF14]/10 focus:border-[#39FF14] outline-none transition-all font-black text-gray-900 placeholder-gray-300" placeholder="https://..." />
+                                    </div>
+
+                                    <button type="submit" className="w-full bg-[#39FF14] text-black font-black text-[10px] uppercase tracking-[0.4em] py-6 rounded-[1.5rem] hover:bg-black hover:text-[#39FF14] transition-all shadow-[0_15px_35px_rgba(57,255,20,0.3)] active:scale-95 mt-4">
+                                        {t.addNew}
+                                    </button>
                                 </div>
-                                <button type="submit" className="bg-[#39FF14] text-black font-black text-[10px] uppercase tracking-[0.4em] py-6 px-10 rounded-[1.5rem] hover:bg-black hover:text-[#39FF14] transition-all shadow-[0_15px_35px_rgba(57,255,20,0.3)] h-[70px] active:scale-95">
-                                    {t.addNew}
-                                </button>
                             </form>
                         </div>
 

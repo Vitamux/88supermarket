@@ -204,8 +204,8 @@ export default function Home() {
               Redefining the standard for premium online grocery shopping with 88 Supermarket's fulfillment.
             </p>
             <div className="text-[10px] space-y-4 opacity-80 uppercase tracking-[0.3em] font-black">
-              <p className="flex items-center gap-3"><div className="w-1.5 h-1.5 bg-[#39FF14] rounded-full"></div> 88 Center Plaza, Armenian Highlands</p>
-              <p className="flex items-center gap-3"><div className="w-1.5 h-1.5 bg-[#39FF14] rounded-full"></div> Opening Hours:</p>
+              <div className="flex items-center gap-3"><span className="w-1.5 h-1.5 bg-[#39FF14] rounded-full"></span> 88 Center Plaza, Armenian Highlands</div>
+              <div className="flex items-center gap-3"><span className="w-1.5 h-1.5 bg-[#39FF14] rounded-full"></span> Opening Hours:</div>
               <p className="text-[#39FF14] bg-[#39FF14]/10 px-4 py-2 rounded-lg inline-block">8 AM - 11 PM Daily</p>
             </div>
           </div>

@@ -39,6 +39,8 @@ interface CartStore {
     updateOrderStatus: (orderId: string, status: Order['status']) => void;
     getItemCount: () => number;
     getTotalPrice: () => number;
+    isLocationModalOpen: boolean;
+    setIsLocationModalOpen: (isOpen: boolean) => void;
 }
 
 export const useCartStore = create<CartStore>()(
@@ -48,6 +50,8 @@ export const useCartStore = create<CartStore>()(
             orders: [],
             searchQuery: '',
             selectedStoreId: null,
+            isLocationModalOpen: false,
+            setIsLocationModalOpen: (isOpen) => set({ isLocationModalOpen: isOpen }),
             addItem: (item) => set((state) => {
                 const existingItem = state.items.find((i) => i.id === item.id);
                 if (existingItem) {

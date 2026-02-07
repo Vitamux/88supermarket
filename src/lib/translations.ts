@@ -137,6 +137,13 @@ export const translations = {
         confirmDeleteProduct: "Are you sure you want to delete this product?",
         selectStore: "Select Branch",
         allBranches: "All Branches",
+        searchBranches: "Search branches...",
+        locationTitle: "Find your local 88 Supermarket",
+        district_Kentron: "Kentron",
+        district_Arabkir: "Arabkir",
+        district_Shengavit: "Shengavit",
+        district_Syunik: "Syunik",
+        district_Shirak: "Shirak",
     },
     ru: {
         searchPlaceholder: "Поиск продуктов...",
@@ -276,6 +283,13 @@ export const translations = {
         confirmDeleteProduct: "Вы уверены, что хотите удалить этот товар?",
         selectStore: "Выбрать филиал",
         allBranches: "Все филиалы",
+        searchBranches: "Поиск филиала...",
+        locationTitle: "Найдите ближайший 88 Supermarket",
+        district_Kentron: "Кентрон",
+        district_Arabkir: "Арабкир",
+        district_Shengavit: "Шенгавит",
+        district_Syunik: "Сюник",
+        district_Shirak: "Ширак",
     },
     am: {
         searchPlaceholder: "Որոնել ապրանքներ...",
@@ -415,6 +429,13 @@ export const translations = {
         confirmDeleteProduct: "Վստա՞հ եք, որ ցանկանում եք ջնջել այս ապրանքը:",
         selectStore: "Ընտրել մասնաճյուղ",
         allBranches: "Բոլոր մասնաճյուղերը",
+        searchBranches: "Որոնել մասնաճյուղ...",
+        locationTitle: "Գտեք ձեր մոտակա 88 Supermarket-ը",
+        district_Kentron: "Կենտրոն",
+        district_Arabkir: "Արաբկիր",
+        district_Shengavit: "Շենգավիթ",
+        district_Syunik: "Սյունիք",
+        district_Shirak: "Շիրակ",
     }
 };
 
