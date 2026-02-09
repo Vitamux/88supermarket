@@ -78,7 +78,12 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart }: 
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                             src={imageUrl}
-                            alt={product.name}
+                            alt={(() => {
+                                if (typeof product.name === 'object' && product.name !== null) {
+                                    return (product.name as any)[lang] || (product.name as any)['am'] || (product.name as any)['en'] || 'Product Image';
+                                }
+                                return product.name || 'Product Image';
+                            })()}
                             className="w-full h-full object-cover"
                         />
                         {isOutOfStock && (
@@ -97,7 +102,15 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart }: 
                             <span className="text-[12px] font-black text-[#39FF14] uppercase tracking-[0.4em] mb-4 drop-shadow-[0_0_8px_rgba(57,255,20,0.4)]">
                                 {(product as any).category || '88 Selection'}
                             </span>
-                            <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-4 uppercase tracking-tighter italic">{(product as any).display_names?.[lang] || product.name}</h2>
+                            <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-4 uppercase tracking-tighter italic">
+                                {(() => {
+                                    if ((product as any).display_names?.[lang]) return (product as any).display_names[lang];
+                                    if (typeof product.name === 'object' && product.name !== null) {
+                                        return (product.name as any)[lang] || (product.name as any)['am'] || (product.name as any)['en'] || 'Unknown Product';
+                                    }
+                                    return product.name;
+                                })()}
+                            </h2>
                             <div className="h-1.5 w-16 bg-[#39FF14] rounded-full shadow-[0_0_10px_#39FF14] mb-6"></div>
                             <p className="text-4xl font-black text-gray-900 tracking-tighter">
                                 {product.price.toLocaleString()} <span className="text-xs font-black text-[#39FF14] uppercase tracking-widest ml-1">AMD</span>

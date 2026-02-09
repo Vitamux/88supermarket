@@ -39,8 +39,31 @@ export default function Home() {
   }, []);
 
   const filteredProducts = products.filter(product => {
-    const currentName = product.display_names?.[lang] || product.name || '';
-    const matchesSearch = currentName.toLowerCase().includes(searchQuery.toLowerCase());
+    // Helper to get searching name safely
+    let nameToSearch = '';
+
+    // 1. Try display_names for current lang
+    if (product.display_names?.[lang]) {
+      nameToSearch = product.display_names[lang];
+    }
+    // 2. Try product.name if it's an object
+    else if (typeof product.name === 'object' && product.name !== null) {
+      nameToSearch = product.name[lang] || product.name['am'] || product.name['ru'] || product.name['en'] || '';
+      // Also allow searching by ANY of the names in the object? 
+      // For now, let's just search the resolved name or maybe we should search stringified values.
+      // Actually, better user experience: search matching any language? 
+      // User asked: "It should search within the am (Armenian) key by default."
+      // Let's just stick to the resolved name for now to avoid complexity, or checking all values.
+      // Let's check all values for better search.
+      const allNames = Object.values(product.name).join(' ').toLowerCase();
+      if (allNames.includes(searchQuery.toLowerCase())) return true;
+    }
+    // 3. Fallback to string
+    else if (typeof product.name === 'string') {
+      nameToSearch = product.name;
+    }
+
+    const matchesSearch = nameToSearch.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });

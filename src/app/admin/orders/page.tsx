@@ -400,7 +400,13 @@ export default function ActiveOrdersPage() {
                                                         {item.quantity}
                                                     </span>
                                                     <p className="font-bold text-gray-700 text-sm">
-                                                        {item.display_names?.[lang] || item.name}
+                                                        {(() => {
+                                                            if (item.display_names?.[lang]) return item.display_names[lang];
+                                                            if (typeof item.name === 'object' && item.name !== null) {
+                                                                return (item.name as any)[lang] || (item.name as any)['am'] || (item.name as any)['en'] || 'Unknown Item';
+                                                            }
+                                                            return item.name;
+                                                        })()}
                                                     </p>
                                                 </div>
                                                 <span className="font-bold text-gray-500 text-xs">
@@ -425,6 +431,15 @@ export default function ActiveOrdersPage() {
                                                 onClick={() => {
                                                     const printWindow = window.open('', '', 'width=600,height=800');
                                                     if (printWindow) {
+                                                        // Helper to get name safely for print
+                                                        const getPrintName = (i: any) => {
+                                                            if (i.display_names?.[lang]) return i.display_names[lang];
+                                                            if (typeof i.name === 'object' && i.name !== null) {
+                                                                return (i.name as any)[lang] || (i.name as any)['am'] || (i.name as any)['en'] || 'Item';
+                                                            }
+                                                            return i.name || 'Item';
+                                                        };
+
                                                         printWindow.document.write(`
                                                             <html>
                                                                 <head>
@@ -451,7 +466,7 @@ export default function ActiveOrdersPage() {
                                                                     <hr style="border: 1px dashed #000; margin: 15px 0;" />
                                                                     ${order.items.map((item: any) => `
                                                                         <div class="item">
-                                                                            <span>${item.quantity}x ${(item.display_names?.[lang] || item.name).substring(0, 20)}</span>
+                                                                            <span>${item.quantity}x ${getPrintName(item).substring(0, 20)}</span>
                                                                             <span>${(item.price * item.quantity).toLocaleString()}</span>
                                                                         </div>
                                                                     `).join('')}
