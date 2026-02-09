@@ -6,6 +6,7 @@ import { useCartStore, Order } from '../../store/useCartStore';
 import { supabase } from '../../lib/supabase';
 import { useLanguageStore } from '../../store/useLanguageStore';
 import { translations } from '../../lib/translations';
+import { getTranslation } from '@/lib/i18n';
 import { useAdminStore } from '../../store/useAdminStore';
 import { ChevronDown, BarChart3, Store, TrendingUp, Trash2, Plus, Info } from 'lucide-react';
 
@@ -415,7 +416,7 @@ export default function AdminDashboard() {
                                                             )}
                                                         </div>
                                                         <div>
-                                                            <p className="font-black text-gray-900 text-lg uppercase italic tracking-tighter">{product.display_names?.[lang] || product.name}</p>
+                                                            <p className="font-black text-gray-900 text-lg uppercase italic tracking-tighter">{getTranslation(product.display_names?.[lang] || product.name, lang)}</p>
                                                             <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] mt-1">{product.category}</p>
                                                         </div>
                                                     </div>
