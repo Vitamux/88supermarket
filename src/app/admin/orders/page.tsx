@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useLanguageStore } from '../../../store/useLanguageStore';
 import { translations } from '../../../lib/translations';
 import { supabase } from '../../../lib/supabase';
+import { getTranslation } from '../../../lib/i18n';
 import { useAdminStore } from '@/store/useAdminStore';
 import { Phone, MapPin, Package, Check, Copy, ChevronDown, Filter, Trash2, Store, Printer } from 'lucide-react';
 import Link from 'next/link';
@@ -400,13 +401,7 @@ export default function ActiveOrdersPage() {
                                                         {item.quantity}
                                                     </span>
                                                     <p className="font-bold text-gray-700 text-sm">
-                                                        {(() => {
-                                                            if (item.display_names?.[lang]) return item.display_names[lang];
-                                                            if (typeof item.name === 'object' && item.name !== null) {
-                                                                return (item.name as any)[lang] || (item.name as any)['am'] || (item.name as any)['en'] || 'Unknown Item';
-                                                            }
-                                                            return item.name;
-                                                        })()}
+                                                        {getTranslation(item.display_names || item.name, lang)}
                                                     </p>
                                                 </div>
                                                 <span className="font-bold text-gray-500 text-xs">
@@ -432,13 +427,7 @@ export default function ActiveOrdersPage() {
                                                     const printWindow = window.open('', '', 'width=600,height=800');
                                                     if (printWindow) {
                                                         // Helper to get name safely for print
-                                                        const getPrintName = (i: any) => {
-                                                            if (i.display_names?.[lang]) return i.display_names[lang];
-                                                            if (typeof i.name === 'object' && i.name !== null) {
-                                                                return (i.name as any)[lang] || (i.name as any)['am'] || (i.name as any)['en'] || 'Item';
-                                                            }
-                                                            return i.name || 'Item';
-                                                        };
+                                                        const getPrintName = (i: any) => getTranslation(i.display_names || i.name, lang);
 
                                                         printWindow.document.write(`
                                                             <html>

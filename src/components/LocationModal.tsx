@@ -6,6 +6,7 @@ import { supabase } from '../lib/supabase';
 import { MapPin, Search, ChevronDown, Check, Store, Phone } from 'lucide-react';
 import { useLanguageStore } from '../store/useLanguageStore';
 import { translations } from '../lib/translations';
+import { searchMatch } from '../lib/i18n';
 
 interface StoreType {
     id: string;
@@ -60,11 +61,17 @@ export default function LocationModal() {
 
     // Filter grouped stores by search
     const filteredGroups = Object.keys(groupedStores).reduce((acc, district) => {
-        const districtStores = groupedStores[district].filter(store =>
-            store.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            store.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            district.toLowerCase().includes(searchQuery.toLowerCase())
-        );
+        const districtStores = groupedStores[district].filter(store => {
+            // Filter by search query if exists
+            if (searchQuery) {
+                return (
+                    searchMatch(store.name, searchQuery) ||
+                    searchMatch(store.address, searchQuery) ||
+                    searchMatch(district, searchQuery)
+                );
+            }
+            return true; // If no search query, include all stores
+        });
         if (districtStores.length > 0) {
             acc[district] = districtStores;
         }

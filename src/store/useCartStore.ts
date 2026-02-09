@@ -62,9 +62,18 @@ export const useCartStore = create<CartStore>()(
                     };
                 }
                 // Ensure display_names is present or fall back to name for all keys to avoid errors
+                let display_names = item.display_names;
+                if (!display_names) {
+                    if (typeof item.name === 'object' && item.name !== null) {
+                        display_names = item.name as any;
+                    } else {
+                        display_names = { en: item.name, ru: item.name, am: item.name };
+                    }
+                }
+
                 const safeItem = {
                     ...item,
-                    display_names: item.display_names || { en: item.name, ru: item.name, am: item.name },
+                    display_names,
                     quantity: 1
                 };
                 return { items: [...state.items, safeItem] };

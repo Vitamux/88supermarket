@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useLanguageStore } from '../../../store/useLanguageStore';
 import { translations } from '../../../lib/translations';
+import { getTranslation, searchMatch } from '../../../lib/i18n';
 import { supabase } from '../../../lib/supabase';
 import { Search, Edit2, Check, X } from 'lucide-react';
 import Link from 'next/link';
@@ -113,8 +114,7 @@ export default function InventoryPage() {
     };
 
     const filteredProducts = products.filter(product => {
-        const productName = product.display_names?.[lang] || product.name || '';
-        return productName.toLowerCase().includes(searchQuery.toLowerCase());
+        return searchMatch(product.display_names, searchQuery) || searchMatch(product.name, searchQuery);
     });
 
     return (
@@ -186,13 +186,13 @@ export default function InventoryPage() {
                                                                 {/* eslint-disable-next-line @next/next/no-img-element */}
                                                                 <img
                                                                     src={imageUrl}
-                                                                    alt={product.display_names?.[lang] || product.name}
+                                                                    alt={getTranslation(product.display_names?.[lang] || product.name, lang)}
                                                                     className="w-full h-full object-cover"
                                                                 />
                                                             </div>
                                                             <div>
                                                                 <div className="font-black text-gray-900 text-lg uppercase italic tracking-tighter">
-                                                                    {product.display_names?.[lang] || product.name}
+                                                                    {getTranslation(product.display_names?.[lang] || product.name, lang)}
                                                                 </div>
                                                                 <div className="text-[10px] font-black text-gray-400 uppercase tracking-[0.4em] mt-1.5 opacity-50">
                                                                     REF: {product.id.toString().slice(0, 8).toUpperCase()}
