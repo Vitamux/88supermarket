@@ -82,8 +82,14 @@ export default function ProductCard({ product, onOpenModal, onAddToCart }: Produ
                 </div>
                 <h3 className="font-black text-gray-900 truncate text-xl uppercase tracking-tighter italic">{(product as any).display_names?.[lang] || product.name}</h3>
                 <p className="text-gray-400 text-xs truncate mt-1 font-medium italic opacity-60">
-                    {/* Handle description being either a string (legacy) or object (new) */}
-                    {(typeof product.description === 'object' ? (product.description as any)?.[lang] : product.description) || '88 Supermarket Quality'}
+                    {/* Handle description being either a string (legacy) or object (new) with robust fallback */}
+                    {(() => {
+                        const desc = product.description;
+                        if (typeof desc === 'object' && desc !== null) {
+                            return (desc as any)[lang] || (desc as any)['hy'] || (desc as any)['am'] || (desc as any)['en'] || '88 Supermarket Quality';
+                        }
+                        return desc || '88 Supermarket Quality';
+                    })()}
                 </p>
             </div>
 

@@ -22,10 +22,12 @@ export const useAdminStore = create<AdminState>()(
         (set) => ({
             profile: null,
             activeStoreId: null,
-            setProfile: (profile) => set({
+            setProfile: (profile) => set((state) => ({
                 profile,
-                activeStoreId: profile?.role === 'manager' ? profile.assigned_store_id : null
-            }),
+                activeStoreId: profile?.role === 'manager'
+                    ? profile.assigned_store_id
+                    : (state.activeStoreId || null)
+            })),
             setActiveStoreId: (activeStoreId) => set({ activeStoreId }),
         }),
         {

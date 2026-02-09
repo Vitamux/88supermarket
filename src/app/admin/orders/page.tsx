@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react';
 import { useLanguageStore } from '../../../store/useLanguageStore';
 import { translations } from '../../../lib/translations';
 import { supabase } from '../../../lib/supabase';
-import { useAdminStore } from '../../../store/useAdminStore';
-import { Phone, MapPin, Package, Check, Copy, ChevronDown, Filter, Trash2, Store } from 'lucide-react';
+import { useAdminStore } from '@/store/useAdminStore';
+import { Phone, MapPin, Package, Check, Copy, ChevronDown, Filter, Trash2, Store, Printer } from 'lucide-react';
 import Link from 'next/link';
 // Removed unused toast import
 
@@ -420,13 +420,70 @@ export default function ActiveOrdersPage() {
                                         </p>
                                     </div>
                                     {order.status !== 'completed' && (
-                                        <button
-                                            onClick={() => handleUpdateStatus(order.id, 'completed')}
-                                            className="bg-black text-[#39FF14] font-black px-10 py-5 rounded-[1.5rem] transition-all flex items-center gap-3 shadow-2xl hover:bg-[#39FF14] hover:text-black hover:-translate-y-1 active:scale-95 text-[10px] uppercase tracking-[0.4em] border-2 border-black w-full md:w-auto justify-center"
-                                        >
-                                            <Check className="w-6 h-6 stroke-[4px]" />
-                                            {t.markAsCompleted}
-                                        </button>
+                                        <div className="flex gap-4 w-full md:w-auto">
+                                            <button
+                                                onClick={() => {
+                                                    const printWindow = window.open('', '', 'width=600,height=800');
+                                                    if (printWindow) {
+                                                        printWindow.document.write(`
+                                                            <html>
+                                                                <head>
+                                                                    <title>Order #${order.id.slice(0, 8)}</title>
+                                                                    <style>
+                                                                        body { font-family: monospace; padding: 20px; max-width: 300px; margin: 0 auto; }
+                                                                        .header { text-align: center; margin-bottom: 20px; border-bottom: 2px dashed #000; padding-bottom: 10px; }
+                                                                        .item { display: flex; justify-content: space-between; margin-bottom: 5px; }
+                                                                        .total { border-top: 2px dashed #000; margin-top: 10px; padding-top: 10px; display: flex; justify-content: space-between; font-weight: bold; font-size: 1.2em; }
+                                                                        .footer { text-align: center; margin-top: 20px; font-size: 0.8em; }
+                                                                    </style>
+                                                                </head>
+                                                                <body>
+                                                                    <div class="header">
+                                                                        <h2>88 SUPERMARKET</h2>
+                                                                        <p>${new Date(order.created_at).toLocaleString()}</p>
+                                                                        <p>Order #${order.id.slice(0, 8)}</p>
+                                                                    </div>
+                                                                    <div>
+                                                                        <p><strong>Customer:</strong> ${order.customer_name}</p>
+                                                                        <p><strong>Phone:</strong> ${order.phone}</p>
+                                                                        <p><strong>Address:</strong> ${order.address}</p>
+                                                                    </div>
+                                                                    <hr style="border: 1px dashed #000; margin: 15px 0;" />
+                                                                    ${order.items.map((item: any) => `
+                                                                        <div class="item">
+                                                                            <span>${item.quantity}x ${(item.display_names?.[lang] || item.name).substring(0, 20)}</span>
+                                                                            <span>${(item.price * item.quantity).toLocaleString()}</span>
+                                                                        </div>
+                                                                    `).join('')}
+                                                                    <div class="total">
+                                                                        <span>TOTAL:</span>
+                                                                        <span>${order.total_price.toLocaleString()} AMD</span>
+                                                                    </div>
+                                                                    <div class="footer">
+                                                                        <p>Thank you for shopping with us!</p>
+                                                                    </div>
+                                                                    <script>
+                                                                        window.onload = function() { window.print(); window.close(); }
+                                                                    </script>
+                                                                </body>
+                                                            </html>
+                                                        `);
+                                                        printWindow.document.close();
+                                                    }
+                                                }}
+                                                className="bg-white text-black font-black px-6 py-5 rounded-[1.5rem] transition-all flex items-center gap-3 shadow-xl hover:bg-gray-50 border-2 border-black w-full md:w-auto justify-center"
+                                                title="Print Receipt"
+                                            >
+                                                <Printer className="w-6 h-6" />
+                                            </button>
+                                            <button
+                                                onClick={() => handleUpdateStatus(order.id, 'completed')}
+                                                className="bg-black text-[#39FF14] font-black px-10 py-5 rounded-[1.5rem] transition-all flex items-center gap-3 shadow-2xl hover:bg-[#39FF14] hover:text-black hover:-translate-y-1 active:scale-95 text-[10px] uppercase tracking-[0.4em] border-2 border-black w-full md:w-auto justify-center flex-1"
+                                            >
+                                                <Check className="w-6 h-6 stroke-[4px]" />
+                                                {t.markAsCompleted}
+                                            </button>
+                                        </div>
                                     )}
                                 </div>
                             </div>

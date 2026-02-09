@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useCartStore } from '../store/useCartStore';
 import { supabase } from '../lib/supabase';
-import { MapPin, Search, ChevronDown, Check, Store } from 'lucide-react';
+import { MapPin, Search, ChevronDown, Check, Store, Phone } from 'lucide-react';
 import { useLanguageStore } from '../store/useLanguageStore';
 import { translations } from '../lib/translations';
 
@@ -86,8 +86,8 @@ export default function LocationModal() {
     if (!isLocationModalOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-300">
-            <div className="bg-white w-full max-w-2xl rounded-[3rem] shadow-2xl border-2 border-gray-50 overflow-hidden relative fade-in slide-in-from-bottom-10 duration-500">
+        <div className="fixed inset-0 z-[100] flex items-end md:items-center justify-center p-0 md:p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-300">
+            <div className="bg-white w-full md:max-w-2xl rounded-t-[3rem] md:rounded-[3rem] shadow-2xl border-t-2 md:border-2 border-gray-50 overflow-hidden relative fade-in slide-in-from-bottom-10 duration-500 max-h-[90vh] md:max-h-[85vh] flex flex-col">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-[#39FF14]/10 blur-[100px] -mr-32 -mt-32 rounded-full pointer-events-none"></div>
 
                 <div className="p-10 pb-0">
@@ -122,7 +122,7 @@ export default function LocationModal() {
                     </div>
                 </div>
 
-                <div className="h-[400px] overflow-y-auto px-10 pb-10 space-y-4 scrollbar-hide">
+                <div className="flex-1 overflow-y-auto px-4 md:px-10 pb-10 space-y-4 scrollbar-hide">
                     {Object.keys(filteredGroups).length === 0 ? (
                         <div className="text-center py-20 opacity-50">
                             <Store className="w-12 h-12 mx-auto mb-4 text-gray-300" />
@@ -130,33 +130,39 @@ export default function LocationModal() {
                         </div>
                     ) : (
                         Object.entries(filteredGroups).map(([district, districtStores]) => (
-                            <div key={district} className="border-2 border-gray-100 rounded-3xl overflow-hidden bg-gray-50/30">
+                            <div key={district} className="border-2 border-gray-100 rounded-3xl overflow-hidden bg-gray-50/30 transition-all hover:border-[#39FF14]/30">
                                 <button
                                     onClick={() => setExpandedDistrict(expandedDistrict === district ? null : district)}
-                                    className="w-full flex items-center justify-between p-6 bg-white hover:bg-gray-50 transition-colors"
+                                    className="w-full flex items-center justify-between p-5 md:p-6 bg-white hover:bg-gray-50 transition-colors group"
                                 >
                                     <span className="font-black text-gray-900 uppercase tracking-widest text-xs flex items-center gap-3">
-                                        <div className={`w-2 h-2 rounded-full ${expandedDistrict === district ? 'bg-[#39FF14] shadow-[0_0_10px_#39FF14]' : 'bg-gray-300'}`}></div>
-                                        {getLocalizedDistrict(district)}
+                                        <div className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${expandedDistrict === district ? 'bg-[#39FF14] shadow-[0_0_10px_#39FF14] scale-125' : 'bg-gray-300 group-hover:bg-[#39FF14]/50'}`}></div>
+                                        {getLocalizedDistrict(district)} <span className="text-gray-400 text-[10px]">({districtStores.length})</span>
                                     </span>
-                                    <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${expandedDistrict === district ? 'rotate-180' : ''}`} />
+                                    <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${expandedDistrict === district ? 'rotate-180 text-[#39FF14]' : ''}`} />
                                 </button>
 
-                                <div className={`transition-all duration-300 ease-in-out overflow-hidden ${expandedDistrict === district || searchQuery ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
-                                    <div className="p-4 space-y-2">
+                                <div className={`transition-all duration-500 ease-in-out overflow-hidden ${expandedDistrict === district || searchQuery ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                                    <div className="p-3 md:p-4 space-y-2 bg-gray-50/50 border-t border-gray-100">
                                         {districtStores.map(store => (
                                             <button
                                                 key={store.id}
                                                 onClick={() => handleSelectStore(store.id)}
-                                                className={`w-full text-left p-5 rounded-2xl border-2 transition-all group relative overflow-hidden ${selectedStoreId === store.id ? 'bg-black border-black text-white shadow-xl' : 'bg-white border-transparent hover:border-[#39FF14]/30 hover:shadow-lg'}`}
+                                                className={`w-full text-left p-4 md:p-5 rounded-2xl border-2 transition-all group relative overflow-hidden ${selectedStoreId === store.id
+                                                    ? 'bg-black border-black text-white shadow-xl scale-[1.02]'
+                                                    : 'bg-white border-transparent hover:border-[#39FF14] hover:shadow-[0_10px_20px_rgba(57,255,20,0.1)]'
+                                                    }`}
                                             >
-                                                <div className="flex justify-between items-start">
+                                                <div className="flex justify-between items-start gap-4">
                                                     <div>
-                                                        <h3 className={`font-black uppercase tracking-tight italic mb-1 ${selectedStoreId === store.id ? 'text-[#39FF14]' : 'text-gray-900'}`}>{store.name}</h3>
+                                                        <h3 className={`font-black uppercase tracking-tight italic mb-1 text-sm md:text-base ${selectedStoreId === store.id ? 'text-[#39FF14]' : 'text-gray-900'}`}>{store.name}</h3>
                                                         <p className={`text-[10px] uppercase tracking-widest font-bold ${selectedStoreId === store.id ? 'text-gray-400' : 'text-gray-400'}`}>{store.address}</p>
+                                                        <p className="text-[10px] font-bold text-gray-300 mt-2 flex items-center gap-2">
+                                                            <Phone className="w-3 h-3" /> {store.phone}
+                                                        </p>
                                                     </div>
                                                     {selectedStoreId === store.id && (
-                                                        <div className="bg-[#39FF14] rounded-full p-1">
+                                                        <div className="bg-[#39FF14] rounded-full p-1.5 shadow-[0_0_10px_#39FF14]">
                                                             <Check className="w-4 h-4 text-black stroke-[4px]" />
                                                         </div>
                                                     )}

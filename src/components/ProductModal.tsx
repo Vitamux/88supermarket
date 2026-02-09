@@ -105,7 +105,13 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart }: 
                         </div>
 
                         <p className="text-gray-400 mb-12 leading-relaxed text-center font-medium italic text-lg opacity-80">
-                            {product.description || t.premiumFallback}
+                            {(() => {
+                                const desc = product.description;
+                                if (typeof desc === 'object' && desc !== null) {
+                                    return (desc as any)[lang] || (desc as any)['hy'] || (desc as any)['am'] || (desc as any)['en'] || t.premiumFallback;
+                                }
+                                return desc || t.premiumFallback;
+                            })()}
                         </p>
 
                         {((product as any).nutritional_info || product.nutrition) && (
