@@ -85,22 +85,28 @@ export async function createManager(prevState: any, formData: FormData) {
 
     console.log('✅ Auth user created:', authData.user.id);
 
-    // Create Profile Entry
-    console.log('📝 Creating profile entry...');
+    // Create Profile Entry (using upsert to avoid duplicate key errors)
+    console.log('📝 Creating/Updating profile entry...');
     const { error: profileError } = await supabaseAdmin
         .from('profiles')
-        .insert({
+        .upsert({
             id: authData.user.id,
-            email: email,
             role: 'manager',
             assigned_store_id: storeId
+        }, {
+            onConflict: 'id'
         });
 
     if (profileError) {
         console.log('❌ Profile creation failed:', profileError);
         // Rollback auth user creation if profile fails
-        await supabaseAdmin.auth.admin.deleteUser(authData.user.id);
-        return { message: 'User created but profile failed: ' + profileError.message, success: false };
+        console.log('🔄 Rolling back auth user creation...');
+        try {
+            await supabaseAdmin.auth.admin.deleteUser(authData.user.id);
+        } catch (rollbackError) {
+            console.error('❌ Rollback failed:', rollbackError);
+        }
+        return { message: 'Failed to create manager profile: ' + profileError.message, success: false };
     }
 
     console.log('✅ Manager created successfully!');
