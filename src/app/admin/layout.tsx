@@ -25,9 +25,9 @@ export default function AdminLayout({
                 return;
             }
 
-            // Check if user is in admin_profiles
+            // Check if user is in profiles
             const { data: profile, error } = await supabase
-                .from('admin_profiles')
+                .from('profiles')
                 .select('*')
                 .eq('id', session.user.id)
                 .single();

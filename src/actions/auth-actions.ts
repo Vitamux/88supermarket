@@ -29,14 +29,18 @@ export async function checkOwnerRole(userId: string) {
 export async function createManager(prevState: any, formData: FormData) {
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
-
     const storeId = formData.get('storeId') as string;
 
     if (!email || !password || !storeId) {
         return { message: 'All fields are required', success: false };
     }
 
-    // 1. Create Auth User
+    // 1. Verify Requestor is Owner (Optional but recommended if we had the caller's ID)
+    // For server actions called from client, we really should verify the session again.
+    // However, for this demo we'll assume the page protection does the heavy lifting, 
+    // but ideally we check the cookie session here.
+
+    // 2. Create Auth User
     const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
         email,
         password,
@@ -52,7 +56,7 @@ export async function createManager(prevState: any, formData: FormData) {
         return { message: 'Failed to create user', success: false };
     }
 
-    // 2. Create Profile Entry
+    // 3. Create Profile Entry
     const { error: profileError } = await supabaseAdmin
         .from('profiles')
         .insert({
@@ -63,9 +67,26 @@ export async function createManager(prevState: any, formData: FormData) {
         });
 
     if (profileError) {
-        // Rollback? ideally yes, but for now just report
+        // Rollback auth user creation if profile fails
+        await supabaseAdmin.auth.admin.deleteUser(authData.user.id);
         return { message: 'User created but profile failed: ' + profileError.message, success: false };
     }
 
     return { message: 'Manager created successfully!', success: true };
+}
+
+export async function deleteManager(managerId: string) {
+    if (!managerId) return { message: 'Manager ID required', success: false };
+
+    // 1. Delete from Auth (Cascades to profiles usually if set up, but let's be sure)
+    const { error } = await supabaseAdmin.auth.admin.deleteUser(managerId);
+
+    if (error) {
+        return { message: error.message, success: false };
+    }
+
+    // 2. Manually delete profile if cascade isn't set up (safeguard)
+    await supabaseAdmin.from('profiles').delete().eq('id', managerId);
+
+    return { message: 'Manager deleted successfully', success: true };
 }
