@@ -17,10 +17,13 @@ export default function AdminLayout({
 
     useEffect(() => {
         const checkAuth = async () => {
+            console.log('🔍 Admin Layout: Checking auth...');
             const { data: { session } } = await supabase.auth.getSession();
+            console.log('🔍 Admin Layout: Session:', session ? 'Found' : 'Not found');
             const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'v.anri01@gmail.com';
 
             if (!session) {
+                console.log('❌ Admin Layout: No session, redirecting to home');
                 router.push('/');
                 return;
             }
@@ -35,7 +38,9 @@ export default function AdminLayout({
             let currentProfile = profile;
 
             if (error || !profile) {
+                console.log('⚠️ Admin Layout: No profile found in DB');
                 if (session.user.email === adminEmail) {
+                    console.log('✅ Admin Layout: User is admin email, creating owner profile');
                     currentProfile = {
                         id: session.user.id,
                         email: session.user.email!,
@@ -44,20 +49,25 @@ export default function AdminLayout({
                     };
                     useAdminStore.getState().setProfile(currentProfile);
                 } else {
+                    console.log('❌ Admin Layout: User not admin, redirecting');
                     router.push('/');
                     return;
                 }
             } else {
+                console.log('✅ Admin Layout: Profile found:', profile.role);
                 useAdminStore.getState().setProfile(profile);
             }
 
             // Route protection
             const path = window.location.pathname;
+            console.log('🔍 Admin Layout: Current path:', path);
             if (currentProfile?.role === 'manager' && path.includes('/admin/categories')) {
+                console.log('⚠️ Admin Layout: Manager trying to access categories, redirecting');
                 router.push('/admin');
                 return;
             }
 
+            console.log('✅ Admin Layout: Authorization successful');
             setAuthorized(true);
             setLoading(false);
         };

@@ -10,24 +10,56 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 export default function StaffPage() {
-    const { profile } = useAdminStore();
+    const { profile, setProfile } = useAdminStore();
     const router = useRouter();
     const [stores, setStores] = useState<any[]>([]);
     const [managers, setManagers] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isDeleting, setIsDeleting] = useState<string | null>(null);
     const [message, setMessage] = useState<{ text: string, type: 'success' | 'error' } | null>(null);
+    const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
-    // Redirect if not owner
+    // Fetch user profile from database
     useEffect(() => {
-        if (profile && profile.role !== 'owner') {
-            router.push('/admin');
-        }
-    }, [profile, router]);
+        const checkAuth = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+
+            if (!session) {
+                router.push('/');
+                return;
+            }
+
+            // Fetch profile from database
+            const { data: profileData } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', session.user.id)
+                .single();
+
+            if (profileData) {
+                setProfile(profileData);
+
+                // Only owners can access this page
+                if (profileData.role !== 'owner') {
+                    router.push('/admin');
+                    return;
+                }
+            } else {
+                // No profile found
+                router.push('/');
+                return;
+            }
+
+            setIsCheckingAuth(false);
+        };
+
+        checkAuth();
+    }, [router, setProfile]);
 
     const fetchStores = async () => {
-        const { data, error } = await supabase.from('stores').select('*');
+        const { data, error } = await supabase.from('stores').select('*').order('name');
         console.log('📍 Fetched stores:', data);
+        console.log('📍 Store count:', data?.length);
         console.log('📍 Store fetch error:', error);
         if (data) setStores(data);
     };
@@ -39,10 +71,15 @@ export default function StaffPage() {
            For now, let's fetch profiles and map store names manually if join is complex 
            or use the relational query if setup.
         */
+        console.log('👥 Fetching managers...');
         const { data: profiles, error } = await supabase
             .from('profiles')
             .select('*')
             .eq('role', 'manager');
+
+        console.log('👥 Managers fetched:', profiles);
+        console.log('👥 Manager count:', profiles?.length);
+        console.log('👥 Fetch error:', error);
 
         if (profiles) {
             setManagers(profiles);
@@ -50,9 +87,11 @@ export default function StaffPage() {
     };
 
     useEffect(() => {
-        fetchStores();
-        fetchManagers();
-    }, []);
+        if (!isCheckingAuth && profile?.role === 'owner') {
+            fetchStores();
+            fetchManagers();
+        }
+    }, [isCheckingAuth, profile]);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -64,7 +103,9 @@ export default function StaffPage() {
         console.log('🏪 Form data - StoreId:', formData.get('storeId'));
         console.log('🔑 Form data - Password length:', (formData.get('password') as string)?.length);
 
+        console.log('🚀 Calling createManager...');
         const result = await createManager(null, formData);
+        console.log('📨 Server response:', result);
 
         setMessage({
             text: result.message,
@@ -93,8 +134,21 @@ export default function StaffPage() {
         setIsDeleting(null);
     };
 
-    if (profile?.role !== 'owner') {
-        return null; // Or a loading spinner while redirecting
+    // Show loading while checking authentication
+    if (isCheckingAuth) {
+        return (
+            <div className="min-h-screen bg-black flex items-center justify-center">
+                <div className="text-center">
+                    <div className="w-16 h-16 border-4 border-[#39FF14] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                    <p className="text-[#39FF14] font-bold">Verifying access...</p>
+                </div>
+            </div>
+        );
+    }
+
+    // Show nothing if not owner (will redirect)
+    if (!profile || profile.role !== 'owner') {
+        return null;
     }
 
     const getStoreName = (storeId: string) => {
