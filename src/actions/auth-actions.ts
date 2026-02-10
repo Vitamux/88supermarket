@@ -37,6 +37,7 @@ export async function checkOwnerRole(userId: string) {
 
 export async function createManager(prevState: any, formData: FormData) {
     console.log('🚀 createManager called');
+    console.log('🔑 Key Check:', !!process.env.SUPABASE_SERVICE_ROLE_KEY);
 
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
