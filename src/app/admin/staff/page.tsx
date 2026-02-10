@@ -26,7 +26,9 @@ export default function StaffPage() {
     }, [profile, router]);
 
     const fetchStores = async () => {
-        const { data } = await supabase.from('stores').select('*');
+        const { data, error } = await supabase.from('stores').select('*');
+        console.log('📍 Fetched stores:', data);
+        console.log('📍 Store fetch error:', error);
         if (data) setStores(data);
     };
 
@@ -58,6 +60,10 @@ export default function StaffPage() {
         setMessage(null);
 
         const formData = new FormData(e.currentTarget);
+        console.log('📧 Form data - Email:', formData.get('email'));
+        console.log('🏪 Form data - StoreId:', formData.get('storeId'));
+        console.log('🔑 Form data - Password length:', (formData.get('password') as string)?.length);
+
         const result = await createManager(null, formData);
 
         setMessage({
@@ -172,15 +178,20 @@ export default function StaffPage() {
                                             defaultValue=""
                                             className="w-full bg-black border-2 border-zinc-800 rounded-2xl py-4 pl-14 pr-10 font-bold text-sm focus:border-[#39FF14] focus:outline-none transition-all appearance-none text-white cursor-pointer"
                                         >
-                                            <option value="" disabled className="text-zinc-500">Select a branch...</option>
+                                            <option value="" disabled className="text-zinc-500">
+                                                {stores.length === 0 ? 'Loading branches...' : 'Select a branch...'}
+                                            </option>
                                             {stores.map(store => (
-                                                <option key={store.id} value={store.id} className="text-black">
-                                                    {store.name} ({store.district})
+                                                <option key={store.id} value={store.id} className="bg-zinc-900 text-white">
+                                                    {store.name} - {store.district}
                                                 </option>
                                             ))}
                                         </select>
                                         <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600 pointer-events-none" />
                                     </div>
+                                    {stores.length === 0 && (
+                                        <p className="text-[10px] text-yellow-500 pl-4 mt-2">⚠️ Loading stores from database...</p>
+                                    )}
                                 </div>
 
                                 <button

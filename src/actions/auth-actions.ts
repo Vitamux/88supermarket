@@ -27,13 +27,27 @@ export async function checkOwnerRole(userId: string) {
 }
 
 export async function createManager(prevState: any, formData: FormData) {
+    console.log('🚀 createManager called');
+
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
     const storeId = formData.get('storeId') as string;
 
+    console.log('📋 Received data:', { email, storeId, passwordLength: password?.length });
+
     if (!email || !password || !storeId) {
+        console.log('❌ Validation failed - missing fields');
         return { message: 'All fields are required', success: false };
     }
+
+    // Validate UUID format
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(storeId)) {
+        console.log('❌ Invalid UUID format for storeId:', storeId);
+        return { message: 'Invalid store ID format', success: false };
+    }
+
+    console.log('✅ Validation passed');
 
     // 1. Verify Requestor is Owner (Optional but recommended if we had the caller's ID)
     // For server actions called from client, we really should verify the session again.
@@ -41,6 +55,7 @@ export async function createManager(prevState: any, formData: FormData) {
     // but ideally we check the cookie session here.
 
     // 2. Create Auth User
+    console.log('👤 Creating auth user...');
     const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
         email,
         password,
@@ -49,14 +64,19 @@ export async function createManager(prevState: any, formData: FormData) {
     });
 
     if (authError) {
+        console.log('❌ Auth creation failed:', authError);
         return { message: authError.message, success: false };
     }
 
     if (!authData.user) {
+        console.log('❌ No user returned from auth creation');
         return { message: 'Failed to create user', success: false };
     }
 
+    console.log('✅ Auth user created:', authData.user.id);
+
     // 3. Create Profile Entry
+    console.log('📝 Creating profile entry...');
     const { error: profileError } = await supabaseAdmin
         .from('profiles')
         .insert({
@@ -67,11 +87,13 @@ export async function createManager(prevState: any, formData: FormData) {
         });
 
     if (profileError) {
+        console.log('❌ Profile creation failed:', profileError);
         // Rollback auth user creation if profile fails
         await supabaseAdmin.auth.admin.deleteUser(authData.user.id);
         return { message: 'User created but profile failed: ' + profileError.message, success: false };
     }
 
+    console.log('✅ Manager created successfully!');
     return { message: 'Manager created successfully!', success: true };
 }
 
