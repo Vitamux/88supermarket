@@ -3,11 +3,21 @@
 import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 
+// Validate environment variables
+if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+    throw new Error('Missing NEXT_PUBLIC_SUPABASE_URL environment variable');
+}
+
+if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    console.error('❌ CRITICAL: SUPABASE_SERVICE_ROLE_KEY is not set in .env.local');
+    console.error('📝 Get it from: Supabase Dashboard > Project Settings > API > service_role key');
+    throw new Error('SUPABASE_SERVICE_ROLE_KEY is required for admin operations');
+}
+
 // Initialize Supabase Admin Client
-// note: Ensure SUPABASE_SERVICE_ROLE_KEY is set in .env.local
 const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY || '',
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY,
     {
         auth: {
             autoRefreshToken: false,
@@ -49,10 +59,38 @@ export async function createManager(prevState: any, formData: FormData) {
 
     console.log('✅ Validation passed');
 
-    // 1. Verify Requestor is Owner (Optional but recommended if we had the caller's ID)
-    // For server actions called from client, we really should verify the session again.
-    // However, for this demo we'll assume the page protection does the heavy lifting, 
-    // but ideally we check the cookie session here.
+    // 1. Verify Requestor is Owner
+    console.log('🔐 Verifying owner role...');
+    const cookieStore = await cookies();
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
+    // Create a client with the user's session to verify their role
+    const { createServerClient } = await import('@supabase/ssr');
+    const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+        cookies: {
+            get(name: string) {
+                return cookieStore.get(name)?.value;
+            },
+            set() { },
+            remove() { }
+        }
+    });
+
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        console.log('❌ No authenticated user');
+        return { message: 'Authentication required', success: false };
+    }
+
+    const isOwner = await checkOwnerRole(user.id);
+    if (!isOwner) {
+        console.log('❌ User is not an owner:', user.id);
+        return { message: 'Only owners can create managers', success: false };
+    }
+
+    console.log('✅ Owner verification passed');
 
     // 2. Create Auth User
     console.log('👤 Creating auth user...');
