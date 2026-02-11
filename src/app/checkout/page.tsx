@@ -29,19 +29,29 @@ export default function CheckoutPage() {
         setMounted(true);
 
         const fetchUser = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+            try {
+                const { data: authData, error: authError } = await supabase.auth.getUser();
+                if (authError) {
+                    console.warn('Auth session error:', authError.message);
+                    return;
+                }
 
-            if (user) {
-                setUser(user);
-                setIsAdmin(adminEmail ? user.email === adminEmail : false);
+                const user = authData?.user;
+                const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
 
-                // Auto-fill form data
-                setFormData(prev => ({
-                    ...prev,
-                    name: user.user_metadata?.full_name || prev.name,
-                    phone: user.user_metadata?.phone || prev.phone
-                }));
+                if (user) {
+                    setUser(user);
+                    setIsAdmin(adminEmail ? user.email === adminEmail : false);
+
+                    // Auto-fill form data
+                    setFormData(prev => ({
+                        ...prev,
+                        name: user.user_metadata?.full_name || prev.name,
+                        phone: user.user_metadata?.phone || prev.phone
+                    }));
+                }
+            } catch (error) {
+                console.error('Unexpected auth error during checkout initialization:', error);
             }
         };
 
@@ -54,21 +64,33 @@ export default function CheckoutPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!formData.name || !formData.address || !formData.phone) {
+
+        // Safety Check 1: Form Validation
+        if (!formData?.name || !formData?.address || !formData?.phone) {
             alert('Please fill in all required fields');
+            return;
+        }
+
+        // Safety Check 2: Cart Items
+        if (!items || items.length === 0) {
+            alert('Your cart is empty');
             return;
         }
 
         setLoading(true);
 
         try {
+            // Logging requested by user: Add console.log('Payment Initiated', { storeData, userData })
+            // userData = user object, storeData = items in cart
+            console.log('Payment Initiated', { storeData: items, userData: user });
+
             // 1. Create the order
             const orderData = {
-                customer_name: formData.name,
-                address: formData.address,
-                phone: formData.phone,
+                customer_name: formData?.name,
+                address: formData?.address,
+                phone: formData?.phone,
                 items: items,
-                total_price: total,
+                total_price: total || 1000,
                 status: 'pending'
             };
 
@@ -81,30 +103,34 @@ export default function CheckoutPage() {
             if (orderError) throw orderError;
 
             // 2. Update stock for each item
-            for (const item of items) {
-                // Fetch current stock
-                const { data: product, error: fetchError } = await supabase
-                    .from('products')
-                    .select('stock_quantity')
-                    .eq('id', item.id)
-                    .single();
+            if (items && Array.isArray(items)) {
+                for (const item of items) {
+                    if (!item?.id) continue;
 
-                if (!fetchError && product) {
-                    const newStock = (product.stock_quantity || 0) - item.quantity;
-                    await supabase
+                    // Fetch current stock
+                    const { data: product, error: fetchError } = await supabase
                         .from('products')
-                        .update({ stock_quantity: newStock })
-                        .eq('id', item.id);
+                        .select('stock_quantity')
+                        .eq('id', item.id)
+                        .single();
+
+                    if (!fetchError && product) {
+                        const newStock = Math.max(0, (product?.stock_quantity || 0) - (item?.quantity || 0));
+                        await supabase
+                            .from('products')
+                            .update({ stock_quantity: newStock })
+                            .eq('id', item.id);
+                    }
                 }
             }
 
             // 3. Update store (to show in Success page)
             const newOrder = {
-                id: order.id.toString(),
+                id: order?.id?.toString() || Math.random().toString(),
                 customer: {
-                    name: formData.name,
-                    address: formData.address,
-                    phone: formData.phone
+                    name: formData?.name,
+                    address: formData?.address,
+                    phone: formData?.phone
                 },
                 items: items,
                 total: total,
@@ -119,8 +145,12 @@ export default function CheckoutPage() {
 
             router.push('/checkout/success');
         } catch (err: any) {
-            console.error('Checkout error:', err);
-            alert(`Failed to place order: ${err.message || 'Please try again'}`);
+            // Error Boundary wrapping requested: logs to console instead of crashing
+            console.error('CRITICAL: Checkout error caught in boundary:', err);
+
+            // Inform the user gracefully
+            const message = err?.message || 'A client-side exception occurred during payment';
+            alert(`Payment/Checkout error inhibited: ${message}. If the problem persists, please contact support.`);
         } finally {
             setLoading(false);
         }
@@ -210,13 +240,16 @@ export default function CheckoutPage() {
                     <div className="bg-white p-8 rounded-2xl shadow-sm h-fit">
                         <h2 className="text-xl font-bold text-gray-900 mb-6">Order Summary</h2>
                         <div className="space-y-4 mb-6">
-                            {items.map((item) => (
-                                <div key={item.id} className="flex justify-between items-center text-sm">
+                            {items?.map((item) => (
+                                <div key={item?.id} className="flex justify-between items-center text-sm">
                                     <div>
-                                        <span className="font-medium text-gray-900">{item.name}</span>
-                                        <span className="text-gray-500 ml-2">x{item.quantity}</span>
+                                        <span className="font-medium text-gray-900">
+                                            {/* Fix React Error #31: Ensure we translate or stringify the name, not render object */}
+                                            {typeof item?.display_names === 'object' ? (item.display_names as any)[lang] || item.name : item?.name}
+                                        </span>
+                                        <span className="text-gray-500 ml-2">x{item?.quantity || 1}</span>
                                     </div>
-                                    <span className="text-gray-900">{item.price * item.quantity} AMD</span>
+                                    <span className="text-gray-900">{(item?.price || 0) * (item?.quantity || 1)} AMD</span>
                                 </div>
                             ))}
                         </div>

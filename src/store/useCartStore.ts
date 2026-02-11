@@ -95,30 +95,40 @@ export const useCartStore = create<CartStore>()(
             setSelectedStoreId: (id) => set({ selectedStoreId: id }),
             placeOrder: async (customer) => {
                 const state = get();
-                const total = state.items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
 
-                const { data, error } = await supabase
-                    .from('orders')
-                    .insert([
-                        {
-                            customer_name: customer.name,
-                            total_price: total,
-                            items: state.items,
-                            store_id: state.selectedStoreId
-                        }
-                    ])
-                    .select()
-                    .single();
+                // Logging for debugging
+                console.log('Order Initiation Started', { customer, items: state?.items });
 
-                if (error) {
-                    console.error('Error placing order:', error);
-                    alert('Failed to place order. Please try again.');
+                try {
+                    const total = state?.items?.reduce((acc, item) => acc + ((item?.price || 0) * (item?.quantity || 1)), 0) || 0;
+
+                    const { data, error } = await supabase
+                        .from('orders')
+                        .insert([
+                            {
+                                customer_name: customer?.name,
+                                total_price: total,
+                                items: state?.items,
+                                store_id: state?.selectedStoreId
+                            }
+                        ])
+                        .select()
+                        .single();
+
+                    if (error) {
+                        console.error('Error placing order:', error);
+                        alert(`Failed to place order: ${error.message || 'Please try again.'}`);
+                        return '';
+                    }
+
+                    alert('Order sent to 88 Supermarket');
+                    set({ items: [] });
+                    return data?.id || '';
+                } catch (err: any) {
+                    console.error('Unexpected error in placeOrder:', err);
+                    alert('An unexpected error occurred. Please try again.');
                     return '';
                 }
-
-                alert('Order sent to 88 Supermarket');
-                set({ items: [] });
-                return data.id;
             },
             updateOrderStatus: (orderId, status) => set((state) => ({
                 orders: state.orders.map(o => o.id === orderId ? { ...o, status } : o)
