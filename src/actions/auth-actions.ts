@@ -92,6 +92,7 @@ export async function createManager(prevState: any, formData: FormData) {
         .from('profiles')
         .upsert({
             id: authData.user.id,
+            email: email, // Add email column here
             role: 'manager',
             assigned_store_id: storeId
         }, {
