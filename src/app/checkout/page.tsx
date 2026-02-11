@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '../../lib/supabase';
 import { useLanguageStore } from '../../store/useLanguageStore';
+import { getTranslation } from '../../lib/i18n';
 
 export default function CheckoutPage() {
     const router = useRouter();
@@ -246,8 +247,8 @@ export default function CheckoutPage() {
                                 <div key={item?.id} className="flex justify-between items-center text-sm">
                                     <div>
                                         <span className="font-medium text-gray-900">
-                                            {/* Fix React Error #31: Ensure we translate or stringify the name, not render object */}
-                                            {typeof item?.display_names === 'object' ? (item.display_names as any)[lang || 'en'] || item.name : item?.name}
+                                            {/* Fix React Error #31: Use getTranslation helper to ensure a string is always rendered */}
+                                            {getTranslation(item?.display_names || item?.name, lang)}
                                         </span>
                                         <span className="text-gray-500 ml-2">x{item?.quantity || 1}</span>
                                     </div>

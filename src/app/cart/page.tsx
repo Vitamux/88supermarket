@@ -9,6 +9,7 @@ import { translations } from '../../lib/translations';
 import { Trash2, Plus, Minus, ArrowLeft } from 'lucide-react';
 import Header from '../../components/Header';
 import { supabase } from '../../lib/supabase';
+import { getTranslation } from '../../lib/i18n';
 
 export default function CartPage() {
     const router = useRouter();
@@ -67,7 +68,7 @@ export default function CartPage() {
                                             {/* eslint-disable-next-line @next/next/no-img-element */}
                                             <img
                                                 src={imageUrl}
-                                                alt={item.display_names?.[lang] || item.name}
+                                                alt={getTranslation(item.display_names || item.name, lang)}
                                                 className="w-full h-full object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-500"
                                             />
                                         </div>
@@ -76,7 +77,7 @@ export default function CartPage() {
                                             <div className="flex flex-col gap-1 mb-2">
                                                 <span className="text-[10px] font-black text-[#39FF14] uppercase tracking-[0.3em] drop-shadow-[0_0_5px_rgba(57,255,20,0.3)]">Premium Selection</span>
                                                 <h3 className="text-2xl font-black text-gray-900 uppercase tracking-tighter italic">
-                                                    {item.display_names?.[lang] || item.name}
+                                                    {getTranslation(item.display_names || item.name, lang)}
                                                 </h3>
                                             </div>
                                             <p className="text-gray-900 font-black text-lg tracking-tighter">

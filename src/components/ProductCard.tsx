@@ -5,6 +5,7 @@ import { Plus } from "lucide-react";
 import { useState } from "react";
 import { useLanguageStore } from "../store/useLanguageStore";
 import { translations } from "../lib/translations";
+import { getTranslation } from "../lib/i18n";
 
 interface Product {
     id: number;
@@ -20,6 +21,12 @@ interface Product {
     };
     isLocal?: boolean;
     stock_quantity?: number;
+    display_names?: {
+        en: string;
+        ru: string;
+        am: string;
+        [key: string]: string;
+    };
 }
 
 interface ProductCardProps {
@@ -81,23 +88,11 @@ export default function ProductCard({ product, onOpenModal, onAddToCart }: Produ
                     <div className="h-0.5 w-8 bg-[#39FF14]/30 rounded-full group-hover:w-12 transition-all duration-500"></div>
                 </div>
                 <h3 className="font-black text-gray-900 truncate text-xl uppercase tracking-tighter italic">
-                    {(() => {
-                        if ((product as any).display_names?.[lang]) return (product as any).display_names[lang];
-                        if (typeof product.name === 'object' && product.name !== null) {
-                            return (product.name as any)[lang] || (product.name as any)['am'] || (product.name as any)['en'] || 'Unknown Product';
-                        }
-                        return product.name;
-                    })()}
+                    {getTranslation(product.display_names || product.name, lang)}
                 </h3>
                 <p className="text-gray-400 text-xs truncate mt-1 font-medium italic opacity-60">
                     {/* Handle description being either a string (legacy) or object (new) with robust fallback */}
-                    {(() => {
-                        const desc = product.description;
-                        if (typeof desc === 'object' && desc !== null) {
-                            return (desc as any)[lang] || (desc as any)['hy'] || (desc as any)['am'] || (desc as any)['en'] || '88 Supermarket Quality';
-                        }
-                        return desc || '88 Supermarket Quality';
-                    })()}
+                    {getTranslation(product.description, lang) || '88 Supermarket Quality'}
                 </p>
             </div>
 

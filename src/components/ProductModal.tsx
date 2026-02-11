@@ -4,6 +4,7 @@ import { X, Plus, Minus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLanguageStore } from "../store/useLanguageStore";
 import { translations } from "../lib/translations";
+import { getTranslation } from "../lib/i18n";
 
 interface Product {
     id: number;
@@ -21,6 +22,12 @@ interface Product {
     };
     isLocal?: boolean;
     stock_quantity?: number;
+    display_names?: {
+        en: string;
+        ru: string;
+        am: string;
+        [key: string]: string;
+    };
 }
 
 interface ProductModalProps {
@@ -78,12 +85,7 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart }: 
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                             src={imageUrl}
-                            alt={(() => {
-                                if (typeof product.name === 'object' && product.name !== null) {
-                                    return (product.name as any)[lang] || (product.name as any)['am'] || (product.name as any)['en'] || 'Product Image';
-                                }
-                                return product.name || 'Product Image';
-                            })()}
+                            alt={getTranslation(product.name, lang) || 'Product Image'}
                             className="w-full h-full object-cover"
                         />
                         {isOutOfStock && (
@@ -103,13 +105,7 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart }: 
                                 {(product as any).category || '88 Selection'}
                             </span>
                             <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-4 uppercase tracking-tighter italic">
-                                {(() => {
-                                    if ((product as any).display_names?.[lang]) return (product as any).display_names[lang];
-                                    if (typeof product.name === 'object' && product.name !== null) {
-                                        return (product.name as any)[lang] || (product.name as any)['am'] || (product.name as any)['en'] || 'Unknown Product';
-                                    }
-                                    return product.name;
-                                })()}
+                                {getTranslation((product as any).display_names || product.name, lang)}
                             </h2>
                             <div className="h-1.5 w-16 bg-[#39FF14] rounded-full shadow-[0_0_10px_#39FF14] mb-6"></div>
                             <p className="text-4xl font-black text-gray-900 tracking-tighter">
@@ -118,13 +114,7 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart }: 
                         </div>
 
                         <p className="text-gray-400 mb-12 leading-relaxed text-center font-medium italic text-lg opacity-80">
-                            {(() => {
-                                const desc = product.description;
-                                if (typeof desc === 'object' && desc !== null) {
-                                    return (desc as any)[lang] || (desc as any)['hy'] || (desc as any)['am'] || (desc as any)['en'] || t.premiumFallback;
-                                }
-                                return desc || t.premiumFallback;
-                            })()}
+                            {getTranslation(product.description, lang) || t.premiumFallback}
                         </p>
 
                         {((product as any).nutritional_info || product.nutrition) && (
