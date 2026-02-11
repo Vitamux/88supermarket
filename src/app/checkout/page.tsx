@@ -5,9 +5,11 @@ import { useCartStore } from '../../store/useCartStore';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '../../lib/supabase';
+import { useLanguageStore } from '../../store/useLanguageStore';
 
 export default function CheckoutPage() {
     const router = useRouter();
+    const { lang } = useLanguageStore();
     const items = useCartStore((state) => state.items);
     const placeOrder = useCartStore((state) => state.placeOrder);
     const cartTotal = items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
@@ -245,7 +247,7 @@ export default function CheckoutPage() {
                                     <div>
                                         <span className="font-medium text-gray-900">
                                             {/* Fix React Error #31: Ensure we translate or stringify the name, not render object */}
-                                            {typeof item?.display_names === 'object' ? (item.display_names as any)[lang] || item.name : item?.name}
+                                            {typeof item?.display_names === 'object' ? (item.display_names as any)[lang || 'en'] || item.name : item?.name}
                                         </span>
                                         <span className="text-gray-500 ml-2">x{item?.quantity || 1}</span>
                                     </div>
